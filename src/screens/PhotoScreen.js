@@ -1,0 +1,232 @@
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Linking,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { Camera, CameraType } from "expo-camera";
+import React,{useEffect, useLayoutEffect, useState} from "react";
+
+import { AxiosContext } from "../context/AxiosContext";
+import Loader from "../components/Loader";
+import { MaterialIcons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
+import { UserContext } from "../context/UserContext";
+import { getStatusBarHeight } from "react-native-status-bar-height";
+import { useNavigation } from '@react-navigation/native';
+
+const PhotoScreen = () => {
+  const {user,updateUser} = React.useContext(UserContext);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [showCamera, setShowCamera] = React.useState(false);
+  const [cameraRef, setCameraRef] = React.useState(null);
+  const [capturedImage, setCapturedImage] = useState(user.photo != null ? user.photo.uri:null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const {publicAxios} = React.useContext(AxiosContext);
+  const [verificationMessage, setVerificationMessage] = useState(null);
+
+  const handlePhotoVerification = async (data) => {
+    console.log("Verifying photo");
+    setIsVerifying(true);
+    await publicAxios.post("/photo_verification", { image: data.base64Image })
+      .then((res) => {
+        console.log(res.data);
+        if(res.data.status == 0){
+          setVerificationMessage("Photo verification successfull!");
+          updateUser({'photo':data})
+        }else if(res.data.status == 1){
+          setVerificationMessage("No face found in the photo!Please try again");
+        }else if(res.data.status == 2){
+          setVerificationMessage("Multiple faces found in the photo!Please try again");
+        }else if(res.data.status == 3){
+          setVerificationMessage("Face not clear!Please try again");
+        }
+        setIsVerifying(false);
+      })
+  }
+
+  const navigation = useNavigation()
+
+  useLayoutEffect(() => {
+    
+        navigation.setOptions({
+            headerShown: !showCamera, // Hide header when the camera is open
+          });
+}, [navigation, showCamera])
+
+useEffect(() => {
+  const unsubscribe = navigation.addListener('beforeRemove', e => {
+    e.preventDefault(); // Prevent default action
+    unsubscribe() // Unsubscribe the event on first call to prevent infinite loop
+    updateUser({'photo':null})
+    navigation.navigate('GenderScreen') // Navigate to your desired screen
+  });
+}, [])
+
+  const takePicture = async () => {
+    if (cameraRef) {
+      const data = await cameraRef.takePictureAsync(null);
+      setCapturedImage(data.uri);
+      setShowCamera(false);
+      handlePhotoVerification(data);
+    }
+  };
+
+    const handleNext = () => {
+      console.log(user)
+        navigation.navigate("MobileNumberInputScreen")
+    }
+
+  const handleRetake = () => {
+    setCapturedImage(null);
+    setShowCamera(true);
+  }
+
+  const closeCamera = () => {
+    setShowCamera(false);
+  };
+
+  const handleIconPress = async () => {
+    const response = await requestPermission();
+    if (!response.granted) {
+      Alert.alert(
+        "Permission Denied",
+        "In order to ensure only genuine people join Gas, it is required to click a photo! Please go to settings and enable camera permissions",
+        [
+          {
+            text: "Go to Settings",
+            onPress: () => Linking.openSettings(),
+          },
+          { text: "Cancel" },
+        ]
+      );
+    } else {
+      setShowCamera(true);
+    }
+  };
+  if (!permission || !permission.granted || !showCamera) {
+    return (
+      <View style={styles.container}>
+        <StatusBar style="light" backgroundColor="#FF8C00" />
+        <Text style={styles.title}>Add a profile photo</Text>
+        {capturedImage ?(isVerifying ? <ActivityIndicator />: <> 
+        <Image source={{ uri: capturedImage }} style={styles.image} />
+        <Text>{verificationMessage}</Text>
+        </>) :
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={handleIconPress}
+        >
+          <MaterialIcons name="add-a-photo" size={50} color="white" />
+        </TouchableOpacity>
+        }
+        <View style={styles.buttonContainer}>
+            {capturedImage &&
+          <TouchableOpacity style={styles.button} onPress={handleRetake}>
+            <Text style={styles.buttonText}>Retake Photo</Text>
+          </TouchableOpacity>}
+          <TouchableOpacity disabled={user.photo == null} onPress={handleNext} style={[styles.button,user.photo ? {} : styles.disabledButton]}>
+            <Text style={styles.buttonText}>Next</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  } else {
+    return (
+      <Camera
+        style={{ flex: 1, flexDirection: "column" }}
+        type={CameraType.front}
+        ref={(ref) => setCameraRef(ref)}
+      >
+        <View style={styles.closeButton}>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity style={{marginRight: 10,
+    backgroundColor:"red"}} onPress={closeCamera}>
+            <MaterialIcons name="close" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.captureButton}>
+          <TouchableOpacity onPress={takePicture}>
+            <MaterialIcons name="camera" size={60} color="white" />
+          </TouchableOpacity>
+        </View>
+      </Camera>
+    );
+  }
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FF8C00",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cameraContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  iconContainer: {
+    marginBottom: 100,
+  },
+  buttonContainer: {
+    width: "100%",
+    paddingHorizontal: 30,
+    position: "absolute",
+    bottom: 30,
+  },
+  button: {
+    backgroundColor: "transparent",
+    borderColor: "white",
+    borderWidth: 2,
+    borderRadius: 30,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+  },
+  disabledButton: {
+          backgroundColor: '#CCCCCC',
+        },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
+  },
+  camera: {
+    flex: 1,
+  },
+  captureButton: {
+    flex:1,
+    backgroundColor: "transparent",
+    borderRadius: 50,
+    padding: 15,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  closeButton: {
+    
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  image: {
+          width: 150,
+          height: 150,
+          borderRadius: 100,
+          marginBottom: 30,
+        },
+});
+
+export default PhotoScreen;
