@@ -19,6 +19,7 @@ import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import PermissionsScreen from './src/screens/PermissionScreen';
 import PhotoScreen from './src/screens/PhotoScreen';
 import PollScreen from './src/screens/PollScreen';
+import PricingScreen from './src/screens/PricingScreen';
 import ProfileScreen from './src/screens/ProfieScreen';
 import SchoolSelectionScreen from './src/screens/SchoolSelectionScreen';
 import { StatusBar } from 'expo-status-bar';
@@ -122,7 +123,7 @@ export default function App() {
           <AxiosProvider>
       <UserProvider>
       <Stack.Navigator>
-        <Stack.Screen name = "BannerScreen" component = {TabNavigator} options={{headerShown:false}} />
+        <Stack.Screen name = "BannerScreen" component = {PricingScreen} options={{headerShown:false}} />
         <Stack.Screen name = "Permissions" component = {PermissionsScreen} options={{headerShown:true,headerTitle:"Please allow access",headerTitleStyle:{'fontSize':15},headerTitleAlign:'center',headerStyle:{'backgroundColor':'#FF8C00'}}} />
         <Stack.Screen name = "GradeSelectionScreen" component = {GradeSelectionScreen} options={{headerShown:true,headerTitle:"What grade are you in?",headerTitleStyle:{'fontSize':15,color:"white"},headerTitleAlign:'center',headerStyle:{'backgroundColor':'#FF8C00'}}} />
         <Stack.Screen name = "SchoolSelectionScreen" component = {SchoolSelectionScreen} options={{headerShown:true,headerTitle:"Pick your school",headerTitleStyle:{'fontSize':15,color:"white"},headerTitleAlign:'center',headerStyle:{'backgroundColor':'#FF8C00'}}} />

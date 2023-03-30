@@ -15,6 +15,7 @@ import ElevatedBox from "../components/ElevatedBox";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader";
 import ProgressBar from "../components/ProgressBar";
+import Purchases from 'react-native-purchases';
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -76,6 +77,7 @@ function randomSoothingColor() {
   const lightness = Math.floor(Math.random() * 21) + 20;
 
   console.log("generated ", hslToHex(hue, saturation, lightness));
+  console.log("wjkk")
   return hslToHex(hue, saturation, lightness);
 }
 
@@ -120,6 +122,16 @@ const PollScreen = () => {
       setSelectedIndex(null);
     }
   };
+
+  useEffect(() => {
+    const test = async () => {
+    Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
+    Purchases.configure({apiKey:'goog_bClHlaubcaVscmrRoRbWdxZmcyD'})
+    const offerings = await Purchases.getOfferings();
+    console.log(offerings)
+    }
+    test()
+  },[])
 
   const getPolls = async () => {
     const response = await authAxios.get("/get_polls");
