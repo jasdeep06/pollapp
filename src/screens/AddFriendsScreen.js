@@ -1,3 +1,4 @@
+import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
 import {
@@ -13,7 +14,9 @@ import {
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
 import FriendItem from "../components/FriendItem";
+import { Linking } from 'react-native';
 import Loader from "../components/Loader";
+import RNFS from 'react-native-fs';
 import React from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -32,26 +35,22 @@ const AddFriendsScreen = ({ navigation }) => {
     }
   };
 
-  const shareMessage = async () => {
-    const message = 'Hello, this is a test message!';
-    const shareUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
+
+  const shareWhatsAppMessage = async (message) => {
+    const url = `whatsapp://send?text=${encodeURIComponent(message)}`;
   
     try {
-      // Check if sharing is available on the device
-      const isAvailable = await Sharing.isAvailableAsync();
-      if (!isAvailable) {
-        alert('Sharing is not available on this device');
-        return;
+      const canOpenURL = await Linking.canOpenURL(url);
+      if (canOpenURL) {
+        await Linking.openURL(url);
+      } else {
+        console.error('WhatsApp is not installed on the device');
       }
-  
-      // Open share dialog with the pre-filled message
-      await Sharing.shareAsync(shareUrl);
     } catch (error) {
-      console.error('Error while sharing message:', error);
+      console.error('Error opening WhatsApp:', error);
     }
   };
   
-
 
   useFocusEffect(
     React.useCallback(() => {
@@ -191,7 +190,7 @@ const AddFriendsScreen = ({ navigation }) => {
         style={{ borderBottomWidth: 0.5, borderBottomColor: "black" }}
       ></View> */}
       <View style={{alignItems:"center",flex:1,justifyContent:"center"}}>
-      <CustomButton buttonText={"Invite on WhatsApp"} onPress={shareMessage}/>
+      <CustomButton buttonText={"Invite on WhatsApp"} onPress={() => shareWhatsAppMessage("Hi")}/>
       </View>
     </View>
   );

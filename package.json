@@ -22,11 +22,14 @@
     "expo-dev-client": "~2.1.6",
     "expo-location": "~15.1.1",
     "expo-permissions": "~14.1.1",
+    "expo-sharing": "~11.2.2",
+    "expo-splash-screen": "~0.18.1",
     "expo-status-bar": "~1.4.4",
     "react": "18.2.0",
     "react-native": "0.71.3",
     "react-native-confetti-cannon": "^1.5.2",
     "react-native-confirmation-code-field": "^7.3.1",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-modal": "^13.0.1",
     "react-native-otp-inputs": "^7.4.0",
@@ -37,8 +40,7 @@
     "react-native-screens": "~3.20.0",
     "react-native-status-bar-height": "^2.6.0",
     "react-native-tab-view": "^3.5.1",
-    "expo-splash-screen": "~0.18.1",
-    "expo-sharing": "~11.2.2"
+    "expo-file-system": "~15.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
