@@ -12,25 +12,32 @@ import React, { useState } from 'react';
 import { AxiosContext } from '../context/AxiosContext';
 import { UserContext } from '../context/UserContext';
 
-const MobileNumberInputScreen = ({navigation}) => {
+const MobileNumberInputScreen = ({navigation,route}) => {
     // const [mobileNumber, setMobileNumber] = useState('');
     const {user,updateUser} = React.useContext(UserContext);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
     const {publicAxios} = React.useContext(AxiosContext);
+    const isLogin = route.params?.isLogin || false;
+
 
     const handleNextButton = async () => {
       console.log('Mobile Number:', user.phone);
       setIsSendingOtp(true);
-      const result  = await publicAxios.post('/get_otp', { phone: user.phone,"task":"send" })
+      try{
+      const result  = await publicAxios.post('/get_otp', { mobile: "91" + user.phone,"task":"send" })
       if(result.data.status == 0){
         console.log("OTP sent successfully");
-        navigation.navigate("OtpVerificationScreen")
+        navigation.navigate("OtpVerificationScreen",{isLogin:isLogin})
         setIsSendingOtp(false);
       }
       else{
+        console.log(respose.data.status)
         console.log("Error sending OTP");
       }
+    }catch(err){
+      console.log(err);
     };
+  }
     const handleMobileNumberChange = (text) => {
         const filteredText = text.replace(/[^0-9]/g, '');
         updateUser({'phone':filteredText});
@@ -41,7 +48,7 @@ const MobileNumberInputScreen = ({navigation}) => {
         <StatusBar backgroundColor="#FF8C00" />
         <View style={styles.content}>
 
-        <Text style={styles.title}>Enter your phone number</Text>
+        <Text style={styles.title}>{isLogin ? "Login using your mobile":"Enter your phone number"}</Text>
         <View style={styles.inputContainer}>
           <Text style={styles.countryCode}>+91</Text>
           <TextInput
@@ -53,9 +60,11 @@ const MobileNumberInputScreen = ({navigation}) => {
             placeholder="Mobile Number"
           />
         </View>
-        <Text style={styles.warning}>
-          Remember - never sign up with another person's phone number.
-        </Text>
+        {!isLogin ?  <Text style={styles.warning}>
+          Remember - never sign up with another person's phone number.We will send you an OTP.
+        </Text>:<Text style={styles.warning}>
+          We will send you an OTP.
+        </Text>}
         </View>
 
         <View style={styles.buttonContainer}>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import CustomButton from '../components/CustomButton';
 import { UserContext } from '../context/UserContext';
 
 const FirstNameScreen = ({navigation}) => {
@@ -27,9 +28,16 @@ const FirstNameScreen = ({navigation}) => {
             autoFocus={true}
           />
         </View>
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
+        {/* <TouchableOpacity style={user.firstname.length != 0 ? styles.nextButton:[styles.nextButton,styles.disabledButton]} disabled={user.firstname.length == 0} onPress={handleNext}>
+          <Text style={styles.nextButtonText} >Next</Text>
+        </TouchableOpacity> */}
+        <CustomButton 
+        buttonStyles={user.firstname.length != 0 ? styles.nextButton:[styles.nextButton,styles.disabledButton]}
+        onPress = {handleNext}
+        buttonText={"Next"}
+        textStyles={styles.nextButtonText}
+        disabled={user.firstname.length == 0}
+        />
       </SafeAreaView>
     );
   };
@@ -72,6 +80,9 @@ const FirstNameScreen = ({navigation}) => {
       fontSize: 18,
       textAlign: 'center',
     },
+    disabledButton: {
+      backgroundColor: '#CCCCCC'
+    }
   });
   
 

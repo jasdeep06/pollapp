@@ -33,17 +33,17 @@ const PhotoScreen = () => {
   const handlePhotoVerification = async (data) => {
     console.log("Verifying photo");
     setIsVerifying(true);
-    await publicAxios.post("/photo_verification", { image: data.base64Image })
+    await publicAxios.post("http://15.207.192.148:8000/liveness", { image: data.base64 })
       .then((res) => {
         console.log(res.data);
         if(res.data.status == 0){
           setVerificationMessage("Photo verification successfull!");
           updateUser({'photo':data})
-        }else if(res.data.status == 1){
+        }else if(res.data.status == 3){
           setVerificationMessage("No face found in the photo!Please try again");
         }else if(res.data.status == 2){
           setVerificationMessage("Multiple faces found in the photo!Please try again");
-        }else if(res.data.status == 3){
+        }else if(res.data.status == 1){
           setVerificationMessage("Face not clear!Please try again");
         }
         setIsVerifying(false);
@@ -70,7 +70,7 @@ useEffect(() => {
 
   const takePicture = async () => {
     if (cameraRef) {
-      const data = await cameraRef.takePictureAsync(null);
+      const data = await cameraRef.takePictureAsync({ base64: true });
       setCapturedImage(data.uri);
       setShowCamera(false);
       handlePhotoVerification(data);
@@ -78,7 +78,7 @@ useEffect(() => {
   };
 
     const handleNext = () => {
-      console.log(user)
+      // console.log(user)
         navigation.navigate("MobileNumberInputScreen")
     }
 

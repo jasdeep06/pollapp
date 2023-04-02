@@ -20,23 +20,37 @@ import useOtpResend from "../hooks/useOtpResend";
 import useOtpValidation from "../hooks/useOtpValidation";
 
 const reformatContacts = (contacts) => {
-  return contacts.map((contact) => {
-   if('phoneNumbers' in contact){
-    const uniqueNumbers = new Set();
-    contact.phoneNumbers.forEach((number) => {
-      uniqueNumbers.add(number.number.replace(/[-\s]/g, ''));
-    });
-    return {
-      name: contact.name,
-      numbers: Array.from(uniqueNumbers),
-    };
-    // return {
-    //   name: contact.name,
-    //   numbers: contact.phoneNumbers.map((number) => number.number),
-    // };
-   }
-  });
+  return contacts.reduce((result, contact) => {
+    if ('phoneNumbers' in contact) {
+      const uniqueNumbers = new Set();
+      contact.phoneNumbers.forEach((number) => {
+        let formattedNumber = number.number.replace(/[-\s]/g, '');
+
+        // If the number starts with '+91', remove the '+'
+        if (formattedNumber.startsWith('+91')) {
+          formattedNumber = formattedNumber.replace('+', '');
+        }
+        // If the number is 10 digits, prepend '91'
+        else if (formattedNumber.length === 10) {
+          formattedNumber = '91' + formattedNumber;
+        }
+        // If the number is 11 digits and starts with '0', remove '0' and prepend '91'
+        else if (formattedNumber.length === 11 && formattedNumber.startsWith('0')) {
+          formattedNumber = '91' + formattedNumber.substring(1);
+        }
+        uniqueNumbers.add(formattedNumber);
+      });
+      
+      result.push({
+        name: contact.name,
+        numbers: Array.from(uniqueNumbers),
+      });
+    }
+    return result;
+  }, []);
 };
+
+
 
 const saveToStorage = async (key, value) => {
   try {
@@ -47,33 +61,58 @@ const saveToStorage = async (key, value) => {
 };
 
 
-const OtpVerificationScreen = ({navigation}) => {
+const OtpVerificationScreen = ({navigation,route}) => {
 
   const {user,updateUser} = React.useContext(UserContext);
   const {updateAuthToken} = React.useContext(AuthContext);
   const {publicAxios} = React.useContext(AxiosContext);
+  const isLogin = route.params?.isLogin || false;
   
   
   const validateOtp = async (otp) => {
-    return publicAxios.post('/verify_otp', {
-      "mobile": user.phone,
+    console.log(!isLogin ?  {
+      "mobile": "91" + user.phone,
+      "otp": otp,
+      "concern":isLogin ? "login":"signup",
+      "firstname":user.firstname,
+      "lastname":user.lastname,
+      "gender":user.gender,
+      "age":user.age,
+      "school_id":user.school,
+      "photo":user.photo.base64.slice(0,100),
+      "grade":user.grade,
+      "latitude":user.location.coords.latitude,
+      "longitude":user.location.coords.longitude,
+      "contacts":reformatContacts(user.contacts)
+    }:{
+      "mobile": "91" + user.phone,
+      "otp": otp,
+      "concern":"login"
+    })
+    return publicAxios.post('http://65.0.2.61:8000/verify_otp', !isLogin ?  {
+      "mobile": "91" + user.phone,
       "otp": otp,
       "concern":"signup",
       "firstname":user.firstname,
       "lastname":user.lastname,
       "gender":user.gender,
       "age":user.age,
-      "school":user.school,
-      "photo":user.photo.base64Image,
+      "school_id":user.school,
+      "photo":user.photo.base64,
       "grade":user.grade,
-      "lat":user.location.coords.lattitude,
-      "long":user.location.coords.longitude,
+      "latitude":user.location.coords.latitude,
+      "longitude":user.location.coords.longitude,
       "contacts":reformatContacts(user.contacts)
+    }:{
+      "mobile": "91" + user.phone,
+      "otp": otp,
+      "concern":isLogin ? "login":"signup"
     })
   };
 
 
   useLayoutEffect (() => {
+    // console.log(reformatContacts(user.contacts))
     navigation.setOptions({
       headerTitle: "Otp sent on " + user.phone
     })
@@ -89,10 +128,15 @@ const OtpVerificationScreen = ({navigation}) => {
 const {timeRem, resendResponse, handleResendOtp,resendOngoing} = useOtpResend(resendOtp,10);
 
 useEffect(() => {
-  console.log(otpResponse)
+  // console.log(otpResponse)
+    //console.log(otpResponse.data.status)
+    if(otpResponse){
+      console.log(otpResponse.data)
+    }
     if(otpResponse && otpResponse.data.status == 0){
-        saveToStorage("authToken",otpResponse.data.authToken)
-        updateAuthToken(otpResponse.data.authToken)
+        console.log(otpResponse.data.jwt_token)
+        saveToStorage("authToken",otpResponse.data.jwt_token)
+        updateAuthToken(otpResponse.data.jwt_token)
         navigation.navigate("Tabs")
     }
 

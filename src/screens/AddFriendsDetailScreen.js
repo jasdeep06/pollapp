@@ -27,7 +27,8 @@ const AddFriendsDetailScreen = ({ navigation }) => {
   const getData = async () => {
     if(context == "request"){
       setIsLoading(true)
-      const response = await authAxios.get('/get_friend_requests')
+      const response = await authAxios.get('http://65.0.2.61:8000/get_requests')
+      console.log(response.data)
       if(response.data.status == 0){
         console.log(response.data.data)
         setData(response.data.data)
@@ -36,7 +37,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
       }
   }else if(context == "add"){
     setIsLoading(true)
-    const response = await authAxios.get('/get_school_friends')
+    const response = await authAxios.get('http://65.0.2.61:8000/get_school_friends')
     if(response.data.status == 0){
       console.log(response.data.data)
       setData(response.data.data)
@@ -54,7 +55,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
     setSearchText(text);
     if (text) {
       const newData = data.filter((item) => {
-        const itemData = `${item.firstname.toUpperCase()} ${item.lastname.toUpperCase()}`;
+        const itemData = `${item.firstname.toUpperCase()} ${item.lastname.toUpperCase()} ${item.mobile}`;
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
@@ -103,12 +104,12 @@ const AddFriendsDetailScreen = ({ navigation }) => {
       </View>
       {filteredData.map((item, index) => (
         <>
-          <View style={{ padding: 10 }} key={index}>
+          <View style={{ padding: 10 }} key={item.user_id}>
             <FriendItem
-              imageUrl={item.image_url}
+              imageUrl={item.photo}
               name={item.firstname + " " + item.lastname}
               type={context}
-              number={item.number}
+              number={item.mobile}
             />
           </View>
           <View

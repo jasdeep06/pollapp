@@ -11,7 +11,7 @@ const BannerScreen = ({navigation}) => {
 
   const generateAgeOptions = () => {
     let options = [];
-    for (let i = 13; i <= 18; i++) {
+    for (let i = 14; i <= 18; i++) {
       options.push(<Picker.Item key={i} label={i.toString()} value={i} />);
     }
     return options;
@@ -20,7 +20,7 @@ const BannerScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
          <StatusBar backgroundColor="black" barStyle="light-content" />
-       <TouchableOpacity style={styles.loginWrapper} onPress={() => console.log('Log In')}>
+       <TouchableOpacity style={styles.loginWrapper} onPress={() => navigation.navigate("MobileNumberInputScreen",{isLogin:true})}>
         <Text style={styles.loginText}>Log In</Text>
       </TouchableOpacity>
       <Image

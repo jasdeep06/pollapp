@@ -1,18 +1,20 @@
+import * as Sharing from 'expo-sharing';
+
 import {
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 import { AxiosContext } from "../context/AxiosContext";
+import CustomButton from "../components/CustomButton";
 import FriendItem from "../components/FriendItem";
 import Loader from "../components/Loader";
 import React from "react";
-import { addFriendsDummyData } from "../data/dummyAddFriendsData";
-import { getStatusBarHeight } from "react-native-status-bar-height";
 import { useFocusEffect } from "@react-navigation/native";
 
 const AddFriendsScreen = ({ navigation }) => {
@@ -22,18 +24,47 @@ const AddFriendsScreen = ({ navigation }) => {
 
   const getAddFriendsData = async () => {
     setIsLoading(true);
-    const response = await authAxios.get("/get_school_friends_and_requests");
+    const response = await authAxios.get("http://65.0.2.61:8000/get_school_friends_and_requests");
+    console.log(response.data.data)
     if (response.data.status == 0) {
       setAddFriendsData(response.data.data);
       setIsLoading(false);
     }
   };
 
+  const shareMessage = async () => {
+    const message = 'Hello, this is a test message!';
+    const shareUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
+  
+    try {
+      // Check if sharing is available on the device
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (!isAvailable) {
+        alert('Sharing is not available on this device');
+        return;
+      }
+  
+      // Open share dialog with the pre-filled message
+      await Sharing.shareAsync(shareUrl);
+    } catch (error) {
+      console.error('Error while sharing message:', error);
+    }
+  };
+  
+
+
   useFocusEffect(
     React.useCallback(() => {
         getAddFriendsData()
     },[])
   )
+
+  useFocusEffect(
+    React.useCallback(() => {
+      StatusBar.setBackgroundColor("#8C92AC");
+      StatusBar.setBarStyle("dark-content");
+    }, [])
+  );
 
   const sendFriendRequest = async (user_id) => {
     return authAxios.post('/send_friend_request',{user_id:user_id})
@@ -49,23 +80,25 @@ const AddFriendsScreen = ({ navigation }) => {
 
   return (
     isLoading ? <Loader visible={isLoading} /> :
-    <ScrollView
+    <View
       style={{
         flex: 1,
-        marginTop: getStatusBarHeight(),
+        // marginTop: getStatusBarHeight(),
         backgroundColor: "#8C92AC",
       }}
     >
       <Text style={styles.heading}>Friend Requests</Text>
+      {addFriendsData["friend_requests"].length == 0 ? <Text style={{textAlign:"center",margin:10}}>You don't have any new friend requests.</Text> :
+      <>
       {addFriendsData["friend_requests"].slice(0, 2).map((item, index) => (
         <>
-          <View style={{ padding: 10 }} key={index}>
+          <View style={{ padding: 10 }} key={item.user_id}>
             <FriendItem
-              key={item.user_id}
-              imageUrl={item.image_url}
+            //   key={item.user_id}
+              imageUrl={item.photo}
               name={item.firstname + " " +  item.lastname}
               type="request"
-              number={item.number}
+              number={item.mobile}
               onAccept={() => friendRequestAccept(item.user_id)}
                 onDecline={() => friendRequestDecline(item.user_id)}
             />
@@ -86,19 +119,22 @@ const AddFriendsScreen = ({ navigation }) => {
       >
         <Text style={{ textAlign: "center", fontSize: 15 }}>See more</Text>
       </TouchableOpacity>
+      </>}
       <View
         style={{ borderBottomWidth: 0.5, borderBottomColor: "black" }}
       ></View> 
       <Text style={styles.heading}>Add friends from school</Text>
+      {addFriendsData["from_school"].length == 0 ? <Text style={{textAlign:"center",margin:10}}>You don't have any new friend requests.</Text> :
+      <>
       {addFriendsData["from_school"].slice(0, 2).map((item, index) => (
         <>
-          <View style={{ padding: 10 }} key={index}>
+          <View style={{ padding: 10 }} key={item.user_id}>
             <FriendItem
-              key={item.user_id}
-              imageUrl={item.image_url}
+            //   key={item.user_id}
+              imageUrl={item.photo}
               name={item.firstname + " " +  item.lastname}
               type="add"
-              number={item.number}
+              number={item.mobile}
               onAdd={() => sendFriendRequest(item.user_id)}
 
             />
@@ -119,6 +155,7 @@ const AddFriendsScreen = ({ navigation }) => {
       >
         <Text style={{ textAlign: "center", fontSize: 15 }}>See more</Text>
       </TouchableOpacity>
+      </>}
       <View
         style={{ borderBottomWidth: 0.5, borderBottomColor: "black" }}
       ></View>
@@ -153,7 +190,10 @@ const AddFriendsScreen = ({ navigation }) => {
       <View
         style={{ borderBottomWidth: 0.5, borderBottomColor: "black" }}
       ></View> */}
-    </ScrollView>
+      <View style={{alignItems:"center",flex:1,justifyContent:"center"}}>
+      <CustomButton buttonText={"Invite on WhatsApp"} onPress={shareMessage}/>
+      </View>
+    </View>
   );
 };
 

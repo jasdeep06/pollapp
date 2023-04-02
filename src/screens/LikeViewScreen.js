@@ -33,12 +33,24 @@ const LikeViewScreen = ({route,navigation}) => {
     setModalVisible(!modalVisible);
   };
 
-  const handleRevealPress = () => {
-    if(!likeViewData.revealed){
-        revealLike()
+
+const handleRevealPress = async () => {
+    if (!likeViewData.revealed) {
+      const responseStatus = await revealLike();
+      if (responseStatus === 0) {
+        handleToggleModal();
+      } else if (responseStatus === 3 || responseStatus === 4) {
+        navigation.navigate("PricingScreen", {
+          like_id: like_id,
+          gender: gender,
+          from: "reveal",
+        });
+      }
+    } else {
+      handleToggleModal();
     }
-    handleToggleModal()
-  }
+  };
+  
 
 
   useLayoutEffect (() => {
@@ -49,20 +61,25 @@ const LikeViewScreen = ({route,navigation}) => {
     })
   },[navigation])
 
-  const revealLike = async () => {
-    setIsRevealLoading(true)
-    const response = await authAxios.get('/reveal_like',{params:{like_id:like_id}})
-    if(response.data.status == 0){
-        console.log(response.data.data)
-        setRevealInfo(response.data.data)
-        setIsRevealLoading(false)
+
+const revealLike = async () => {
+    setIsRevealLoading(true);
+    const response = await authAxios.get("http://65.0.2.61:8000/reveal_like", {
+      params: { like_id: like_id },
+    });
+    if (response.data.status == 0) {
+      console.log(response.data.data);
+      setRevealInfo(response.data.data);
+      setIsRevealLoading(false);
     }
-  }
+    return response.data.status;
+  };
+  
 
 
   const getLikeViewData = async () => {
     setIsLoadingLikeViewData(true)
-    const response = await authAxios.get('/get_like_details',{params:{like_id:like_id}})
+    const response = await authAxios.get('http://65.0.2.61:8000/get_like_details',{params:{like_id:like_id}})
     if(response.data.status == 0){
         setLikeViewData(response.data.data)
         console.log(response.data.data)
@@ -132,7 +149,7 @@ const getModalView = (likeViewData,revealInfo,isRevealLoading) => {
         <>
             <Image source={{uri:revealInfo.photo}}   style={{ width: 100, height: 100,borderRadius:50,marginHorizontal:10,alignSelf:"center" }}      />
         <Text style={{textAlign:"center",fontSize:20,color:"white"}}>{`${revealInfo.firstname} ${revealInfo.lastname}`}</Text>
-        <Text style={{textAlign:"center",fontSize:15,color:"white"}}>You have {revealInfo.num_reveals} reveals remaining!</Text>
+        <Text style={{textAlign:"center",fontSize:15,color:"white"}}>You have {revealInfo.reveals} reveals remaining!</Text>
 
             </>
         )

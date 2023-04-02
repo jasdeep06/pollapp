@@ -123,15 +123,6 @@ const PollScreen = () => {
     }
   };
 
-  useEffect(() => {
-    const test = async () => {
-    Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
-    Purchases.configure({apiKey:'goog_bClHlaubcaVscmrRoRbWdxZmcyD'})
-    const offerings = await Purchases.getOfferings();
-    console.log(offerings)
-    }
-    test()
-  },[])
 
   const getPolls = async () => {
     const response = await authAxios.get("/get_polls");
@@ -184,7 +175,19 @@ const PollScreen = () => {
   useEffect(() => {
     console.log("getting polls...")
     getPolls();
+    
   },[])
+
+  // useEffect(() => {
+  //   StatusBar.setBackgroundColor(randomColor);
+  //   StatusBar.setBarStyle("light-content");
+  // },[])
+
+
+  // useEffect(() => {
+  //   StatusBar.setBackgroundColor(randomColor);
+  //   StatusBar.setBarStyle("light-content");
+  // }, [randomColor]);
   
   return (
     <View style={[styles.container, { backgroundColor: randomColor }]}>
@@ -344,7 +347,7 @@ const getContinueView = (isSendingResponse,handleSkip) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: getStatusBarHeight(),
+    // marginTop: getStatusBarHeight(),
   },
   pollText: {
     color: "white",

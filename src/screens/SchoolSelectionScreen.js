@@ -75,20 +75,48 @@ const SchoolSelectionScreen = ({navigation}) => {
     navigation.navigate('FirstNameScreen');
   }
 
+  // useEffect(() => {
+  //   console.log(user.location)
+  //   publicAxios.get('http://65.0.2.61:8000/get_nearby_schools',{
+  //     params: {
+  //       lat: user.location.coords.latitude,
+  //       long: user.location.coords.longitude,
+  //     }
+  //   })
+  //     .then(res => {
+  //       console.log(res.data);
+  //       setSchools(res.data);
+  //       setFilteredData(res.data);
+  //       setSchoolsLoading(false);
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     })
+  // },[])
+
   useEffect(() => {
-
-    publicAxios.get('/get_nearby_schools')
-      .then(res => {
-        console.log(res.data);
-        setSchools(res.data);
-        setFilteredData(res.data);
+    const fetchNearbySchools = async () => {
+      try {
+        console.log(user.location);
+        const response = await publicAxios.get('http://65.0.2.61:8000/get_nearby_schools', {
+          params: {
+            lat: user.location.coords.latitude,
+            long: user.location.coords.longitude,
+          }
+        });
+  
+        console.log(response.data.data);
+        setSchools(response.data.data);
+        setFilteredData(response.data.data);
         setSchoolsLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         console.log(err);
-      })
-  },[])
-
+      }
+    };
+  
+    fetchNearbySchools();
+  }, []);
+  
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleSchoolSelect(item)} style={[styles.listItem,user.school != null && user.school == item.school_id ? styles.selected : {}  ]}>
     <Image source={{ uri: item.logo_url }} style={styles.logo} />

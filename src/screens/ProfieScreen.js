@@ -26,9 +26,18 @@ const ProfileScreen = ({ navigation }) => {
   const [profileData, setProfileData] = React.useState(null);
   const [isLoadingProfileData, setIsLoadingProfileData] = React.useState(true);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      StatusBar.setBackgroundColor("#8C92AC");
+      StatusBar.setBarStyle("dark-content");
+    }, [])
+  );
+
+
   const getProfile = async () => {
     setIsLoadingProfileData(true);
-    const response = await authAxios.get("/get_profile");
+    const response = await authAxios.get("http://65.0.2.61:8000/get_profile");
+    console.log(response.data)
     if (response.data.status == 0) {
       console.log(response.data.data);
         setProfileData(response.data.data);
@@ -44,7 +53,7 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={"#8C92AC"} barStyle="light-content" />
+      {/* <StatusBar backgroundColor={"#8C92AC"} barStyle="light-content" /> */}
       {!isLoadingProfileData ?  <>
       <View>
         <Image
@@ -120,7 +129,7 @@ const ProfileScreen = ({ navigation }) => {
             marginHorizontal: 10,
           }}
         >
-          { profileData.reveals_left +" reveals left"}
+          { profileData.reveals +" reveals left"}
         </Text>
       </View>
       <Text
@@ -131,11 +140,12 @@ const ProfileScreen = ({ navigation }) => {
           marginHorizontal: 10,
         }}
       >
-        {"Expires in " + profileData.reveals_expire_in} 
+        {"Expires in " + profileData.reveals_expiry} 
       </Text>
       <CustomButton
-        buttonText={"Edit Profile"}
+        buttonText={"My Account"}
         buttonStyles={{ width: "60%", alignSelf: "center", marginVertical: 20 }}
+        onPress={() => {navigation.navigate("MyAccountScreen")}}
       />
           </>: <Loader visible={isLoadingProfileData} />}
 
@@ -161,7 +171,7 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: getStatusBarHeight(),
+    // marginTop: getStatusBarHeight(),
     backgroundColor: "#8C92AC",
     padding: 10,
   },

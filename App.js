@@ -1,8 +1,13 @@
+import * as SplashScreen from "expo-splash-screen";
+
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import AddFriendsDetailScreen from './src/screens/AddFriendsDetailScreen';
 import AddFriendsScreen from './src/screens/AddFriendsScreen';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "./src/context/AuthContext";
 import { AuthProvider } from './src/context/AuthContext';
+import AuthResolverScreen from "./src/screens/AuthResolverScreen";
 import { AxiosProvider } from './src/context/AxiosContext';
 import BannerScreen from './src/screens/BannerScreen';
 import FirstNameScreen from './src/screens/FirstNameScreen';
@@ -13,6 +18,7 @@ import LastNameScreen from './src/screens/LastNameScreen';
 import LikeViewScreen from './src/screens/LikeViewScreen';
 import LikesScreen from './src/screens/LikesScreen';
 import MobileNumberInputScreen from './src/screens/MobileNumberInputScreen';
+import MyAccountScreen from './src/screens/MyAccountScreen';
 import { NavigationContainer } from "@react-navigation/native";
 import OTPVerificationScreen from './src/screens/OtpVerificationScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
@@ -29,6 +35,10 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
 const Tab = createMaterialTopTabNavigator();
+
+
+
+
 
 const TabNavigator = () => {
   return (
@@ -116,14 +126,18 @@ const TabNavigator = () => {
 
 export default function App() {
 
+
+
+
   return (
     
     <NavigationContainer>
       <AuthProvider>
           <AxiosProvider>
       <UserProvider>
-      <Stack.Navigator>
-        <Stack.Screen name = "BannerScreen" component = {PricingScreen} options={{headerShown:false}} />
+      <Stack.Navigator initialRouteName="Auth">
+      <Stack.Screen name = "Auth" component = {AuthResolverScreen} options={{headerShown:false}} />
+        <Stack.Screen name = "BannerScreen" component = {BannerScreen} options={{headerShown:false}} />
         <Stack.Screen name = "Permissions" component = {PermissionsScreen} options={{headerShown:true,headerTitle:"Please allow access",headerTitleStyle:{'fontSize':15},headerTitleAlign:'center',headerStyle:{'backgroundColor':'#FF8C00'}}} />
         <Stack.Screen name = "GradeSelectionScreen" component = {GradeSelectionScreen} options={{headerShown:true,headerTitle:"What grade are you in?",headerTitleStyle:{'fontSize':15,color:"white"},headerTitleAlign:'center',headerStyle:{'backgroundColor':'#FF8C00'}}} />
         <Stack.Screen name = "SchoolSelectionScreen" component = {SchoolSelectionScreen} options={{headerShown:true,headerTitle:"Pick your school",headerTitleStyle:{'fontSize':15,color:"white"},headerTitleAlign:'center',headerStyle:{'backgroundColor':'#FF8C00'}}} />
@@ -137,6 +151,8 @@ export default function App() {
         <Stack.Screen name = "LikeViewScreen" component={LikeViewScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#4A90E2'}}}/>
         <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#4A90E2'}}}/>
         <Stack.Screen name="AddFriendsDetailScreen" component={AddFriendsDetailScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#8C92AC'}}}/>
+        <Stack.Screen name="PricingScreen" component={PricingScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#8C92AC'}}}/>
+        <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#8C92AC'}}}/>
 
       </Stack.Navigator>
       </UserProvider>
