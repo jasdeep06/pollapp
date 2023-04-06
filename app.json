@@ -7,7 +7,7 @@
     "icon": "./assets/app_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.gif",
+      "image": "./assets/images/razz.png",
       "resizeMode": "contain",
       "backgroundColor": "#1e1e1e"
     },
@@ -24,7 +24,7 @@
       },
       "permissions": [],
       "package": "com.jas1994.pollapp",
-      "versionCode":4
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,6 +33,14 @@
       "eas": {
         "projectId": "34805afd-2276-43e6-b919-d485deafa99e"
       }
-    }
+    },
+    "plugins": [
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
+      ]
+    ]
   }
 }
