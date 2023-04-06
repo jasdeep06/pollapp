@@ -40,10 +40,9 @@ const FriendsScreen = ({ navigation }) => {
   ) : friendsData.length > 0 ? (
     <ScrollView style={{ backgroundColor: "#e9e9e9", flex: 1 }}>
       {friendsData.map((item, index) => (
-        <>
+        <React.Fragment key={index}>
           <View style={{ padding: 10 }}>
             <FriendItem
-              key={index}
               imageUrl={item.photo}
               name={item.firstname + " " + item.lastname}
               type="friend"
@@ -53,7 +52,7 @@ const FriendsScreen = ({ navigation }) => {
           <View
             style={{ borderBottomWidth: 0.5, borderBottomColor: "#DDD" }}
           ></View>
-        </>
+        </React.Fragment>
       ))}
     </ScrollView>
   ) : (
