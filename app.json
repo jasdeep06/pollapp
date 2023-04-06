@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "pollapp",
-    "slug": "pollapp",
+    "name": "Razz",
+    "slug": "Razz",
     "version": "2.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash.gif",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1e1e1e"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -19,12 +19,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/app_logo.png",
+        "backgroundColor": "#1e1e1e"
       },
       "permissions": [],
       "package": "com.jas1994.pollapp",
-      "versionCode":3
+      "versionCode":4
     },
     "web": {
       "favicon": "./assets/favicon.png"

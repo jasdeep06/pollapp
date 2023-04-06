@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 
 import { AxiosContext } from '../context/AxiosContext';
+import CustomButton from '../components/CustomButton';
 import { UserContext } from '../context/UserContext';
 
 const MobileNumberInputScreen = ({navigation,route}) => {
@@ -19,6 +20,14 @@ const MobileNumberInputScreen = ({navigation,route}) => {
     const {publicAxios} = React.useContext(AxiosContext);
     const isLogin = route.params?.isLogin || false;
 
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerTintColor: "white",
+        headerStyle: {
+          backgroundColor: "#fa7024",
+        },
+      });
+    }, [navigation]);
 
     const handleNextButton = async () => {
       console.log('Mobile Number:', user.phone);
@@ -45,7 +54,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
   
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor="#FF8C00" />
+        <StatusBar backgroundColor="#fa7024" />
         <View style={styles.content}>
 
         <Text style={styles.title}>{isLogin ? "Login using your mobile":"Enter your phone number"}</Text>
@@ -67,9 +76,9 @@ const MobileNumberInputScreen = ({navigation,route}) => {
         </Text>}
         </View>
 
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}> */}
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[
             styles.nextButton,
             user.phone && user.phone.length === 10
@@ -81,8 +90,19 @@ const MobileNumberInputScreen = ({navigation,route}) => {
         >
           <Text style={styles.nextButtonText}>Next</Text>
           {isSendingOtp && <ActivityIndicator/>}
-        </TouchableOpacity>
-        </View>
+        </TouchableOpacity> */}
+        <CustomButton 
+          buttonStyles={[
+            styles.nextButton,
+            user.phone && user.phone.length === 10 && !isSendingOtp ? {} :styles.disabledButton
+          ]}
+          textStyles={styles.nextButtonText}
+          buttonText={"Next"}
+          disabled={user.phone == null || user.phone.length !== 10 || isSendingOtp}
+          onPress={handleNextButton}
+          icon={isSendingOtp ? <ActivityIndicator size="small" color="black"/> : null}
+          />
+        {/* </View> */}
 
       </View>
     );
@@ -91,9 +111,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
   const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FF8C00',
-        // alignItems: 'center',
-        // justifyContent: 'center',
+        backgroundColor: '#fa7024',
         paddingTop: 30,
         paddingBottom: 30,
       },
@@ -118,6 +136,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
     countryCode: {
       fontSize: 18,
       marginRight: 10,
+      color:"#ffffff"
     },
     mobileInput: {
       borderBottomWidth: 1,
@@ -133,31 +152,38 @@ const MobileNumberInputScreen = ({navigation,route}) => {
       marginBottom: 20,
       paddingHorizontal: 20,
     },
-    nextButton: {
-      borderRadius: 30,
-      borderWidth: 1,
-      borderColor: '#FFFFFF',
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-      marginBottom: 10,
-      width: '85%',
-      alignItems: 'center',
+    // nextButton: {
+    //   borderRadius: 30,
+    //   borderWidth: 1,
+    //   borderColor: '#FFFFFF',
+    //   paddingHorizontal: 20,
+    //   paddingVertical: 10,
+    //   marginBottom: 10,
+    //   width: '85%',
+    //   alignItems: 'center',
+    //   backgroundColor: '#ffffff',
+    //   alignSelf:"center"
+    // },
+    // nextButtonEnabled: {
+    //   backgroundColor: '#FF8C00',
+    // },
+    nextButton:{
+      borderWidth:0,
+      backgroundColor: '#ffffff',
+      width:"80%",
+      alignSelf:"center"
     },
-    nextButtonEnabled: {
-      backgroundColor: '#FF8C00',
-    },
-    nextButtonDisabled: {
-      backgroundColor: '#CCCCCC',
+    disabledButton: {
+      backgroundColor: "#fdbf9c",
     },
     nextButtonText: {
-      fontSize: 18,
-      color: '#FFFFFF',
+      color: "#fa7024",
     },
-    buttonContainer: {
-        width: '100%',
-        alignItems: 'center',
-        alignSelf:'flex-end'
-      },
+    // buttonContainer: {
+    //     width: '100%',
+    //     alignItems: 'center',
+    //     alignSelf:'flex-end'
+    //   },
   });
 
   export default MobileNumberInputScreen;

@@ -7,85 +7,100 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
-import React,{useEffect, useLayoutEffect, useState} from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
+import CustomButton from "../components/CustomButton";
 import Loader from "../components/Loader";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { UserContext } from "../context/UserContext";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 const PhotoScreen = () => {
-  const {user,updateUser} = React.useContext(UserContext);
+  const { user, updateUser } = React.useContext(UserContext);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [showCamera, setShowCamera] = React.useState(false);
   const [cameraRef, setCameraRef] = React.useState(null);
-  const [capturedImage, setCapturedImage] = useState(user.photo != null ? user.photo.uri:null);
+  const [capturedImage, setCapturedImage] = useState(
+    user.photo != null ? user.photo.uri : null
+  );
   const [isVerifying, setIsVerifying] = useState(false);
-  const {publicAxios} = React.useContext(AxiosContext);
+  const { publicAxios } = React.useContext(AxiosContext);
   const [verificationMessage, setVerificationMessage] = useState(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTintColor: "white",
+      headerStyle: {
+        backgroundColor: "#fa7024",
+      },
+    });
+  }, [navigation]);
 
   const handlePhotoVerification = async (data) => {
     console.log("Verifying photo");
     setIsVerifying(true);
-    await publicAxios.post("http://15.207.192.148:8000/liveness", { image: data.base64 })
+    await publicAxios
+      .post("http://15.207.192.148:8000/liveness", { image: data.base64 })
       .then((res) => {
         console.log(res.data);
-        if(res.data.status == 0){
+        if (res.data.status == 0) {
           setVerificationMessage("Photo verification successfull!");
-          updateUser({'photo':data})
-        }else if(res.data.status == 3){
+          updateUser({ photo: data });
+        } else if (res.data.status == 3) {
           setVerificationMessage("No face found in the photo!Please try again");
-        }else if(res.data.status == 2){
-          setVerificationMessage("Multiple faces found in the photo!Please try again");
-        }else if(res.data.status == 1){
+        } else if (res.data.status == 2) {
+          setVerificationMessage(
+            "Multiple faces found in the photo!Please try again"
+          );
+        } else if (res.data.status == 1) {
           setVerificationMessage("Face not clear!Please try again");
         }
         setIsVerifying(false);
-      })
-  }
+      });
+  };
 
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   useLayoutEffect(() => {
-    
-        navigation.setOptions({
-            headerShown: !showCamera, // Hide header when the camera is open
-          });
-}, [navigation, showCamera])
+    navigation.setOptions({
+      headerShown: !showCamera, // Hide header when the camera is open
+    });
+  }, [navigation, showCamera]);
 
-useEffect(() => {
-  const unsubscribe = navigation.addListener('beforeRemove', e => {
-    e.preventDefault(); // Prevent default action
-    unsubscribe() // Unsubscribe the event on first call to prevent infinite loop
-    updateUser({'photo':null})
-    navigation.navigate('GenderScreen') // Navigate to your desired screen
-  });
-}, [])
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      e.preventDefault(); // Prevent default action
+      unsubscribe(); // Unsubscribe the event on first call to prevent infinite loop
+      updateUser({ photo: null });
+      navigation.navigate("GenderScreen"); // Navigate to your desired screen
+    });
+  }, []);
 
   const takePicture = async () => {
     if (cameraRef) {
-      const data = await cameraRef.takePictureAsync({ base64: true });
+      const data = await cameraRef.takePictureAsync({ base64: true ,quality:0.1});
+      console.log(data.base64.length)
       setCapturedImage(data.uri);
       setShowCamera(false);
       handlePhotoVerification(data);
     }
   };
 
-    const handleNext = () => {
-      // console.log(user)
-        navigation.navigate("MobileNumberInputScreen")
-    }
+  const handleNext = () => {
+    // console.log(user)
+    navigation.navigate("MobileNumberInputScreen");
+  };
 
   const handleRetake = () => {
     setCapturedImage(null);
     setShowCamera(true);
-  }
+  };
 
   const closeCamera = () => {
     setShowCamera(false);
@@ -112,20 +127,29 @@ useEffect(() => {
   if (!permission || !permission.granted || !showCamera) {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" backgroundColor="#FF8C00" />
-        <Text style={styles.title}>Add a profile photo</Text>
-        {capturedImage ?(isVerifying ? <ActivityIndicator />: <> 
-        <Image source={{ uri: capturedImage }} style={styles.image} />
-        <Text>{verificationMessage}</Text>
-        </>) :
-        <TouchableOpacity
-          style={styles.iconContainer}
-          onPress={handleIconPress}
-        >
-          <MaterialIcons name="add-a-photo" size={50} color="white" />
-        </TouchableOpacity>
-        }
-        <View style={styles.buttonContainer}>
+        <StatusBar style="light" backgroundColor="#fa7024" />
+        <View style={{ flex: 1 }} />
+        <View style={{ flex: 2,alignItems:"center" }}>
+          <Text style={styles.title}>Add a profile photo</Text>
+          {capturedImage ? (
+            isVerifying ? (
+              <ActivityIndicator />
+            ) : (
+              <>
+                <Image source={{ uri: capturedImage }} style={styles.image} />
+                <Text>{verificationMessage}</Text>
+              </>
+            )
+          ) : (
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={handleIconPress}
+            >
+              <MaterialIcons name="add-a-photo" size={50} color="white" />
+            </TouchableOpacity>
+          )}
+        </View>
+        {/* <View style={styles.buttonContainer}>
             {capturedImage &&
           <TouchableOpacity style={styles.button} onPress={handleRetake}>
             <Text style={styles.buttonText}>Retake Photo</Text>
@@ -133,6 +157,17 @@ useEffect(() => {
           <TouchableOpacity disabled={user.photo == null} onPress={handleNext} style={[styles.button,user.photo ? {} : styles.disabledButton]}>
             <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
+        </View> */}
+        <View style={{width:"100%",alignItems:"center",marginBottom:20}}>
+          {capturedImage && <CustomButton buttonText={"Retake Photo"} 
+          buttonStyles={styles.button} 
+          textStyles={styles.buttonText}
+          onPress={handleRetake}/>}
+          <CustomButton buttonText={"Next"} 
+          buttonStyles={[styles.button,user.photo ? {} : styles.disabledButton]} 
+          disabled={user.photo == null} 
+          textStyles={styles.buttonText} 
+          onPress={handleNext}/>
         </View>
       </View>
     );
@@ -142,11 +177,14 @@ useEffect(() => {
         style={{ flex: 1, flexDirection: "column" }}
         type={CameraType.front}
         ref={(ref) => setCameraRef(ref)}
+        ratio={"1:1"}
       >
         <View style={styles.closeButton}>
           <View style={{ flex: 1 }} />
-          <TouchableOpacity style={{marginRight: 10,
-    backgroundColor:"red"}} onPress={closeCamera}>
+          <TouchableOpacity
+            style={{ marginRight: 10, backgroundColor: "red" }}
+            onPress={closeCamera}
+          >
             <MaterialIcons name="close" size={24} color="white" />
           </TouchableOpacity>
         </View>
@@ -163,7 +201,7 @@ useEffect(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FF8C00",
+    backgroundColor: "#fa7024",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -187,29 +225,32 @@ const styles = StyleSheet.create({
     bottom: 30,
   },
   button: {
-    backgroundColor: "transparent",
-    borderColor: "white",
-    borderWidth: 2,
-    borderRadius: 30,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 10,
+    // backgroundColor: "transparent",
+    // borderColor: "white",
+    // borderWidth: 2,
+    // borderRadius: 30,
+    // paddingVertical: 15,
+    // paddingHorizontal: 20,
+    // alignItems: "center",
+    // justifyContent: "center",
+    // marginBottom: 10,
+    borderWidth:0,
+    backgroundColor: '#ffffff',
+    width:"80%"
   },
   disabledButton: {
-          backgroundColor: '#CCCCCC',
-        },
+    backgroundColor: "#fdbf9c",
+  },
   buttonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
+    // fontSize: 18,
+    // fontWeight: "bold",
+    color: "#fa7024",
   },
   camera: {
     flex: 1,
   },
   captureButton: {
-    flex:1,
+    flex: 1,
     backgroundColor: "transparent",
     borderRadius: 50,
     padding: 15,
@@ -217,16 +258,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   closeButton: {
-    
     flexDirection: "row",
     justifyContent: "flex-end",
   },
   image: {
-          width: 150,
-          height: 150,
-          borderRadius: 100,
-          marginBottom: 30,
-        },
+    width: 150,
+    height: 150,
+    borderRadius: 100,
+    marginBottom: 30,
+  },
 });
 
 export default PhotoScreen;

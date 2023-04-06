@@ -4,7 +4,7 @@ const ElevatedBox = (props) => {
     return(
         <TouchableOpacity style={[{
             backgroundColor: 'white',
-            borderRadius: 5,
+            borderRadius: 15,
             elevation: 10, // Increase the elevation value
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 }, // Increase the shadow offset height
@@ -18,7 +18,7 @@ const ElevatedBox = (props) => {
           onPress={props.onPress}
           disabled={props.disabled}>
             {props.icon}
-        <Text style={{textAlign:"center"}}>{props.text}</Text>
+        <Text style={[{textAlign:"center"},props.textStyle]}>{props.text}</Text>
         </TouchableOpacity>
     )
 }

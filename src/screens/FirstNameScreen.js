@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import CustomButton from '../components/CustomButton';
@@ -6,6 +6,15 @@ import { UserContext } from '../context/UserContext';
 
 const FirstNameScreen = ({navigation}) => {
     const {user,updateUser} = React.useContext(UserContext);
+
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerTintColor: "white",
+        headerStyle: {
+          backgroundColor: "#fa7024",
+        },
+      });
+    }, [navigation]);
 
     const handleFirstName = (text) => {
         updateUser({firstname:text})
@@ -28,9 +37,6 @@ const FirstNameScreen = ({navigation}) => {
             autoFocus={true}
           />
         </View>
-        {/* <TouchableOpacity style={user.firstname.length != 0 ? styles.nextButton:[styles.nextButton,styles.disabledButton]} disabled={user.firstname.length == 0} onPress={handleNext}>
-          <Text style={styles.nextButtonText} >Next</Text>
-        </TouchableOpacity> */}
         <CustomButton 
         buttonStyles={user.firstname.length != 0 ? styles.nextButton:[styles.nextButton,styles.disabledButton]}
         onPress = {handleNext}
@@ -47,7 +53,7 @@ const FirstNameScreen = ({navigation}) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#FF8C00', // Replace with your desired orange color
+      backgroundColor: '#fa7024', // Replace with your desired orange color
       paddingHorizontal: 24,
     },
     content: {
@@ -68,20 +74,21 @@ const FirstNameScreen = ({navigation}) => {
         textAlign: 'center',
       },
     nextButton: {
-      backgroundColor: 'white',
+      backgroundColor: '#ffffff',
       borderRadius: 30,
       paddingVertical: 12,
       marginBottom: 16,
       alignSelf: 'center',
       width: '85%',
+      borderWidth:0
     },
     nextButtonText: {
-      color: 'black',
+      color: '#fa7024',
       fontSize: 18,
       textAlign: 'center',
     },
     disabledButton: {
-      backgroundColor: '#CCCCCC'
+      backgroundColor: '#fdbf9c'
     }
   });
   

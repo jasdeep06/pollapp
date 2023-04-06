@@ -10,6 +10,8 @@ const FriendItem = ({
   onDecline,
   onInvite,
   onAdd,
+  itemStyle,
+  contact_name
 }) => {
 
   const [accepted,setAccepted] = useState(false)
@@ -38,11 +40,11 @@ const FriendItem = ({
     if (type === 'request') {
       return (
         <>
-          {!declined && <TouchableOpacity onPress={acceptRequest} style={styles.button}>
-            <Text style={styles.buttonText}>{accepted ? "Accepted": "Accept"}</Text>
+          {!accepted && <TouchableOpacity onPress={declineRequest} style={styles.decline}>
+            <Text style={styles.declineText}>{declined ? "DECLINED":"DECLINE"}</Text>
           </TouchableOpacity>}
-          {!accepted && <TouchableOpacity onPress={declineRequest} style={styles.button}>
-            <Text style={styles.buttonText}>{declined ? "Declined":"Decline"}</Text>
+          {!declined && <TouchableOpacity onPress={acceptRequest} style={[styles.button,styles.accept]}>
+            <Text style={styles.buttonText}>{accepted ? "ACCEPTED": "ACCEPT"}</Text>
           </TouchableOpacity>}
         </>
       );
@@ -58,8 +60,8 @@ const FriendItem = ({
 
     if (type === 'add') {
       return (
-        <TouchableOpacity onPress={addFriend} style={styles.button} disabled={added}>
-          <Text style={styles.buttonText}>{added ? "Request sent":"Add"}</Text>
+        <TouchableOpacity onPress={addFriend} style={[styles.button,{paddingHorizontal:22}]} disabled={added}>
+          <Text style={styles.buttonText}>{added ? "SENT":"ADD"}</Text>
         </TouchableOpacity>
       );
     }
@@ -68,12 +70,12 @@ const FriendItem = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,itemStyle]}>
       <View style={styles.imageNameContainer}>
         <Image source={{ uri: imageUrl }} style={styles.image} />
         <View style={{flexDirection:"column"}}>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.number}>{number}</Text>
+        {getNumberView(number,contact_name)}
         </View>
       </View>
       <View style={styles.buttonsContainer}>{renderButtons()}</View>
@@ -81,11 +83,24 @@ const FriendItem = ({
   );
 };
 
+
+const getNumberView = (number,contact_name) => {
+  if(number != null){
+    return  <Text style={{color:"#7d7d7d",marginLeft:10,fontSize:12}}>{number}</Text>
+  }else
+  if(contact_name != null && contact_name != "Not in Contacts"){
+    return <Text style={{color:"#7c7c7c",marginLeft:10,fontSize:12}}><Text style={{color:"#ff9155"}}>{contact_name}</Text>(Contacts)</Text>
+  }else if(contact_name ==  "Not in Contacts"){
+    return <Text style={{color:"#7c7c7c",marginLeft:10,fontSize:12}}>Not in Contacts</Text>
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    // backgroundColor:"pink"
   },
   imageNameContainer: {
     flexDirection: 'row',
@@ -98,13 +113,14 @@ const styles = StyleSheet.create({
   },
   name: {
     marginLeft: 10,
-    fontSize:18
+    fontSize:18,
+    color:"#2f2f2f"
   },
   buttonsContainer: {
     flexDirection: 'row',
   },
   button: {
-    backgroundColor: '#1f7cf7',
+    backgroundColor: '#fa7024',
     borderRadius: 15,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -116,6 +132,15 @@ const styles = StyleSheet.create({
   number:{
     marginLeft: 10,
     fontSize:12
+  },
+  decline:{
+    alignSelf:"center"
+  },
+  declineText:{
+    color:'#7c7c7c'
+  },
+  accept:{
+    backgroundColor:'#fa7024'
   }
 });
 

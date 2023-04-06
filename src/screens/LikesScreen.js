@@ -1,12 +1,16 @@
+import { Image, RefreshControl, ScrollView, StatusBar, Text, View } from "react-native";
 import React, { useEffect } from "react";
-import { SafeAreaView, ScrollView, StatusBar, Text, View } from "react-native";
 
 import { AxiosContext } from "../context/AxiosContext";
 import ElevatedBoxWIthIcon from "../components/ElevatedBoxWithIcon";
 import Empty from "../components/Empty";
 import {Ionicons} from "@expo/vector-icons"
 import Loader from "../components/Loader";
+import blackFlameImage from '../../assets/images/top_black_flame_png.png'
+import blueFlameImage from '../../assets/images/blue_flame.png'
 import { getStatusBarHeight } from "react-native-status-bar-height";
+import pinkFlameImage from '../../assets/images/pink_flame.png'
+import seenFlameImage from '../../assets/images/seen_flame.png'
 import { useFocusEffect } from "@react-navigation/native";
 
 const LikesScreen = ({ navigation }) => {
@@ -16,7 +20,7 @@ const LikesScreen = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      StatusBar.setBackgroundColor("#8C92AC");
+      StatusBar.setBackgroundColor("#e9e9e9");
       StatusBar.setBarStyle("dark-content");
     }, [])
   );
@@ -50,28 +54,31 @@ const LikesScreen = ({ navigation }) => {
       style={{
         flex: 1,
         // marginTop: getStatusBarHeight(),
-        backgroundColor: "#8C92AC",
+        backgroundColor: "#e9e9e9",
       }}
     >
-      <Text style={{ textAlign: "center", fontSize: 20, color: "white" }}>
-        Have a look at your likes!
+      <View style={{marginVertical:10,marginBottom:20,alignItems:"center"}}>
+      <Image source={blackFlameImage} style={{width:80,height:80}}/>
+      <Text style={{ fontSize: 18, color: "#6c6c6c" }}>
+        See who liked you!
       </Text>
+      </View>
       {!isFetching ? (
         likes.length > 0 ? (
-          <ScrollView>
+          <ScrollView refreshControl={<RefreshControl refreshing={isFetching} onRefresh={getLikes}/>}>
             {likes.map((item, index) => {
               return (
                 <ElevatedBoxWIthIcon
                   key={index}
-                  styleLeft={{ color: item.read ? "#6D6D6D" : "black" }}
-                  styleRight={{ color: item.read ? "#6D6D6D" : "black" }}
+                  styleLeft={{ color: item.read ? "#a3a3a3" : "#000000" }}
+                  styleRight={{ color: item.read ? "#a3a3a3" : "#000000" }}
                   leftText={"From a " + item.gender}
                   style={{
                     margin: 10,
-                    backgroundColor: item.read ? "#D3D3D3" : "white",
+                    backgroundColor: item.read ? "#f9f9f9" : "#ffffff",
                   }}
                   rightText={item.time}
-                  icon={require("../../assets/images/fire.png")}
+                  icon={getFlameIcon(item.read,item.gender)}
                   onPress={() => {
                     handleLikePress(item.like_id, item.gender);
                   }}
@@ -90,5 +97,18 @@ const LikesScreen = ({ navigation }) => {
     </View>
   );
 };
+
+const getFlameIcon = (read,gender) => {
+  if(read){
+    return seenFlameImage
+  }
+  else if(gender == 'boy'){
+    return blueFlameImage
+  }
+  else if(gender == 'girl'){
+    return pinkFlameImage
+  }
+
+}
 
 export default LikesScreen;

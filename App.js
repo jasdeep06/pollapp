@@ -14,6 +14,7 @@ import FirstNameScreen from './src/screens/FirstNameScreen';
 import FriendsScreen from './src/screens/FriendsScreen';
 import GenderScreen from './src/screens/GenderScreen';
 import GradeSelectionScreen from './src/screens/GradeSelectionScreen';
+import IntroScreen from "./src/screens/IntroScreen";
 import LastNameScreen from './src/screens/LastNameScreen';
 import LikeViewScreen from './src/screens/LikeViewScreen';
 import LikesScreen from './src/screens/LikesScreen';
@@ -42,7 +43,7 @@ const Tab = createMaterialTopTabNavigator();
 
 const TabNavigator = () => {
   return (
-    <Tab.Navigator tabBarPosition='bottom'>
+    <Tab.Navigator tabBarPosition='bottom' screenOptions={{swipeEnabled:false}}>
       <Tab.Screen
         name="Polls"
         component={PollScreen}
@@ -51,15 +52,25 @@ const TabNavigator = () => {
           tabBarIcon: ({ focused, color }) => {
             return (
               <Image
-                source={require("./assets/images/fire.png")}
-                style={
-                  focused
-                    ? { opacity: 1, height: 25, width: 25 }
-                    : { opacity: 0.4, height: 25, width: 25 }
-                }
+                source={focused ? require("./assets/images/polls_selected.png") : require("./assets/images/polls_unselected.png")}
+                // style={
+                //   focused
+                //     ? { opacity: 1, height: 25, width: 25, }
+                //     : { opacity: 0.4, height: 25, width: 25 }
+                // }
+                style={{
+                  height:35,
+                  width:35,
+                  alignSelf:"center"
+                }}
               />
             );
           },
+          tabBarIconStyle:{
+            margin:5
+            
+          }
+          // tabBarContentContainerStyle:{backgroundColor:"red"}
         }}
       />
       
@@ -71,15 +82,24 @@ const TabNavigator = () => {
           tabBarIcon: ({ focused, color }) => {
             return (
               <Image
-                source={require("./assets/images/fire.png")}
-                style={
-                  focused
-                    ? { opacity: 1, height: 25, width: 25 }
-                    : { opacity: 0.4, height: 25, width: 25 }
-                }
+              source={focused ? require("./assets/images/likes_selected.png") : require("./assets/images/likes_unselected.png")}
+              // style={
+              //     focused
+              //       ? { opacity: 1, height: 25, width: 25 }
+              //       : { opacity: 0.4, height: 25, width: 25 }
+              //   }
+              style={{
+                height:35,
+                width:35,
+                alignSelf:"center"
+              }}
               />
             );
           },
+          tabBarIconStyle:{
+            margin:5
+            
+          }
         }}
       />
       <Tab.Screen
@@ -90,34 +110,57 @@ const TabNavigator = () => {
           tabBarIcon: ({ focused, color }) => {
             return (
               <Image
-                source={require("./assets/images/fire.png")}
-                style={
-                  focused
-                    ? { opacity: 1, height: 25, width: 25 }
-                    : { opacity: 0.4, height: 25, width: 25 }
-                }
+              source={focused ? require("./assets/images/profile_selected.png") : require("./assets/images/profile_unselected.png")}
+                // style={
+                //   focused
+                //     ? { opacity: 1, height: 25, width: 25 }
+                //     : { opacity: 0.4, height: 25, width: 25 }
+                // }
+                style={{
+                  height:35,
+                  width:35,
+                  alignSelf:"center"
+
+                }}
               />
             );
           },
+          tabBarIconStyle:{
+            margin:5
+            
+          }
+
         }}
+        
+        
       />
       <Tab.Screen
-        name="Add Friends"
+        name="Add"
         component={AddFriendsScreen}
         options={{
           unmountOnBlur: true,
           tabBarIcon: ({ focused, color }) => {
             return (
               <Image
-                source={require("./assets/images/fire.png")}
-                style={
-                  focused
-                    ? { opacity: 1, height: 25, width: 25 }
-                    : { opacity: 0.4, height: 25, width: 25 }
-                }
+              source={focused ? require("./assets/images/add_selected.png") : require("./assets/images/add_unselected.png")}
+                // style={
+                //   focused
+                //     ? { opacity: 1, height: 25, width: 25 }
+                //     : { opacity: 0.4, height: 25, width: 25 }
+                // }
+                style={{
+                  height:35,
+                  width:35,
+                  alignSelf:"center",
+
+                }}
               />
             );
           },
+          tabBarIconStyle:{
+            margin:5
+            
+          }
         }}
       />
     </Tab.Navigator>
@@ -153,6 +196,7 @@ export default function App() {
         <Stack.Screen name="AddFriendsDetailScreen" component={AddFriendsDetailScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#8C92AC'}}}/>
         <Stack.Screen name="PricingScreen" component={PricingScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#8C92AC'}}}/>
         <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#8C92AC'}}}/>
+        <Stack.Screen name="IntroScreen" component={IntroScreen} options={{headerShown:false}}/>
 
       </Stack.Navigator>
       </UserProvider>

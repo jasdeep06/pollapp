@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useLayoutEffect, useState } from 'react';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { UserContext } from '../context/UserContext';
+import boyImage from "../../assets/images/boy.png"
+import girlImage from "../../assets/images/girl.png"
 
 const GenderScreen = ({navigation}) => {
   const {user,updateUser} = React.useContext(UserContext);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTintColor: "white",
+      headerStyle: {
+        backgroundColor: "#fa7024",
+      },
+    });
+  }, [navigation]);
 
   const handleGenderSelect = (gender) => {
     updateUser({'gender':gender})
@@ -19,6 +30,8 @@ const GenderScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
+        <View style={{flex:1}}/>
+        <View style={{flex:2}}>
         <Text style={styles.question}>What's your gender?</Text>
         <View style={styles.iconsContainer}>
           <TouchableOpacity
@@ -28,7 +41,8 @@ const GenderScreen = ({navigation}) => {
             ]}
             onPress={() => handleGenderSelect('boy')}
           >
-            <MaterialCommunityIcons name="face-man-shimmer" size={60} color="white" />
+            {/* <MaterialCommunityIcons name="face-man-shimmer" size={60} color="white" /> */}
+            <Image source={boyImage} style={{height:100,width:100}}/>
             <Text style={styles.iconLabel}>Boy</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -38,10 +52,12 @@ const GenderScreen = ({navigation}) => {
             ]}
             onPress={() => handleGenderSelect('girl')}
           >
-            <MaterialCommunityIcons name="face-woman-shimmer" size={60} color="white" />
+            {/* <MaterialCommunityIcons name="face-woman-shimmer" size={60} color="white" /> */}
+            <Image source={girlImage} style={{height:100,width:100}}/>
             <Text style={styles.iconLabel}>Girl</Text>
           </TouchableOpacity>
         </View>
+      </View>
       </View>
     </View>
   );
@@ -50,7 +66,7 @@ const GenderScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FF8C00',
+    backgroundColor: '#fa7024',
     paddingHorizontal: 24,
   },
   content: {
@@ -73,10 +89,10 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   selectedIcon: {
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: '#934215',
   },
   unselectedIcon: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#fc955c',
   },
   iconLabel: {
     color: 'white',

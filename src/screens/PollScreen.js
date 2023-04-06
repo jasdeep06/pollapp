@@ -1,27 +1,38 @@
 import {
   ActivityIndicator,
+  AppState,
+  Dimensions,
   Image,
   SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
+import CustomButton from "../components/CustomButton";
 import ElevatedBox from "../components/ElevatedBox";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader";
 import ProgressBar from "../components/ProgressBar";
-import Purchases from 'react-native-purchases';
+import Purchases from "react-native-purchases";
+import Svg from "react-native-svg";
+import dotImage from "../../assets/images/dot.png";
+import flameImage from "../../assets/images/smaller_size_flame.gif"
 import { getStatusBarHeight } from "react-native-status-bar-height";
+import { images } from "../screens/images";
+import lockImage from "../../assets/images/lock_poll.png";
+import notEnoughImage from "../../assets/images/not_enough_friends.png"
+import playAgainImage from "../../assets/images/play_again.png";
+import razzImage from "../../assets/images/razz_60_percent.png"
 import { useFocusEffect } from "@react-navigation/native";
 
+// import DynamicImage from "../components/DynamicImage";
+
 // import { dummyData } from "../data/pollDummyData";
-
-
 
 // import  {dummyData}  from "../data/pollDummyData"
 
@@ -77,7 +88,7 @@ function randomSoothingColor() {
   const lightness = Math.floor(Math.random() * 21) + 20;
 
   console.log("generated ", hslToHex(hue, saturation, lightness));
-  console.log("wjkk")
+  console.log("wjkk");
   return hslToHex(hue, saturation, lightness);
 }
 
@@ -103,34 +114,107 @@ function lightenColor(hexColor, percent) {
   return `#${newHexR}${newHexG}${newHexB}`;
 }
 
-const PollScreen = () => {
+const PollScreen = ({ navigation }) => {
   // console.log(dummyData);
   // const randomColor = randomSoothingColor();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [shuffleId, setShuffleId] = useState(0);
-  const [randomColor, setRandomColor] = useState(randomSoothingColor());
+  const [randomColor, setRandomColor] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const {authAxios} = React.useContext(AxiosContext);
+  const { authAxios } = React.useContext(AxiosContext);
   const [polls, setPolls] = useState(null);
   const [isPollsLoading, setIsPollsLoading] = useState(true);
   const [isSendingResponse, setIsSendingResponse] = useState(false);
+  const [status, setStatus] = useState(null);
+  const [countdown, setCountdown] = useState(null);
+  const appState = React.useRef(AppState.currentState);
+  // const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [fromBackgroundToActive,setFromBackgroundToActive] = useState(false) 
+
+  useEffect(() => {
+    if (countdown !== null) {
+      const timer = setInterval(() => {
+        if (countdown > 0) {
+          setCountdown(countdown - 1);
+        } else if (countdown == 0) {
+          console.log("calling from effect")
+          getPolls();
+        }
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [countdown]);
+
+
+  useEffect(()=> {
+    if(status == -2){
+      getPolls()
+    }
+  },[fromBackgroundToActive])
+
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      if ((appState.current === 'inactive' || appState.current === 'background') && nextAppState === 'active') {
+        console.log("back to active")
+        setFromBackgroundToActive(true)
+      }else if(appState.current === 'active' && (nextAppState === 'background' || nextAppState == 'inactive')){
+        console.log("active to back")
+        setFromBackgroundToActive(false)
+
+      }
+      appState.current = nextAppState;
+
+    };
+
+    AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener('change', handleAppStateChange);
+    };
+  }, []);
+
+
 
   const handleSkip = () => {
     if (currentIndex < polls.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setShuffleId(0);
       setSelectedIndex(null);
+    } else {
+      console.log("calling from skip!")
+      getPolls();
     }
   };
 
-
   const getPolls = async () => {
-    const response = await authAxios.get("/get_polls");
-    if(response.data.status == 0){
+    const response = await authAxios.get("https://api.razzapp.com/get_polls");
+    console.log(response.data);
+    if (response.data.status == 0) {
+      setStatus(0);
+      setCurrentIndex(0)
+      setCountdown(null)
+      setSelectedIndex(null)
+      setShuffleId(0)
       setPolls(response.data.data);
       setIsPollsLoading(false);
+    } else if (response.data.status == -2) {
+      setStatus(-2);
+      setCountdown(response.data.data);
+    } else if (response.data.status == -1) {
+      setStatus(-1);
     }
-  }
+  };
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    // return `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2, '0')}`;
+    return [
+      minutes.toString().padStart(2, "0"),
+      seconds.toString().padStart(2, "0"),
+    ];
+  };
 
   const handleShuffle = () => {
     if (shuffleId < 2) {
@@ -138,129 +222,228 @@ const PollScreen = () => {
     }
   };
 
-  const sendResponse  = async (shuffleId,selectedIndex) => {
+  const sendResponse = async (shuffleId, selectedIndex) => {
+    console.log("sending...");
     setIsSendingResponse(true);
-    const response = await authAxios.post("/register_response",{
-      question_id: polls[currentIndex].question_id,
-      selected_id: polls[currentIndex].options.slice(4*shuffleId,4*shuffleId+4)[selectedIndex].user_id,
-      option_list: polls[currentIndex].options.slice(4*shuffleId,4*shuffleId+4)
-    })
-    if(response.data.status == 0){
+    const response = await authAxios.post(
+      "http://65.0.2.61:8000/add_response_and_like",
+      {
+        question_id: polls[currentIndex].ques_id,
+        selected_id: polls[currentIndex].options.slice(
+          4 * shuffleId,
+          4 * shuffleId + 4
+        )[selectedIndex].user_id,
+        option_list: polls[currentIndex].options.slice(
+          4 * shuffleId,
+          4 * shuffleId + 4
+        ),
+      }
+    );
+    if (response.data.status == 0) {
       console.log("response sent");
       setIsSendingResponse(false);
     }
-
-  }
+  };
   const handleOptionSelect = (shuffleId, selectedIndex) => {
     setSelectedIndex(selectedIndex);
     console.log("doing");
     console.log("Selected index: ", selectedIndex, " Shuffle id: ", shuffleId);
-    console.log(polls[currentIndex].options.slice(4*shuffleId,4*shuffleId+4))
-    console.log(polls[currentIndex].options.slice(4*shuffleId,4*shuffleId+4)[selectedIndex].user_id)
-    sendResponse(shuffleId,selectedIndex)
-
+    console.log(
+      polls[currentIndex].options.slice(4 * shuffleId, 4 * shuffleId + 4)
+    );
+    console.log(
+      polls[currentIndex].options.slice(4 * shuffleId, 4 * shuffleId + 4)[
+        selectedIndex
+      ].user_id
+    );
+    sendResponse(shuffleId, selectedIndex);
   };
 
   useEffect(() => {
-    setRandomColor(randomSoothingColor());
-  }, [currentIndex]);
+    if (status == 0) {
+      setRandomColor(randomSoothingColor());
+    }
+  }, [currentIndex, status]);
 
   useFocusEffect(
     React.useCallback(() => {
-      StatusBar.setBackgroundColor(randomColor);
-      StatusBar.setBarStyle("light-content");
+      if (randomColor != null && status == 0) {
+        StatusBar.setBackgroundColor(randomColor);
+        StatusBar.setBarStyle("light-content");
+      }
     }, [randomColor])
   );
 
   useEffect(() => {
-    console.log("getting polls...")
+    console.log("getting polls...");
     getPolls();
-    
-  },[])
+  }, []);
 
-  // useEffect(() => {
-  //   StatusBar.setBackgroundColor(randomColor);
-  //   StatusBar.setBarStyle("light-content");
-  // },[])
+  if (status == -1 || status == -2) {
+    const screenWidth = Dimensions.get("screen").width;
+    const playAgainAspectRatio = 600 / 114;
+    const playAgainWidth = screenWidth * 0.8;
+    const playAgainHeight = playAgainWidth / playAgainAspectRatio;
+    const [mm, ss] = formatTime(countdown);
 
+    const razzImageWidth = screenWidth * 0.5
+    const razzImageHeight = razzImageWidth/3
 
-  // useEffect(() => {
-  //   StatusBar.setBackgroundColor(randomColor);
-  //   StatusBar.setBarStyle("light-content");
-  // }, [randomColor]);
-  
-  return (
-    <View style={[styles.container, { backgroundColor: randomColor }]}>
-      <Text style={styles.pollText}>Poll</Text>
-      <ProgressBar
-        colorHex={"#FFFFFF"}
-        style={styles.progressBar}
-        minThickness={0.5}
-        maxThickness={3}
-        totalSteps={12}
-        stepSize={1}
-        currentStep={currentIndex + 1}
-      />
-      <Text style={styles.stepText}>{currentIndex + 1}/12</Text>
-      {!isPollsLoading ? <View style={styles.content}>
-        <View>
-          <Image
-            source={{ uri: polls[currentIndex].image }}
-            style={styles.image}
-          />
-          <Text style={styles.questionText}>
-            {polls[currentIndex].question}
-          </Text>
-        </View>
-        <View style={styles.column}>
-          {getOptionView(
-            polls,
-            shuffleId,
-            currentIndex,
-            randomColor,
-            selectedIndex,
-            handleOptionSelect
-          )}
-        </View>
-        {selectedIndex == null ? (
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.shuffleButton}
-              onPress={handleShuffle}
-              disabled={shuffleId == 2}
+    const notEnoughImageWidth = screenWidth * 0.6
+    const notEnoughImageHeight = notEnoughImageWidth/4.5
+
+    return (
+      <View style={[styles.playAgainContainer, { backgroundColor: "#e9e9e9" }]}>
+        <StatusBar backgroundColor="#e9e9e9" barStyle="dark-content" />
+        {status === -2 && (
+          <>
+            <Image
+              source={playAgainImage}
+              style={{ height: playAgainHeight, width: playAgainWidth }}
+            />
+            <Image source={lockImage} style={{ height: 120, width: 120 }} />
+            <Text
+              style={{
+                fontSize: 24,
+                marginVertical: 20,
+                fontWeight: "bold",
+                color: "#656565",
+              }}
             >
-              <Ionicons
-                name="shuffle"
-                size={32}
-                color={shuffleId == 2 ? "black" : "white"}
+              New polls in..
+            </Text>
+            <View style={styles.timerContainer}>
+              <View style={styles.timerPart}>
+                <Text style={styles.timerText}>{mm}</Text>
+              </View>
+              <Image
+                source={dotImage}
+                style={styles.separator}
+                resizeMode="contain"
               />
-              <Text
-                style={[
-                  styles.footerText,
-                  shuffleId == 2 && { color: "black" },
-                ]}
-              >
-                Shuffle
+              <View style={styles.timerPart}>
+                <Text style={styles.timerText}>{ss}</Text>
+              </View>
+            </View>
+          </>
+        )}
+
+        {status === -1 && (
+          // <>
+          //   <Text style={styles.infoText}>
+          //     You need to have at least 12 friends to participate in a poll
+          //   </Text>
+          //   <CustomButton
+          //     buttonText="Add Friends"
+          //     buttonStyles={styles.addButton}
+          //     textStyles={{ color: "black" }}
+          //     onPress={() =>
+          //       navigation.navigate("Tabs", { screen: "Add Friends" })
+          //     } // Replace 'AddFriendsScreen' with the actual name of the screen where users can add friends
+          //   />
+          // </>
+          <>
+          <View style={{marginBottom:20}}>
+          <Image source={flameImage} style={{height:150,width:118,alignSelf:"center"}} resizeMode="cover"/>
+          <Image source={razzImage} style={{height:razzImageHeight,width:razzImageWidth}}/>
+          </View>
+          <Image source={notEnoughImage} style={{height:notEnoughImageHeight,width:notEnoughImageWidth,marginTop:40,marginBottom:10}}/>
+          <CustomButton buttonText={"Add Friends"} 
+          buttonStyles={{width:"80%",alignSelf:"center",backgroundColor:"#fa7024",borderWidth:0}}
+          onPress={() =>
+                   navigation.navigate("Tabs", { screen: "Add" })
+               } />
+          </>
+        )}
+      </View>
+    );
+  } else if (status == 0) {
+    // const png = require("../../assets/poll-pngs/" + polls[currentIndex].image)
+
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: randomColor }]}
+      >
+        <Text style={styles.pollText}>Poll</Text>
+        <ProgressBar
+          colorHex={"#FFFFFF"}
+          style={styles.progressBar}
+          minThickness={0.5}
+          maxThickness={3}
+          totalSteps={12}
+          stepSize={1}
+          currentStep={currentIndex + 1}
+        />
+        <Text style={styles.stepText}>{currentIndex + 1}/12</Text>
+        {!isPollsLoading ? (
+          <View style={styles.content}>
+            <View>
+              <Image
+                source={images[polls[currentIndex].image]}
+                style={styles.image}
+              />
+              {/* <DynamicImage
+            imageName={polls[currentIndex].image}/> */}
+              <Text style={styles.questionText}>
+                {polls[currentIndex].ques}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-              <Ionicons
-                name="play-skip-forward-sharp"
-                size={32}
-                color="white"
-              />
-              <Text style={styles.footerText}>Skip</Text>
-            </TouchableOpacity>
+            </View>
+            <View style={styles.column}>
+              {getOptionView(
+                polls,
+                shuffleId,
+                currentIndex,
+                randomColor,
+                selectedIndex,
+                handleOptionSelect
+              )}
+            </View>
+            {selectedIndex == null ? (
+              <View style={styles.footer}>
+                <TouchableOpacity
+                  style={styles.shuffleButton}
+                  onPress={handleShuffle}
+                  disabled={shuffleId == 2}
+                >
+                  <Ionicons
+                    name="shuffle"
+                    size={32}
+                    color={shuffleId == 2 ? "black" : "white"}
+                  />
+                  <Text
+                    style={[
+                      styles.footerText,
+                      shuffleId == 2 && { color: "black" },
+                    ]}
+                  >
+                    Shuffle
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.skipButton}
+                  onPress={handleSkip}
+                >
+                  <Ionicons
+                    name="play-skip-forward-sharp"
+                    size={32}
+                    color="white"
+                  />
+                  <Text style={styles.footerText}>Skip</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              getContinueView(isSendingResponse, handleSkip)
+            )}
           </View>
         ) : (
-          getContinueView(isSendingResponse, handleSkip)
+          <Loader visible={isPollsLoading} />
         )}
-      </View>:<Loader visible={isPollsLoading}/>}
-    </View>
-  );
+      </SafeAreaView>
+    );
+  } else {
+    return <Loader visible={isPollsLoading} />;
+  }
 };
-
-
 
 const renderOption = (
   option,
@@ -331,23 +514,27 @@ const getOptionView = (
   );
 };
 
-const getContinueView = (isSendingResponse,handleSkip) => {
-  if(isSendingResponse){
-    return <ActivityIndicator/>
-  }else{
-    return(
-    <TouchableOpacity onPress={handleSkip}>
-            <Text style={styles.continueText}>Tap to continue</Text>
-          </TouchableOpacity>
-    )
+const getContinueView = (isSendingResponse, handleSkip) => {
+  if (isSendingResponse) {
+    return <ActivityIndicator />;
+  } else {
+    return (
+      <TouchableOpacity onPress={handleSkip}>
+        <Text style={styles.continueText}>Tap to continue</Text>
+      </TouchableOpacity>
+    );
   }
-
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     // marginTop: getStatusBarHeight(),
+  },
+  playAgainContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   pollText: {
     color: "white",
@@ -404,6 +591,51 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "white",
     fontSize: 20,
+  },
+  separator: {
+    height: 40, // The height of the boxes (fontSize of timerText + paddingVertical * 2)
+    marginLeft: 5,
+    marginRight: 5,
+    width: 10,
+  },
+
+  // timerText: {
+  //   fontSize: 24,
+  //   color: 'white',
+  //   marginBottom: 10,
+  // },
+  // timer: {
+  //   fontSize: 48,
+  //   color: 'black',
+  //   fontWeight: 'bold',
+  //   marginBottom: 20,
+  // },
+  timerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  timerPart: {
+    backgroundColor: "white",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+    elevation: 10,
+  },
+  timerText: {
+    fontSize: 30,
+    color: "black",
+    fontWeight: "bold",
+  },
+  infoText: {
+    fontSize: 18,
+    color: "white",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  addButton: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "transparent",
   },
 });
 

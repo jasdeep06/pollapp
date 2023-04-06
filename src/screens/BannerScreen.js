@@ -1,13 +1,23 @@
-import { Image, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import {
+  Image,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useContext, useState } from "react";
 
-import { Picker } from '@react-native-picker/picker';
-import  {UserContext}  from '../context/UserContext';
-import { getStatusBarHeight } from 'react-native-status-bar-height';
+import CustomButton from "../components/CustomButton";
+import { Picker } from "@react-native-picker/picker";
+import { UserContext } from "../context/UserContext";
+import firegif from "../../assets/images/fire.gif";
+import razzImage from "../../assets/images/razz.png";
 
-const BannerScreen = ({navigation}) => {
+const BannerScreen = ({ navigation }) => {
   // const [age, setAge] = useState(13);
-  const {user,updateUser} = useContext(UserContext);
+  const { user, updateUser } = useContext(UserContext);
 
   const generateAgeOptions = () => {
     let options = [];
@@ -19,91 +29,93 @@ const BannerScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-         <StatusBar backgroundColor="black" barStyle="light-content" />
-       <TouchableOpacity style={styles.loginWrapper} onPress={() => navigation.navigate("MobileNumberInputScreen",{isLogin:true})}>
-        <Text style={styles.loginText}>Log In</Text>
-      </TouchableOpacity>
-      <Image
-        style={styles.appLogo}
-        source={{ uri: 'https://ving-assets.s3.ap-south-1.amazonaws.com/app_images/fire-fireball.gif' }}
-      />
-      <Text style={styles.selectAgeText}>Select your age</Text>
-      <View style={styles.pickerWrapper}>
-        <Picker
-          selectedValue={user.age}
-          onValueChange={(itemValue) => updateUser({'age':itemValue})}
-          style={styles.picker}
+      <StatusBar backgroundColor="#1e1e1e" barStyle="light-content" />
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity
+          style={styles.loginWrapper}
+          onPress={() =>
+            navigation.navigate("MobileNumberInputScreen", { isLogin: true })
+          }
         >
-          {generateAgeOptions()}
-        </Picker>
-      </View>
-      <View style={styles.buttonWrapper}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Permissions")}>
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.loginText}>Log In</Text>
         </TouchableOpacity>
+      </View>
+      <View style={{ flex: 1 }} />
+      <View
+        style={{
+          flex: 6,
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <View style={{ alignItems: "center" }}>
+          <Image style={styles.appLogo} source={firegif} />
+          <Image source={razzImage} style={styles.appImage} />
+        </View>
+        <View style={{ justifyContent: "center", flex: 1 }}>
+          <Text
+            style={{ color: "white", textAlign: "center", marginHorizontal: 30,color:"#bababa" }}
+          >
+            By entering your age, you agree to our Terms and Privacy Policy
+          </Text>
+        </View>
+        <View style={{ width: "100%", alignItems: "center", flex: 2,marginTop:20 }}>
+          <Text style={styles.selectAgeText}>Enter your age</Text>
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={user.age}
+              onValueChange={(itemValue) => updateUser({ age: itemValue })}
+              style={styles.picker}
+              // itemStyle={{backgroundColor:"green"}}
+            >
+              {generateAgeOptions()}
+            </Picker>
+          </View>
+        </View>
+        <CustomButton
+          buttonText={"Get Started"}
+          buttonStyles={{ width: "80%",backgroundColor:"#fa7024",borderWidth:0 }}
+          onPress={() => navigation.navigate("Permissions")}
+        />
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'black',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // marginTop: getStatusBarHeight(), // Add padding equal to the status bar height + 20
-      },
-  appLogo: {
-    width: 150,
-    height: 150,
-    marginBottom: 20,
+  container: {
+    flex: 1,
+    backgroundColor: "#1e1e1e",
+  },
+  appLogo: {},
+  appImage: {
+    width: 200,
+    height: 70,
   },
   selectAgeText: {
     fontSize: 18,
-    color: 'white',
-    marginBottom: 10,
+    color: "#ff7528",
+    marginBottom: 20,
   },
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: 'white',
+    borderColor: "white",
     borderRadius: 5,
     marginBottom: 20,
-    width: '80%',
+    width: "80%",
+    backgroundColor:"#1e1e1e"
   },
   picker: {
     height: 50,
-    width: '100%',
-    color: 'white',
-  },
-  buttonWrapper: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    width: '80%',
-  },
-  button: {
-    backgroundColor: '#FF8C00',
-    paddingVertical: 10,
-    borderRadius: 5,
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  loginWrapper: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
+    width: "100%",
+    color: "white",
   },
   loginText: {
-    color: 'white',
+    color: "#ffffff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    marginRight:10
   },
 });
 

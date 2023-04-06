@@ -30,7 +30,7 @@ const FriendsScreen = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: "#8C92AC",
+        backgroundColor: "#e9e9e9",
       },
       headerTitle: "Friends",
     });
@@ -38,7 +38,7 @@ const FriendsScreen = ({ navigation }) => {
   return isLoadingFriendsData ? (
     <Loader visible={isLoadingFriendsData} />
   ) : friendsData.length > 0 ? (
-    <ScrollView style={{ backgroundColor: "#8C92AC", flex: 1 }}>
+    <ScrollView style={{ backgroundColor: "#e9e9e9", flex: 1 }}>
       {friendsData.map((item, index) => (
         <>
           <View style={{ padding: 10 }}>
@@ -57,7 +57,7 @@ const FriendsScreen = ({ navigation }) => {
       ))}
     </ScrollView>
   ) : (
-    <View style={{ backgroundColor: "#8C92AC", flex: 1 }}>
+    <View style={{ backgroundColor: "#e9e9e9", flex: 1 }}>
       <Empty
         icon={<FontAwesome5 name="user-friends" size={80} color="white" />}
         description={"You don't have any friends now!"}
@@ -65,9 +65,9 @@ const FriendsScreen = ({ navigation }) => {
       />
       <CustomButton
         title="Add Friends"
-        onPress={() => navigation.navigate("Tabs", { screen: "Add Friends" })}
+        onPress={() => navigation.navigate("Tabs", { screen: "Add" })}
         buttonText={"Find Friends"}
-        buttonStyles={{ width: "80%", alignSelf: "center", marginBottom: 30 }}
+        buttonStyles={{ width: "80%", alignSelf: "center", marginVertical: 30 }}
       />
     </View>
   );

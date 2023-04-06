@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,6 +13,15 @@ import { UserContext } from '../context/UserContext';
 
 const LastNameScreen = ({navigation}) => {
   const {user,updateUser} = React.useContext(UserContext);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTintColor: "white",
+      headerStyle: {
+        backgroundColor: "#fa7024",
+      },
+    });
+  }, [navigation]);
 
   const handleNext = () => {
     navigation.navigate("GenderScreen")
@@ -49,7 +58,7 @@ const LastNameScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FF8C00',
+    backgroundColor: '#fa7024',
     paddingHorizontal: 24,
   },
   content: {
@@ -70,20 +79,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   nextButton: {
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     borderRadius: 30,
     paddingVertical: 12,
     marginBottom: 16,
     alignSelf: 'center',
     width: '85%',
+    borderWidth:0
   },
   nextButtonText: {
-    color: 'black',
+    color: '#fa7024',
     fontSize: 18,
     textAlign: 'center',
   },
   disabledButton: {
-    backgroundColor: '#CCCCCC'
+    backgroundColor: '#fdbf9c'
   }
 });
 

@@ -9,36 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 
 import { AxiosContext } from '../context/AxiosContext';
 import { Feather } from '@expo/vector-icons';
 import Loader from '../components/Loader';
 import { UserContext } from '../context/UserContext';
-
-// const sampleData = [
-//   // Replace this sample data with your actual data
-//   {
-//     id: '1',
-//     logo_url: 'https://via.placeholder.com/50',
-//     name: 'Sample School 1',
-//     city: 'City 1',
-//     state: 'State 1',
-//     members: 123,
-//   }
-
-  
-// ];
-// for (let i = 2; i <= 25; i++) {
-//     sampleData.push({
-//       id: String(i),
-//       logo_url: 'https://via.placeholder.com/50',
-//       name: `Sample School ${i}`,
-//       city: `City ${i}`,
-//       state: `State ${i}`,
-//       members: Math.floor(Math.random() * 500),
-//     });
-//   }
 
 const filterByField = (list, field, value) => {
   console.log(`Filtering by ${field} = ${value}`)
@@ -75,24 +51,15 @@ const SchoolSelectionScreen = ({navigation}) => {
     navigation.navigate('FirstNameScreen');
   }
 
-  // useEffect(() => {
-  //   console.log(user.location)
-  //   publicAxios.get('http://65.0.2.61:8000/get_nearby_schools',{
-  //     params: {
-  //       lat: user.location.coords.latitude,
-  //       long: user.location.coords.longitude,
-  //     }
-  //   })
-  //     .then(res => {
-  //       console.log(res.data);
-  //       setSchools(res.data);
-  //       setFilteredData(res.data);
-  //       setSchoolsLoading(false);
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //     })
-  // },[])
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTintColor: "white",
+      headerStyle: {
+        backgroundColor: "#fa7024",
+      },
+      headerTitle: "Pick your school",
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const fetchNearbySchools = async () => {
@@ -121,19 +88,19 @@ const SchoolSelectionScreen = ({navigation}) => {
     <TouchableOpacity onPress={() => handleSchoolSelect(item)} style={[styles.listItem,user.school != null && user.school == item.school_id ? styles.selected : {}  ]}>
     <Image source={{ uri: item.logo_url }} style={styles.logo} />
     <View style={styles.schoolInfo}>
-      <Text style={styles.schoolName}>{item.name}</Text>
-      <Text style={styles.schoolLocation}>{item.city}, {item.state}</Text>
+      <Text style={[styles.schoolName,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.name}</Text>
+      <Text style={[styles.schoolLocation,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.city}, {item.state}</Text>
     </View>
     <View style={styles.membersInfo}>
-      <Text style={styles.membersCount}>{item.num_members}</Text>
-      <Text style={styles.membersLabel}>MEMBERS</Text>
+      <Text style={[styles.membersCount,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.num_members}</Text>
+      <Text style={[styles.membersLabel,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>MEMBERS</Text>
     </View>
   </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#FF8C00" />
+      <StatusBar backgroundColor="#fa7024" />
       {/* <View style={styles.header}>
         <Text style={styles.headerText}>Pick your school</Text>
       </View> */}
@@ -214,9 +181,11 @@ const styles = StyleSheet.create({
   schoolName: {
     fontSize: 16,
     fontWeight: 'bold',
+    color:'#858484'
   },
   schoolLocation: {
     fontSize: 14,
+    color:"#858484",
   },
   membersInfo: {
     alignItems: 'center',
@@ -225,12 +194,17 @@ const styles = StyleSheet.create({
   membersCount: {
     fontSize: 16,
     fontWeight: 'bold',
+    color:'#fa7024'
   },
   membersLabel: {
     fontSize: 14,
+    color:'#858484'
   },
   selected:{
-    backgroundColor:'#FFA500'
+    backgroundColor:'#fa7024'
+  },
+  selectedText:{
+    color:"white"
   }
 });
 

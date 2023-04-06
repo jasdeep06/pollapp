@@ -67,6 +67,15 @@ const OtpVerificationScreen = ({navigation,route}) => {
   const {updateAuthToken} = React.useContext(AuthContext);
   const {publicAxios} = React.useContext(AxiosContext);
   const isLogin = route.params?.isLogin || false;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTintColor: "white",
+      headerStyle: {
+        backgroundColor: "#fa7024",
+      },
+    });
+  }, [navigation]);
   
   
   const validateOtp = async (otp) => {
@@ -137,7 +146,11 @@ useEffect(() => {
         console.log(otpResponse.data.jwt_token)
         saveToStorage("authToken",otpResponse.data.jwt_token)
         updateAuthToken(otpResponse.data.jwt_token)
+        if(isLogin){
         navigation.navigate("Tabs")
+        }else{
+          navigation.navigate("IntroScreen")
+        }
     }
 
 },[otpResponse])
@@ -167,10 +180,11 @@ useEffect(() => {
           onPress={handleOtpSubmit}
           buttonText={"Verify"}
           buttonStyles={[
-            { marginBottom: 20 },
+            { marginBottom: 20,borderWidth:0,backgroundColor:"#ffffff" },
             otp.length == 4 ? {} : styles.disabledButton,
           ]}
           icon = {isOtpValidating && <ActivityIndicator/>}
+          textStyles={{color: "#fa7024"}}
         />
       </View>
     </SafeAreaView>
@@ -190,7 +204,7 @@ const getStatusRender = (timeRem,resendResponse,resendOngoing,handleResendOtp) =
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFA500",
+    backgroundColor: "#fa7024",
     paddingHorizontal: 24,
     justifyContent: "center",
   },
@@ -203,6 +217,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     borderColor: "white",
     textAlign: "center",
+    color:"white"
   },
   root: {
     paddingLeft: "20%",
@@ -217,7 +232,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   disabledButton: {
-    backgroundColor: "#CCCCCC",
+    backgroundColor: "#fdbf9c",
   },
 });
 

@@ -22,7 +22,7 @@ export const AxiosProvider = ({ children }) => {
 
   authAxios.interceptors.request.use(
     (config) => {
-      config.headers.jwt_token = authToken;
+      config.headers.token = authToken;
       return config;
     },
     (error) => {

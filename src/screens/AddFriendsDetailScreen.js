@@ -1,10 +1,11 @@
 import {
   FlatList,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  View,
+  View
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 
@@ -22,6 +23,27 @@ const AddFriendsDetailScreen = ({ navigation }) => {
   const [data, setData] = useState(null)
   const { authAxios } = React.useContext(AxiosContext);
   const [isLoading, setIsLoading] = useState(true)
+
+
+  const sendFriendRequest = async (user_id) => {
+    return authAxios.post("http://65.0.2.61:8000/send_request", {
+      friend_id: user_id,
+    });
+  };
+
+  const friendRequestAccept = async (user_id) => {
+    return authAxios.post("http://65.0.2.61:8000/request_action", {
+      friend_id: user_id,
+      concern: "accept",
+    });
+  };
+
+  const friendRequestDecline = async (user_id) => {
+    return authAxios.post("http://65.0.2.61:8000/request_action", {
+      friend_id: user_id,
+      concern: "decline",
+    });
+  };
 
 
   const getData = async () => {
@@ -78,7 +100,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: "#8C92AC",
+        backgroundColor: "#e9e9e9",
       },
       headerTitle: getHeaderTitle(),
     });
@@ -86,7 +108,8 @@ const AddFriendsDetailScreen = ({ navigation }) => {
 
   return (
     isLoading || data == null ? <Loader visible={isLoading}/> :
-    <ScrollView style={{ flex: 1, backgroundColor: "#8C92AC" }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#e9e9e9" }}
+          refreshControl={<RefreshControl refreshing={isLoading} onRefresh={getData}/>}>
       <View style={styles.searchBarContainer}>
         <Feather
           name="search"
@@ -103,19 +126,24 @@ const AddFriendsDetailScreen = ({ navigation }) => {
         />
       </View>
       {filteredData.map((item, index) => (
-        <>
-          <View style={{ padding: 10 }} key={item.user_id}>
+        <React.Fragment key={item.user_id}>
+          <View style={{ padding: 10 }} >
             <FriendItem
               imageUrl={item.photo}
               name={item.firstname + " " + item.lastname}
               type={context}
-              number={item.mobile}
+              // number={item.in_contacts ? item.contact_name + " in contacts" : item.mobile}
+              contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
+                  number={item.in_contacts ? null : item.mobile}
+                  onAccept={() => friendRequestAccept(item.user_id)}
+                  onDecline={() => friendRequestDecline(item.user_id)}
+                  onAdd={() => sendFriendRequest(item.user_id)}
             />
           </View>
           <View
             style={{ borderBottomWidth: 0.5, borderBottomColor: "#DDD" }}
           ></View>
-        </>
+        </React.Fragment>
       ))}
     </ScrollView>
   );
@@ -127,7 +155,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 4,
+    borderRadius: 16,
     fontSize: 16,
     color: "#888",
     marginHorizontal: 5,

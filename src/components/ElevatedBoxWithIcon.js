@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     borderRadius: 5,
-    elevation: 10,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -43,14 +43,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   icon: {
-    height: 30,
-    width: 30,
+    height: 40,
+    width: 40,
     alignSelf: 'center',
   },
   leftText: {
     alignSelf: 'center',
     marginLeft: 10,
-    fontSize: 15,
+    fontSize: 16,
   },
   rightText: {
     alignSelf: 'center',

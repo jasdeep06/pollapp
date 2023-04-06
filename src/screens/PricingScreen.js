@@ -1,23 +1,32 @@
-import { Alert, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import { Alert, Image, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
 import Loader from "../components/Loader";
 import PricingCard from "../components/PricingCard";
 import Purchases from "react-native-purchases";
+import { ScrollView } from "react-native-gesture-handler";
+import heartImage from "../../assets/images/heart.png"
+import lifetimeImage from "../../assets/images/lifetime.png"
+import oneImage from "../../assets/images/1_card.png"
+import threeImage from "../../assets/images/3_card.png"
+import { useFocusEffect } from "@react-navigation/native";
 
 function parsePurchases(purchases) {
+    const imageDict = {"reveal-1":oneImage,"reveal-3":threeImage,"lifetime":lifetimeImage}
     const products = [];
   
     for (const key in purchases.all) {
+      console.log(key)
       const product = purchases.all[key];
   
       const price = product.availablePackages[0]['product'].priceString;
-      const description = product.serverDescription.split(",").slice(1);
+      const description = product.serverDescription.split(",");
   
       const parsedProduct = {
-        imageSrc: product.serverDescription.split(",")[0],
+        // imageSrc: product.serverDescription.split(",")[0],
+        imageSrc:imageDict[key],
         price,
         description,
         pkg:purchases.all[key]['availablePackages'][0]
@@ -41,9 +50,11 @@ const PricingScreen = ({route,navigation}) => {
   const [transactionTimeOut,setTransactionTimeOut] = useState(false)
   const [transactionLoading,setTransactionLoading] = useState(false)
   const { authAxios } = React.useContext(AxiosContext);
+  const [preVerificationLoader,setPreVerificationLoader] = useState(false)
   const like_id = route.params && route.params.like_id;
   const gender = route.params && route.params.gender;
   const from = route.params && route.params.from;
+  const user_id = route.params && route.params.user_id;
 
   const handleCardSelect = (index,pkg) => {
     console.log(index,pkg)
@@ -63,6 +74,25 @@ useEffect(() => {
     }
 },[transactionLoading])
 
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTintColor: "white",
+    headerStyle: {
+      backgroundColor: "#1c1c1c",
+    },
+  });
+
+}, [navigation]);
+
+useFocusEffect(
+  React.useCallback(() => {
+    StatusBar.setBackgroundColor("#1c1c1c");
+    StatusBar.setBarStyle("dark-content");
+  }, [])
+);
+
+
+
 
 useEffect(() => {
     if(trasactionVerified && from == 'reveal'){
@@ -73,9 +103,9 @@ useEffect(() => {
 const checkTransactionVerification = async (purchaseDate, productId, retryCount = 0) => {
     setTransactionLoading(true)
     try {
-      const response = await authAxios.post('/check_transaction_verification', {
-        purchaseDate: purchaseDate,
-        productId: productId,
+      const response = await authAxios.post('http://65.0.2.61:8000/verify_transaction', {
+        purchase_date: purchaseDate,
+        product_id: productId,
       });
   
       if (response.data.status === 0) {
@@ -110,14 +140,21 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
   
 
   const handleNextPress = async () => {
+    setPreVerificationLoader(true)
     try {
-        const purchaseMade = await Purchases.purchasePackage(selectedPkg);
+        const purchaseMade = await Purchases.purchasePackage(selectedPkg,{
+            custom_metadata:{
+                user_id:user_id
+            }
+        });
         const transactionObj = purchaseMade.customerInfo.nonSubscriptionTransactions.at(-1);
         const purchaseDate = transactionObj.purchaseDate;
         const productId = transactionObj.productId;
+        setPreVerificationLoader(false)
         checkTransactionVerification(purchaseDate, productId);
       } catch (e) {
         if (!e.userCancelled) {
+          setPreVerificationLoader(false)
           console.log(e);
       
           // Check for the pending payment error
@@ -144,6 +181,7 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
             console.log("Other error occurred");
           }
         } else {
+          setPreVerificationLoader(false)
           console.log("User cancelled!");
         }
       }
@@ -154,7 +192,9 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
   useEffect(() => {
     const get_offerings = async () => {
         Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
-        Purchases.configure({apiKey:'goog_bClHlaubcaVscmrRoRbWdxZmcyD'})
+        console.log("COnfiguring rc for user",user_id)
+        Purchases.configure({apiKey:'goog_bClHlaubcaVscmrRoRbWdxZmcyD',appUserId:user_id})
+        Purchases.logIn(user_id)
         const offerings = await Purchases.getOfferings();
         setOfferings(parsePurchases(offerings))
         setIsLoading(false)
@@ -182,19 +222,28 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
     isLoading || offerings == null || transactionLoading ? 
     <>
     <Loader visible={isLoading || transactionLoading}/>
-    <StatusBar backgroundColor={"#8C92AC"} barStyle="light-content" />
     {transactionLoading && <Text style={{textAlign:'center',marginTop:20}}>Verifying Payment.....</Text>}
     </> :
-    <SafeAreaView style={styles.container}>
-              <StatusBar backgroundColor={"#8C92AC"} barStyle="light-content" />
+    // <ScrollView>
+    <>
+      <Loader visible={preVerificationLoader}/>
+      <View style={styles.container}>
+              <StatusBar backgroundColor={"#1c1c1c"} barStyle="light-content" />
 
-      <Text style={{textAlign:"center",fontSize:20,marginHorizontal:20}}>You have 0 reveals left!To know who razzed you,Buy now!</Text>
+      <View style={{flex:1}}>
+      <Text style={{textAlign:"center",fontSize:20,marginHorizontal:20,color:"#d8d8d8"}}>Buy <Text style={{color:"#ff6a1d"}}>Reveals</Text> to see who liked you</Text>
+      <Image source={heartImage} style={{height:40,width:40,alignSelf:"center"}}/>
+      </View>
       <View style={styles.pricingCards}>{renderPricingCards()}</View>
       <CustomButton buttonStyles={[styles.nextButton, selectedCardIndex === null ? styles.disabledButton : null]}
                     onPress={handleNextPress}
                     disabled={selectedCardIndex === null}
-                    buttonText={getButtonText(transactionLoading,transactionTimeOut,trasactionVerified)}/>
-    </SafeAreaView>
+                    buttonText={getButtonText(transactionLoading,transactionTimeOut,trasactionVerified)}
+                    textStyles={selectedCardIndex === null ?  {color:"#a4a4a4"} : {color:"#ffffff"}}
+                    />
+    </View>
+    </>
+    // </ScrollView>
   );
 };
 
@@ -202,18 +251,18 @@ const getButtonText = (transactionLoading,transactionTimeOut,trasactionVerified)
     if(transactionLoading){
         return "Verifying Payment....."
     }else if(transactionTimeOut){
-        return "Next"
+        return "Proceed To Buy"
     }else if(trasactionVerified){
         return "Payment Successful!"
     }else{
-        return "Next"
+        return "Proceed To Buy"
     }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#8C92AC",
+    backgroundColor: "#1c1c1c",
     alignItems: "center",
     justifyContent: "space-evenly",
   },
@@ -222,18 +271,20 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
     alignItems: "center",
+    // flex:1
   },
   nextButton: {
-    backgroundColor: "#FF5A60",
+    backgroundColor: "#fa7024",
     paddingHorizontal: 30,
     paddingVertical: 10,
     borderRadius: 25,
     alignItems: "center",
     justifyContent: "center",
-    width:"80%"
+    width:"80%",
+    borderWidth:0
   },
   disabledButton: {
-    backgroundColor: "#FFA5B1",
+    backgroundColor: "#a65021",
   },
   nextButtonText: {
     color: "#fff",

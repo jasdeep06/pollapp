@@ -4,6 +4,7 @@ import React, { useContext, useEffect } from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
+import Purchases from 'react-native-purchases';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import React,{useLayoutEffect} from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
@@ -13,8 +14,27 @@ import { AxiosContext } from '../context/AxiosContext';
 import { CommonActions } from '@react-navigation/native';
 import CustomButton from '../components/CustomButton';
 import Loader from '../components/Loader';
-import React from 'react';
+import deleteImage from "../../assets/images/dustbin.png"
+import signOutImage from "../../assets/images/sign_out.png"
 import { useNavigation } from '@react-navigation/native';
+
+function getShortenedSchoolName(schoolName) {
+  // Split the school name into words
+  const words = schoolName.split(' ');
+
+  // Get the first two words
+  const firstTwoWords = words.slice(0, 2).join(' ');
+
+  // Get the first 15 characters
+  const firstFifteenChars = schoolName.substring(0, 15);
+
+  // Choose the longer option
+  const result = firstTwoWords.length > firstFifteenChars.length ? firstTwoWords : firstFifteenChars;
+
+  // Append "..." to the result and return it
+  return result + '...';
+}
+
 
 const MyAccountScreen = ({ navigation }) => {
 //   const profileData = {
@@ -26,6 +46,20 @@ const MyAccountScreen = ({ navigation }) => {
 //     mobile: '911234567890',
 //     gender:"boy"
 //   };
+
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTintColor: "black",
+    headerStyle: {
+      backgroundColor: "#e9e9e9",
+    },
+  });
+}, [navigation]);
+
+
+
+
+
 
   const [profileData, setProfileData] = React.useState(null);
   const [isLoadingProfileData, setIsLoadingProfileData] = React.useState(true);
@@ -69,7 +103,7 @@ const MyAccountScreen = ({ navigation }) => {
       <View style={styles.infoContainer}>
         {[
           { key: 'Name', value: profileData.firstname + ' ' + profileData.lastname },
-          { key: 'School', value: profileData.school },
+          { key: 'School', value: getShortenedSchoolName(profileData.school) },
           { key: 'Grade', value: profileData.grade },
           { key: 'Mobile', value: profileData.mobile },
           { key: 'Gender', value: profileData.gender },
@@ -89,14 +123,15 @@ const MyAccountScreen = ({ navigation }) => {
         <CustomButton
           buttonText={'Sign Out'}
           buttonStyles={styles.customButtonStyle}
-          icon={<AntDesign name="logout" size={24} color="white" style={styles.icon} />}
+          // icon={<AntDesign name="logout" size={24} color="white" style={styles.icon} />}
+          icon={<Image source={signOutImage} style={{width:24,height:24,marginRight:5}}/>}
           // Add your sign out logic onPress
           onPress={signOut}
         />
         <CustomButton
           buttonText={'Delete Account'}
           buttonStyles={styles.customButtonStyle}
-          icon={<MaterialCommunityIcons name="delete" size={24} color="white" style={styles.icon} />}
+          icon={<Image source={deleteImage} style={{width:24,height:24,marginRight:5}}/>}
           // Add your delete account logic onPress
           onPress={() => {}}
         />
@@ -109,7 +144,7 @@ const MyAccountScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#8C92AC',
+    backgroundColor: '#e9e9e9',
     padding: 10,
   },
   image: {
@@ -117,6 +152,8 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 100,
     alignSelf: 'center',
+    // borderColor:"blue",
+    // borderWidth:3
   },
   detailsText: {
     fontSize: 18,
@@ -133,12 +170,14 @@ const styles = StyleSheet.create({
     width: '70%',
     alignSelf: 'center',
     marginVertical: 10,
+    backgroundColor:"#fa7024",
+    borderWidth:0
   },
   icon: {
     marginRight: 10,
   },
   infoContainer: {
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     borderRadius: 10,
     padding: 10,
     margin: 20,
@@ -152,13 +191,13 @@ const styles = StyleSheet.create({
   keyText: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#8C92AC',
+    color: '#6b6b6b',
     opacity: 0.7,
-    marginRight: 5,
+    marginRight: 20,
   },
   valueText: {
-    fontSize: 20,
-    color: '#8C92AC',
+    fontSize: 18,
+    color: '#9c9c9c',
     textAlign:"center"
   },
   divider: {
