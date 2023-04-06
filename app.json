@@ -25,7 +25,12 @@
       },
       "permissions": [],
       "package": "com.jas1994.pollapp",
-      "versionCode": 4
+      "versionCode": 4,
+      "resolutions": {
+        "mdpi": {
+          "supportsTablet": false
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

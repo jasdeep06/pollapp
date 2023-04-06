@@ -12,7 +12,7 @@ import React, { useContext, useState } from "react";
 import CustomButton from "../components/CustomButton";
 import { Picker } from "@react-native-picker/picker";
 import { UserContext } from "../context/UserContext";
-import firegif from "../../assets/images/fire.gif";
+import firegif from "../../assets/images/fire-faster.gif";
 import razzImage from "../../assets/images/razz.png";
 
 const BannerScreen = ({ navigation }) => {
@@ -88,7 +88,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1e1e1e",
   },
-  appLogo: {},
+  appLogo: {
+    width:120,
+    height:154
+  },
   appImage: {
     width: 200,
     height: 70,
