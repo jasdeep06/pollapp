@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "Razz",
-    "slug": "Razz",
+    "slug": "pollapp",
     "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/app_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/splash_logo.png",
+      "image": "./assets/images/splash_logo_resized.png",
       "resizeMode": "center",
       "backgroundColor": "#1e1e1e"
     },
