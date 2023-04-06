@@ -7,15 +7,16 @@
     "icon": "./assets/app_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/razz.png",
-      "resizeMode": "contain",
+      "image": "./assets/images/splash_logo.png",
+      "resizeMode": "center",
       "backgroundColor": "#1e1e1e"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jas1994.pollapp"
     },
     "android": {
       "adaptiveIcon": {

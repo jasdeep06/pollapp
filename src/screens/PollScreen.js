@@ -20,6 +20,7 @@ import Loader from "../components/Loader";
 import ProgressBar from "../components/ProgressBar";
 import Purchases from "react-native-purchases";
 import Svg from "react-native-svg";
+import { SvgUri } from "react-native-svg";
 import dotImage from "../../assets/images/dot.png";
 import flameImage from "../../assets/images/smaller_size_flame.gif"
 import { getStatusBarHeight } from "react-native-status-bar-height";
@@ -378,10 +379,11 @@ const PollScreen = ({ navigation }) => {
         {!isPollsLoading ? (
           <View style={styles.content}>
             <View>
-              <Image
+              {/* <Image
                 source={images[polls[currentIndex].image]}
                 style={styles.image}
-              />
+              /> */}
+              <SvgUri width={120} height={120} style={{alignSelf:"center"}} uri={"https://ving-assets.s3.ap-south-1.amazonaws.com/svgs/"+ polls[currentIndex].image.replace(".png",'.svg')} />
               {/* <DynamicImage
             imageName={polls[currentIndex].image}/> */}
               <Text style={styles.questionText}>
@@ -566,6 +568,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 20,
     paddingTop: 20,
+    fontFamily:'Calibri'
   },
   column: {
     flexDirection: "column",

@@ -1,3 +1,4 @@
+import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 import React, { useContext, useEffect } from 'react';
@@ -19,6 +20,11 @@ const AuthResolverScreen = () => {
         console.log("checking for auth token")
         const token = await AsyncStorage.getItem('authToken');
         console.log("token is",token)
+        console.log("getting font...")
+        await Font.loadAsync({
+          'Calibri': require('../../assets/fonts/calibri_regular.ttf'),
+        })
+        console.log("Got font...")
         if (token) {
           updateAuthToken(token);
           navigation.replace("Tabs");
