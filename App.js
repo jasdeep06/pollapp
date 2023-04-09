@@ -175,9 +175,6 @@ const TabNavigator = () => {
 
 export default function App() {
 
-  const {authToken,
-    updateAuthToken} = React.useContext(AuthContext)
-  console.log(authToken)
 
 
 
