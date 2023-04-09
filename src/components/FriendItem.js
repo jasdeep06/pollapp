@@ -11,7 +11,8 @@ const FriendItem = ({
   onInvite,
   onAdd,
   itemStyle,
-  contact_name
+  contact_name,
+  gender
 }) => {
 
   const [accepted,setAccepted] = useState(false)
@@ -72,7 +73,7 @@ const FriendItem = ({
   return (
     <View style={[styles.container,itemStyle]}>
       <View style={styles.imageNameContainer}>
-        <Image source={{ uri: imageUrl }} style={styles.image} />
+        <Image source={{ uri: imageUrl }} style={[styles.image,gender == 'boy' ? {borderColor:"#3f85fa",borderWidth:2.5} : {borderColor:"#fd4996",borderWidth:2.5}]} />
         <View style={{flexDirection:"column"}}>
         <Text style={styles.name}>{name}</Text>
         {getNumberView(number,contact_name)}

@@ -22,20 +22,26 @@ import MobileNumberInputScreen from './src/screens/MobileNumberInputScreen';
 import MyAccountScreen from './src/screens/MyAccountScreen';
 import { NavigationContainer } from "@react-navigation/native";
 import OTPVerificationScreen from './src/screens/OtpVerificationScreen';
+import OneSignal from 'react-native-onesignal';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import PermissionsScreen from './src/screens/PermissionScreen';
 import PhotoScreen from './src/screens/PhotoScreen';
 import PollScreen from './src/screens/PollScreen';
 import PricingScreen from './src/screens/PricingScreen';
 import ProfileScreen from './src/screens/ProfieScreen';
+import React from "react";
 import SchoolSelectionScreen from './src/screens/SchoolSelectionScreen';
 import { StatusBar } from 'expo-status-bar';
 import { UserProvider } from './src/context/UserContext';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 
+OneSignal.setAppId("78dca1f0-2a43-4389-94ff-48b36c79e1f5");
+OneSignal.promptForPushNotificationsWithUserResponse()
+
 const Stack = createStackNavigator();
 const Tab = createMaterialTopTabNavigator();
+
 
 
 
@@ -169,6 +175,9 @@ const TabNavigator = () => {
 
 export default function App() {
 
+  const {authToken,
+    updateAuthToken} = React.useContext(AuthContext)
+  console.log(authToken)
 
 
 
@@ -188,7 +197,9 @@ export default function App() {
         <Stack.Screen name = "LastNameScreen" component = {LastNameScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#FF8C00'}}} />
         <Stack.Screen name = "GenderScreen" component = {GenderScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#FF8C00'}}} />
         <Stack.Screen name = "PhotoScreen" component = {PhotoScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#FF8C00'}}} />
-        <Stack.Screen name = "MobileNumberInputScreen" component = {MobileNumberInputScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#FF8C00'}}} />
+        <Stack.Screen name = "MobileNumberInputScreen" component = {MobileNumberInputScreen} 
+            // options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#FF8C00'}}} />
+            options={{headerShown:false}}/>
         <Stack.Screen name = "OtpVerificationScreen" component = {OtpVerificationScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#FF8C00'}}} />
         <Stack.Screen name = "Tabs" component={TabNavigator} options={{headerShown:false}} />
         <Stack.Screen name = "LikeViewScreen" component={LikeViewScreen} options={{headerShown:true,headerTitle:"",headerStyle:{'backgroundColor':'#4A90E2'}}}/>

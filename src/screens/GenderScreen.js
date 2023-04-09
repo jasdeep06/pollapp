@@ -1,10 +1,11 @@
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { UserContext } from '../context/UserContext';
 import boyImage from "../../assets/images/boy.png"
 import girlImage from "../../assets/images/girl.png"
+import { useFocusEffect } from '@react-navigation/native';
 
 const GenderScreen = ({navigation}) => {
   const {user,updateUser} = React.useContext(UserContext);
@@ -17,6 +18,20 @@ const GenderScreen = ({navigation}) => {
       },
     });
   }, [navigation]);
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('Current navigation state: from gender screen', JSON.stringify(navigation.getState(), null, 2));
+      return () => {
+        // Cleanup or unsubscribe if needed
+      };
+    }, [])
+  );
+  // useEffect(() => {
+  //   navigation.navigate('PhotoScreen')
+
+  // }, [user.gender]);
 
   const handleGenderSelect = (gender) => {
     updateUser({'gender':gender})

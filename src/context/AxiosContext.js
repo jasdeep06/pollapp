@@ -3,9 +3,10 @@ import React, { createContext, useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import axios from "axios";
 
-export const apiBaseURL =
-  "https://b1ab0568-d96a-4b87-9d63-f3582716c94d.mock.pstmn.io/";
+// export const apiBaseURL =
+//   "https://b1ab0568-d96a-4b87-9d63-f3582716c94d.mock.pstmn.io/";
 
+export const apiBaseURL = "https://api.razzapp.com/"
 
 export const AxiosContext = createContext();
 

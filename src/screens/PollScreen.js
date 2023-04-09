@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   AppState,
+  BackHandler,
   Dimensions,
   Image,
   SafeAreaView,
@@ -17,6 +18,7 @@ import CustomButton from "../components/CustomButton";
 import ElevatedBox from "../components/ElevatedBox";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader";
+import PollsLoader from "../components/PollsLoader";
 import ProgressBar from "../components/ProgressBar";
 import Purchases from "react-native-purchases";
 import Svg from "react-native-svg";
@@ -147,6 +149,22 @@ const PollScreen = ({ navigation }) => {
   }, [countdown]);
 
 
+  // useEffect(() => {
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     (e) => {
+  //       e.preventDefault()
+  //       console.log("exiting app ...")
+  //       BackHandler.exitApp()
+  //     }
+  //   )
+    
+  //   return () => backHandler.remove()
+
+  // },[])
+  
+
+  
   useEffect(()=> {
     if(status == -2){
       getPolls()
@@ -189,7 +207,7 @@ const PollScreen = ({ navigation }) => {
   };
 
   const getPolls = async () => {
-    const response = await authAxios.get("https://api.razzapp.com/get_polls");
+    const response = await authAxios.get("get_polls");
     console.log(response.data);
     if (response.data.status == 0) {
       setStatus(0);
@@ -217,9 +235,17 @@ const PollScreen = ({ navigation }) => {
     ];
   };
 
-  const handleShuffle = () => {
-    if (shuffleId < 2) {
+  const handleShuffle = (num_shuffles) => {
+
+    // if (shuffleId < 2) {
+    //   setShuffleId(shuffleId + 1);
+    // }else if(shuffleId == 2){
+    //   setShuffleId(0)
+    // }
+    if (shuffleId < num_shuffles - 1) {
       setShuffleId(shuffleId + 1);
+    } else if (shuffleId == num_shuffles - 1) {
+      setShuffleId(0);
     }
   };
 
@@ -227,7 +253,7 @@ const PollScreen = ({ navigation }) => {
     console.log("sending...");
     setIsSendingResponse(true);
     const response = await authAxios.post(
-      "http://65.0.2.61:8000/add_response_and_like",
+      "/add_response_and_like",
       {
         question_id: polls[currentIndex].ques_id,
         selected_id: polls[currentIndex].options.slice(
@@ -274,6 +300,18 @@ const PollScreen = ({ navigation }) => {
       }
     }, [randomColor])
   );
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("here is it....")
+      console.log(status)
+      if(status == -1){
+        console.log("calling from focus effect")
+        getPolls()
+      }
+    },[status])
+  )
 
   useEffect(() => {
     console.log("getting polls...");
@@ -358,8 +396,9 @@ const PollScreen = ({ navigation }) => {
         )}
       </View>
     );
-  } else if (status == 0) {
+  } else if (polls && status == 0) {
     // const png = require("../../assets/poll-pngs/" + polls[currentIndex].image)
+    const num_shuffles = polls[currentIndex].options.length / 4;
 
     return (
       <SafeAreaView
@@ -404,22 +443,24 @@ const PollScreen = ({ navigation }) => {
               <View style={styles.footer}>
                 <TouchableOpacity
                   style={styles.shuffleButton}
-                  onPress={handleShuffle}
-                  disabled={shuffleId == 2}
+                  onPress={() => handleShuffle(num_shuffles)}
+                  // disabled={shuffleId == 2}
                 >
                   <Ionicons
                     name="shuffle"
                     size={32}
-                    color={shuffleId == 2 ? "black" : "white"}
+                    // color={shuffleId == 2 ? "black" : "white"}
+                    color="white"
                   />
                   <Text
                     style={[
                       styles.footerText,
-                      shuffleId == 2 && { color: "black" },
+                      // shuffleId == 2 && { color: "black" },
                     ]}
                   >
                     Shuffle
                   </Text>
+                  <Text style={{color:"white",alignSelf:"center"}}>{"(" + (shuffleId+1) + "/" + num_shuffles + ")"}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.skipButton}
@@ -443,7 +484,12 @@ const PollScreen = ({ navigation }) => {
       </SafeAreaView>
     );
   } else {
-    return <Loader visible={isPollsLoading} />;
+    // return <Loader visible={isPollsLoading} />;
+    return <View style={{flex:1,backgroundColor:"#ffffff"}}>
+    <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />  
+    <PollsLoader text={"Loading Polls"} textStyles={{textAlign:"center",fontSize:20,fontWeight:"bold"}}/>
+    </View>
+
   }
 };
 

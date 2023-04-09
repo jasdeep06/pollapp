@@ -65,7 +65,7 @@ const SchoolSelectionScreen = ({navigation}) => {
     const fetchNearbySchools = async () => {
       try {
         console.log(user.location);
-        const response = await publicAxios.get('http://65.0.2.61:8000/get_nearby_schools', {
+        const response = await publicAxios.get("/get_nearby_schools", {
           params: {
             lat: user.location.coords.latitude,
             long: user.location.coords.longitude,

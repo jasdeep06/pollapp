@@ -62,7 +62,7 @@ const LikeViewScreen = ({ route, navigation }) => {
 
   const revealLike = async () => {
     setIsRevealLoading(true);
-    const response = await authAxios.get("http://65.0.2.61:8000/reveal_like", {
+    const response = await authAxios.get("/reveal_like", {
       params: { like_id: like_id },
     });
     console.log(response.data);
@@ -77,7 +77,7 @@ const LikeViewScreen = ({ route, navigation }) => {
   const getLikeViewData = async () => {
     setIsLoadingLikeViewData(true);
     const response = await authAxios.get(
-      "http://65.0.2.61:8000/get_like_details",
+      "/get_like_details",
       { params: { like_id: like_id } }
     );
     if (response.data.status == 0) {

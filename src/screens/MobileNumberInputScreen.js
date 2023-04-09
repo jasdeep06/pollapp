@@ -55,6 +55,18 @@ const MobileNumberInputScreen = ({navigation,route}) => {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#fa7024" />
+        {isLogin &&
+        (<View style={{flexDirection:"row"}}>
+          <View style={{flex:1}}/>
+          <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("BannerScreen")
+          }
+        >
+          <Text style={styles.loginText}>Sign Up</Text>
+        </TouchableOpacity>        
+        
+        </View>)}
         <View style={styles.content}>
 
         <Text style={styles.title}>{isLogin ? "Login using your mobile":"Enter your phone number"}</Text>
@@ -112,7 +124,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
     container: {
         flex: 1,
         backgroundColor: '#fa7024',
-        paddingTop: 30,
+        // paddingTop: 30,
         paddingBottom: 30,
       },
       content:{
@@ -151,6 +163,12 @@ const MobileNumberInputScreen = ({navigation,route}) => {
       textAlign: 'center',
       marginBottom: 20,
       paddingHorizontal: 20,
+    },
+    loginText: {
+      color: "#ffffff",
+      fontSize: 16,
+      fontWeight: "bold",
+      marginRight:10
     },
     // nextButton: {
     //   borderRadius: 30,

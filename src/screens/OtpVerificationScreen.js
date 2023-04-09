@@ -13,6 +13,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../context/AuthContext";
 import { AxiosContext } from "../context/AxiosContext";
+import { CommonActions } from "@react-navigation/native";
 import CustomButton from "../components/CustomButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { UserContext } from "../context/UserContext";
@@ -98,7 +99,7 @@ const OtpVerificationScreen = ({navigation,route}) => {
       "otp": otp,
       "concern":"login"
     })
-    return publicAxios.post('http://65.0.2.61:8000/verify_otp', !isLogin ?  {
+    return publicAxios.post("/verify_otp", !isLogin ?  {
       "mobile": "91" + user.phone,
       "otp": otp,
       "concern":"signup",
@@ -147,10 +148,33 @@ useEffect(() => {
         saveToStorage("authToken",otpResponse.data.jwt_token)
         updateAuthToken(otpResponse.data.jwt_token)
         if(isLogin){
-        navigation.navigate("Tabs")
+        // navigation.navigate("Tabs")
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              { name: 'Tabs' },
+
+            ],
+          })
+        )
         }else{
-          navigation.navigate("IntroScreen")
-        }
+          // navigation.navigate("IntroScreen")
+        //   navigation.dispatch(
+        //     CommonActions.reset({
+        //       index: 0,
+        //       routes: [
+        //         { name: 'IntroScreen' },
+        //       ],
+        // })
+        //   )
+        console.log("navigating to intro screen")
+        console.log('Current navigation state:', JSON.stringify(navigation.getState(), null, 2));
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'IntroScreen' }],
+        })
+      }
     }
 
 },[otpResponse])

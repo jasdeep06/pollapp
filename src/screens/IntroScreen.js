@@ -1,11 +1,24 @@
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { ImageBackground, StatusBar, StyleSheet, View } from 'react-native';
+import React,{useEffect} from 'react';
 
 import CustomButton from '../components/CustomButton';
-import React from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
 const IntroScreen = ({navigation}) => {
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('Current navigation state: from intro screen', JSON.stringify(navigation.getState(), null, 2));
+      return () => {
+        // Cleanup or unsubscribe if needed
+      };
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
       <ImageBackground
         source={require('../../assets/images/intro.png')}
         resizeMode="contain"
@@ -15,7 +28,7 @@ const IntroScreen = ({navigation}) => {
       </ImageBackground>
       <CustomButton buttonStyles={{backgroundColor:"#fa7024",width:"80%",alignSelf:"center",borderWidth:0}}
                     buttonText={"Get Started!"}
-                    OnPress={() => {navigation.navigate("Tabs")}}
+                    onPress={() => {navigation.navigate("Tabs")}}
       />
     </View>
   );

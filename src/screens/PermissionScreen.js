@@ -88,7 +88,7 @@ const PermissionsScreen = ({ navigation }) => {
       const { status } = await Contacts.requestPermissionsAsync();
 
       if (status !== "granted") {
-        setIsRequestingLocation(false);
+        setIsRequestingContacts(false);
         Alert.alert(
           "Permission Denied",
           "In order for the Razz app to work properly, you need to enable contacts access!",

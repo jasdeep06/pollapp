@@ -26,20 +26,20 @@ const AddFriendsDetailScreen = ({ navigation }) => {
 
 
   const sendFriendRequest = async (user_id) => {
-    return authAxios.post("http://65.0.2.61:8000/send_request", {
+    return authAxios.post("/send_request", {
       friend_id: user_id,
     });
   };
 
   const friendRequestAccept = async (user_id) => {
-    return authAxios.post("http://65.0.2.61:8000/request_action", {
+    return authAxios.post("/request_action", {
       friend_id: user_id,
       concern: "accept",
     });
   };
 
   const friendRequestDecline = async (user_id) => {
-    return authAxios.post("http://65.0.2.61:8000/request_action", {
+    return authAxios.post("/request_action", {
       friend_id: user_id,
       concern: "decline",
     });
@@ -49,7 +49,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
   const getData = async () => {
     if(context == "request"){
       setIsLoading(true)
-      const response = await authAxios.get('http://65.0.2.61:8000/get_requests')
+      const response = await authAxios.get("/get_requests")
       console.log(response.data)
       if(response.data.status == 0){
         console.log(response.data.data)
@@ -59,7 +59,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
       }
   }else if(context == "add"){
     setIsLoading(true)
-    const response = await authAxios.get('http://65.0.2.61:8000/get_school_friends')
+    const response = await authAxios.get("/get_school_friends")
     if(response.data.status == 0){
       console.log(response.data.data)
       setData(response.data.data)
@@ -138,6 +138,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
                   onAccept={() => friendRequestAccept(item.user_id)}
                   onDecline={() => friendRequestDecline(item.user_id)}
                   onAdd={() => sendFriendRequest(item.user_id)}
+                  gender={item.gender}
             />
           </View>
           <View

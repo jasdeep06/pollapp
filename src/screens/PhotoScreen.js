@@ -46,7 +46,7 @@ const PhotoScreen = () => {
     console.log("Verifying photo");
     setIsVerifying(true);
     await publicAxios
-      .post("http://15.207.192.148:8000/liveness", { image: data.base64 })
+      .post("https://verify.razzapp.com/liveness", { image: data.base64 })
       .then((res) => {
         console.log(res.data);
         if (res.data.status == 0) {
@@ -111,7 +111,7 @@ const PhotoScreen = () => {
     if (!response.granted) {
       Alert.alert(
         "Permission Denied",
-        "In order to ensure only genuine people join Gas, it is required to click a photo! Please go to settings and enable camera permissions",
+        "In order to ensure only genuine people join Razz, it is required to click a photo! Please go to settings and enable camera permissions",
         [
           {
             text: "Go to Settings",
@@ -127,7 +127,7 @@ const PhotoScreen = () => {
   if (!permission || !permission.granted || !showCamera) {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" backgroundColor="#fa7024" />
+        {/* <StatusBar style="light" backgroundColor="#fa7024" /> */}
         <View style={{ flex: 1 }} />
         <View style={{ flex: 2,alignItems:"center" }}>
           <Text style={styles.title}>Add a profile photo</Text>

@@ -103,7 +103,7 @@ useEffect(() => {
 const checkTransactionVerification = async (purchaseDate, productId, retryCount = 0) => {
     setTransactionLoading(true)
     try {
-      const response = await authAxios.post('http://65.0.2.61:8000/verify_transaction', {
+      const response = await authAxios.post("/verify_transaction", {
         purchase_date: purchaseDate,
         product_id: productId,
       });

@@ -41,7 +41,7 @@ const ProfileScreen = ({ navigation }) => {
 
   const getProfile = async () => {
     setIsLoadingProfileData(true);
-    const response = await authAxios.get("http://65.0.2.61:8000/get_profile");
+    const response = await authAxios.get("/get_profile");
     console.log(response.data)
     if (response.data.status == 0) {
       console.log(response.data.data);

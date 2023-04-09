@@ -14,7 +14,7 @@ const FriendsScreen = ({ navigation }) => {
   const [isLoadingFriendsData, setIsLoadingFriendsData] = React.useState(true);
 
   const getFriends = async () => {
-    const response = await authAxios.get("http://65.0.2.61:8000/get_friends");
+    const response = await authAxios.get("/get_friends");
     console.log(response.data);
     if (response.data.status == 0) {
       console.log(response.data.data);
@@ -46,7 +46,10 @@ const FriendsScreen = ({ navigation }) => {
               imageUrl={item.photo}
               name={item.firstname + " " + item.lastname}
               type="friend"
-              number={item.mobile}
+              // number={item.mobile}
+              contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
+              number={item.in_contacts ? null : item.mobile}
+              gender={item.gender}
             />
           </View>
           <View

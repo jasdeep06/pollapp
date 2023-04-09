@@ -38,7 +38,7 @@ const AddFriendsScreen = ({ navigation }) => {
   const getAddFriendsData = async () => {
     setIsLoading(true);
     const response = await authAxios.get(
-      "http://65.0.2.61:8000/get_school_friends_and_requests"
+      "/get_school_friends_and_requests"
     );
     console.log(response.data.data);
     if (response.data.status == 0) {
@@ -82,20 +82,20 @@ const AddFriendsScreen = ({ navigation }) => {
   );
 
   const sendFriendRequest = async (user_id) => {
-    return authAxios.post("http://65.0.2.61:8000/send_request", {
+    return authAxios.post("/send_request", {
       friend_id: user_id,
     });
   };
 
   const friendRequestAccept = async (user_id) => {
-    return authAxios.post("http://65.0.2.61:8000/request_action", {
+    return authAxios.post("/request_action", {
       friend_id: user_id,
       concern: "accept",
     });
   };
 
   const friendRequestDecline = async (user_id) => {
-    return authAxios.post("http://65.0.2.61:8000/request_action", {
+    return authAxios.post("/request_action", {
       friend_id: user_id,
       concern: "decline",
     });
@@ -138,6 +138,7 @@ const AddFriendsScreen = ({ navigation }) => {
                   onAccept={() => friendRequestAccept(item.user_id)}
                   onDecline={() => friendRequestDecline(item.user_id)}
                   itemStyle={{ padding: 10 }}
+                  gender={item.gender}
                 />
               </View>
             </React.Fragment>
@@ -179,6 +180,7 @@ const AddFriendsScreen = ({ navigation }) => {
                   number={item.in_contacts ? null : item.mobile}
                   onAdd={() => sendFriendRequest(item.user_id)}
                   itemStyle={{ padding: 10 }}
+                  gender={item.gender}
                 />
               </View>
             </React.Fragment>

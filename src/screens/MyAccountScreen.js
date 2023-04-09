@@ -68,7 +68,7 @@ useLayoutEffect(() => {
 
     const getProfile = async () => {
     setIsLoadingProfileData(true);
-    const response = await authAxios.get("http://65.0.2.61:8000/get_profile")
+    const response = await authAxios.get("/get_profile")
     if (response.data.status == 0) {
         setProfileData(response.data.data);
         setIsLoadingProfileData(false);

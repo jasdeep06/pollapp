@@ -20,6 +20,7 @@ const LikesScreen = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      console.log("firing...")
       StatusBar.setBackgroundColor("#e9e9e9");
       StatusBar.setBarStyle("dark-content");
     }, [])
@@ -27,7 +28,7 @@ const LikesScreen = ({ navigation }) => {
 
   const getLikes = async () => {
     setIsFetching(true);
-    const response = await authAxios.get("http://65.0.2.61:8000/get_likes");
+    const response = await authAxios.get("/get_likes");
     console.log(response.data);
     if (response.data.status == 0) {
       console.log("Likes fetched successfully");
