@@ -11,6 +11,7 @@ import React, { useLayoutEffect, useState } from 'react';
 
 import { AxiosContext } from '../context/AxiosContext';
 import CustomButton from '../components/CustomButton';
+import CustomText from '../components/CustomText';
 import { UserContext } from '../context/UserContext';
 
 const MobileNumberInputScreen = ({navigation,route}) => {
@@ -63,15 +64,15 @@ const MobileNumberInputScreen = ({navigation,route}) => {
             navigation.navigate("BannerScreen")
           }
         >
-          <Text style={styles.loginText}>Sign Up</Text>
+          <CustomText style={styles.loginText}>Sign Up</CustomText>
         </TouchableOpacity>        
         
         </View>)}
         <View style={styles.content}>
 
-        <Text style={styles.title}>{isLogin ? "Login using your mobile":"Enter your phone number"}</Text>
+        <CustomText style={styles.title}>{isLogin ? "Login using your mobile":"Enter your phone number"}</CustomText>
         <View style={styles.inputContainer}>
-          <Text style={styles.countryCode}>+91</Text>
+          <CustomText style={styles.countryCode}>+91</CustomText>
           <TextInput
             style={styles.mobileInput}
             keyboardType="numeric"
@@ -81,11 +82,11 @@ const MobileNumberInputScreen = ({navigation,route}) => {
             placeholder="Mobile Number"
           />
         </View>
-        {!isLogin ?  <Text style={styles.warning}>
+        {!isLogin ?  <CustomText style={styles.warning}>
           Remember - never sign up with another person's phone number.We will send you an OTP.
-        </Text>:<Text style={styles.warning}>
+        </CustomText>:<CustomText style={styles.warning}>
           We will send you an OTP.
-        </Text>}
+        </CustomText>}
         </View>
 
         {/* <View style={styles.buttonContainer}> */}
@@ -100,7 +101,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
           onPress={handleNextButton}
           disabled={user.phone == null || user.phone.length !== 10}
         >
-          <Text style={styles.nextButtonText}>Next</Text>
+          <CustomText style={styles.nextButtonText}>Next</CustomText>
           {isSendingOtp && <ActivityIndicator/>}
         </TouchableOpacity> */}
         <CustomButton 

@@ -1,8 +1,8 @@
+import { CommonActions, useFocusEffect } from '@react-navigation/native';
 import { ImageBackground, StatusBar, StyleSheet, View } from 'react-native';
 import React,{useEffect} from 'react';
 
 import CustomButton from '../components/CustomButton';
-import { useFocusEffect } from '@react-navigation/native';
 
 const IntroScreen = ({navigation}) => {
 
@@ -28,7 +28,16 @@ const IntroScreen = ({navigation}) => {
       </ImageBackground>
       <CustomButton buttonStyles={{backgroundColor:"#fa7024",width:"80%",alignSelf:"center",borderWidth:0}}
                     buttonText={"Get Started!"}
-                    onPress={() => {navigation.navigate("Tabs")}}
+                    // onPress={() => {navigation.navigate("Tabs")}}
+                    onPress={() => {
+                      navigation.dispatch(
+                      CommonActions.reset({
+                        index: 0,
+                        routes: [
+                          { name: 'Tabs' },
+                        ],
+                      }))
+                    }}
       />
     </View>
   );
@@ -37,6 +46,7 @@ const IntroScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:"#ffffff"
   },
   image: {
     flex: 1,

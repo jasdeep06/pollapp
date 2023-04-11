@@ -10,6 +10,7 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
+import CustomText from "../components/CustomText";
 import { Feather } from "@expo/vector-icons";
 import FriendItem from "../components/FriendItem";
 import Loader from "../components/Loader";

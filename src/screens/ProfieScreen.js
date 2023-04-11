@@ -11,10 +11,12 @@ import {
 
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MetaContext } from "../context/MetaContext";
 import { Octicons } from "@expo/vector-icons";
 import React from "react";
 import friendsImage from "../../assets/images/friends.png"
@@ -30,6 +32,7 @@ const ProfileScreen = ({ navigation }) => {
   const { authAxios } = React.useContext(AxiosContext);
   const [profileData, setProfileData] = React.useState(null);
   const [isLoadingProfileData, setIsLoadingProfileData] = React.useState(true);
+  const {updateMetadata} = React.useContext(MetaContext)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -46,6 +49,8 @@ const ProfileScreen = ({ navigation }) => {
     if (response.data.status == 0) {
       console.log(response.data.data);
         setProfileData(response.data.data);
+        updateMetadata({unread_likes: response.data.unread_likes,
+          friend_requests: response.data.friend_requests})
         setIsLoadingProfileData(false);
     }
   }
@@ -66,7 +71,7 @@ const ProfileScreen = ({ navigation }) => {
           style={styles.image}
           source={{ uri: profileData.photo }}
         />
-        <Text
+        <CustomText
           style={{
             alignSelf: "center",
             fontSize: 25,
@@ -77,20 +82,20 @@ const ProfileScreen = ({ navigation }) => {
           }}
         >
           {profileData.firstname + " " + profileData.lastname}
-        </Text>
+        </CustomText>
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
           {/* <FontAwesome5 name="school" size={20} color="white" /> */}
           <Image source={schoolImage} style={{height:30,width:30,alignSelf:"center"}}/>
-          <Text style={{ marginHorizontal: 10, color: "#575757",marginVertical:10,fontSize:15 }}>
+          <CustomText style={{ marginHorizontal: 10, color: "#575757",marginVertical:10,fontSize:15 }}>
             {profileData["school"]}
-          </Text>
+          </CustomText>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
           {/* <Ionicons name="school-sharp" size={20} color="white" /> */}
           <Image source={gradeImage} style={{height:20,width:20,alignSelf:"center"}}/>
-          <Text style={{ marginHorizontal: 10, color: "#575757",fontSize:15 }}>
+          <CustomText style={{ marginHorizontal: 10, color: "#575757",fontSize:15 }}>
             {profileData["grade"]}
-          </Text>
+          </CustomText>
         </View>
       </View>
       <View
@@ -104,7 +109,7 @@ const ProfileScreen = ({ navigation }) => {
             <TouchableOpacity  style={{ flexDirection: "row" }} onPress={() => {navigation.navigate("FriendsScreen")}}>
           {/* <FontAwesome5 name="user-friends" size={30} color="white" /> */}
           <Image source={friendsImage} style={{height:40,width:40}}/>
-          <Text
+          <CustomText
             style={{
               fontSize: 24,
               alignSelf: "center",
@@ -114,17 +119,17 @@ const ProfileScreen = ({ navigation }) => {
             }}
           >
             {profileData.num_friends}
-          </Text>
-          <Text style={{
+          </CustomText>
+          <CustomText style={{
               fontSize: 18,
               alignSelf: "center",
               color: "#575757",
-            }}>friends</Text>
+            }}>friends</CustomText>
           </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
           {/* <Octicons name="flame" size={30} color="white" /> */}
           <Image source={likesImage} style={{height:40,width:40}}/>
-          <Text
+          <CustomText
             style={{
               fontSize: 24,
               alignSelf: "center",
@@ -134,19 +139,19 @@ const ProfileScreen = ({ navigation }) => {
             }}
           >
             {profileData.num_likes}
-          </Text>
-          <Text style={{
+          </CustomText>
+          <CustomText style={{
               fontSize: 18,
               alignSelf: "center",
               color: "#575757",
-            }}>likes</Text>
+            }}>likes</CustomText>
         </View>
       </View>
 
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         {/* <MaterialCommunityIcons name="account-eye" size={40} color="white" /> */}
         <Image source={unlockImage} style={{height:40,width:40}}/>
-        <Text
+        <CustomText
           style={{
             fontSize: 24,
             alignSelf: "center",
@@ -156,14 +161,14 @@ const ProfileScreen = ({ navigation }) => {
           }}
         >
           { profileData.reveals}
-        </Text>
-        <Text style={{
+        </CustomText>
+        <CustomText style={{
               fontSize: 18,
               alignSelf: "center",
               color: "#575757",
-            }}>reveals left</Text>
+            }}>reveals left</CustomText>
       </View>
-      <Text
+      <CustomText
         style={{
           fontSize: 15,
           alignSelf: "center",
@@ -172,7 +177,7 @@ const ProfileScreen = ({ navigation }) => {
         }}
       >
         {profileData.reveals > 0 && "Expires in " + profileData.reveals_expiry} 
-      </Text>
+      </CustomText>
       <CustomButton
         buttonText={"My Account"}
         buttonStyles={{ width: "60%", alignSelf: "center", borderWidth:0, marginVertical: 20,backgroundColor:"#fa7024" }}
@@ -194,7 +199,7 @@ const ProfileScreen = ({ navigation }) => {
 //         borderBottomColor: "#ccc",
 //       }}
 //     >
-//       <Text>{item}</Text>
+//       <CustomText>{item}</CustomText>
 //     </View>
 //   );
 // };

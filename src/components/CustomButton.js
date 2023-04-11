@@ -1,4 +1,6 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Text as CustonText, StyleSheet, TouchableOpacity } from "react-native";
+
+import CustomText from "./CustomText";
 
 const CustomButton = (props) => {
   const { buttonStyles, textStyles, buttonText,icon } = props;
@@ -15,7 +17,7 @@ const CustomButton = (props) => {
       {...props}
     >
       {icon}
-      <Text style={{ ...styles.buttonText, ...textStyles }}>{buttonText}</Text>
+      <CustomText style={{ ...styles.buttonText, ...textStyles }}>{buttonText}</CustomText>
     </TouchableOpacity>
   );
 };

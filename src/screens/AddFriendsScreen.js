@@ -16,9 +16,11 @@ import {
 
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
 import FriendItem from "../components/FriendItem";
 import { Linking } from "react-native";
 import Loader from "../components/Loader";
+import { MetaContext } from "../context/MetaContext";
 import RNFS from "react-native-fs";
 import React from "react";
 import topImage from "../../assets/images/top_image.png";
@@ -34,13 +36,14 @@ const AddFriendsScreen = ({ navigation }) => {
   const whatsappWidth = screenWidth * 0.8
   const whatsappAspectRatio = 752/237
   const imageHeight = whatsappWidth/whatsappAspectRatio
+  const {updateMetadata} = React.useContext(MetaContext)
 
   const getAddFriendsData = async () => {
     setIsLoading(true);
     const response = await authAxios.get(
       "/get_school_friends_and_requests"
     );
-    console.log(response.data.data);
+    console.log("gsfar ",response.data);
     if (response.data.status == 0) {
       setAddFriendsData(response.data.data);
       setUserData({
@@ -49,6 +52,8 @@ const AddFriendsScreen = ({ navigation }) => {
         num_requests:response.data.data.num_requests,
         num_from_school:response.data.data.num_from_school
       });
+      updateMetadata({unread_likes: response.data.unread_likes,
+        friend_requests: response.data.friend_requests})
       setIsLoading(false);
     }
   };
@@ -114,16 +119,16 @@ const AddFriendsScreen = ({ navigation }) => {
     >
       <View style={{marginVertical:10,marginBottom:20}}>
       <Image source={topImage} style={{ width: 80, height: 80,alignSelf:"center" }} />
-      <Text style={{alignSelf:"center"}}>Find friends here</Text>
+      <CustomText style={{alignSelf:"center"}}>Find friends here</CustomText>
       </View>
       <View style={{ backgroundColor: "white" }}>
-        <Text style={styles.heading}>{"Friend Requests(" + userData.num_requests + ")"}</Text>
+        <CustomText style={styles.heading}>{"Friend Requests(" + userData.num_requests + ")"}</CustomText>
       </View>
       <View style={{ borderWidth: 1, borderColor: "#e9e9e9" }} />
       {addFriendsData["friend_requests"].length == 0 ? (
-        <Text style={{ textAlign: "center", margin: 10 }}>
+        <CustomText style={{ textAlign: "center", margin: 10 }}>
           You don't have any new friend requests.
-        </Text>
+        </CustomText>
       ) : (
         <>
           {addFriendsData["friend_requests"].slice(0, 2).map((item, index) => (
@@ -152,7 +157,7 @@ const AddFriendsScreen = ({ navigation }) => {
               });
             }}
           >
-            <Text style={{ textAlign: "center", fontSize: 15,color:"#767676" }}>See more</Text>
+            <CustomText style={{ textAlign: "center", fontSize: 15,color:"#767676" }}>See more</CustomText>
           </TouchableOpacity>
         </>
       )}
@@ -160,13 +165,13 @@ const AddFriendsScreen = ({ navigation }) => {
         style={{ borderBottomWidth: 1.5, borderBottomColor: "#e9e9e9" }}
       ></View>
       <View style={{ backgroundColor: "white" }}>
-        <Text style={styles.heading}>{"Add friends from school(" + userData.num_from_school + ")"}</Text>
+        <CustomText style={styles.heading}>{"Add friends from school(" + userData.num_from_school + ")"}</CustomText>
         <View style={{ borderWidth: 1, borderColor: "#e9e9e9" }} />
       </View>
       {addFriendsData["from_school"].length == 0 ? (
-        <Text style={{ textAlign: "center", margin: 10 }}>
+        <CustomText style={{ textAlign: "center", margin: 10 }}>
           You don't have any new friend requests.
-        </Text>
+        </CustomText>
       ) : (
         <>
           {addFriendsData["from_school"].slice(0, 2).map((item, index) => (
@@ -194,7 +199,7 @@ const AddFriendsScreen = ({ navigation }) => {
               });
             }}
           >
-            <Text style={{ textAlign: "center", fontSize: 15,color:"#767676" }}>See more</Text>
+            <CustomText style={{ textAlign: "center", fontSize: 15,color:"#767676" }}>See more</CustomText>
           </TouchableOpacity>
         </>
       )}
@@ -206,7 +211,7 @@ const AddFriendsScreen = ({ navigation }) => {
                   userData.firstname +
                     " " +
                     userData.lastname +
-                    " invited you to join Razz app! https://play.google.com/store/apps/details?id=com.supercell.clashofclans"
+                    " invited you to join Razz app! https://play.google.com/store/apps/details?id=com.jas1994.pollapp"
                 )}
           // onPress={() => {navigation.navigate("IntroScreen")}}
                 

@@ -5,13 +5,16 @@ import { useEffect, useLayoutEffect } from "react";
 import ActionModal from "../components/ActionModal";
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
 import ElevatedBox from "../components/ElevatedBox";
+import { Ionicons } from '@expo/vector-icons';
 import Loader from "../components/Loader";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import boyImage from "../../assets/images/boy.png"
 import girlImage from "../../assets/images/girl.png"
 import lockImage from "../../assets/images/lock.png"
+import { useFocusEffect } from "@react-navigation/native";
 
 // import { likeViewDummyData } from "../data/dummyLikeViewData";
 
@@ -19,6 +22,7 @@ const LikeViewScreen = ({ route, navigation }) => {
   const { authAxios } = React.useContext(AxiosContext);
   const like_id = route.params.like_id;
   const gender = route.params.gender;
+  
 
   const [likeViewData, setLikeViewData] = React.useState(null);
   const [isLoadingLikeViewData, setIsLoadingLikeViewData] =
@@ -28,9 +32,15 @@ const LikeViewScreen = ({ route, navigation }) => {
   const [revealInfo, setRevealInfo] = useState(null);
   const [isRevealLoading, setIsRevealLoading] = useState(false);
 
+  const [successModalVisible,setSuccessModalVisible] = useState(false)
+
   const handleToggleModal = () => {
     setModalVisible(!modalVisible);
   };
+
+  const handleSuccessToggleModal = () => {
+    setSuccessModalVisible(!successModalVisible)
+  }
 
   const handleRevealPress = async () => {
     if (!likeViewData.revealed) {
@@ -87,9 +97,29 @@ const LikeViewScreen = ({ route, navigation }) => {
     }
   };
 
+  // useEffect(() => {
+  //   getLikeViewData();
+  // }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("firing from purchase ",route.params)
+      if(route.params.from == 'purchase'){
+        handleSuccessToggleModal()
+      }else{
+      getLikeViewData();
+      }
+    }, [route])
+  )
+
   useEffect(() => {
-    getLikeViewData();
-  }, []);
+    console.log("firing from useeffect ",route.params)
+    if(!modalVisible || !successModalVisible){
+      getLikeViewData();
+    }
+  },[modalVisible,successModalVisible])
+
+
 
   return (
     <View
@@ -118,17 +148,17 @@ const LikeViewScreen = ({ route, navigation }) => {
                 }
                 style={styles.image}
               />
-              <Text
+              <CustomText
                 style={{ alignSelf: "center", color: "white", fontSize: 15 }}
               >
                 From a {gender}
-              </Text>
+              </CustomText>
             </View>
             {/* <View> */}
               <View style={{ flexDirection: "column" }}>
-                <Text style={styles.questionText}>{likeViewData["ques"]}</Text>
+                <CustomText style={styles.questionText}>{likeViewData["ques"]}</CustomText>
                 {getOptionView(likeViewData,gender)}
-                <Text style={{color:"white",textAlign:"center",fontWeight:"bold"}}>razzapp.com</Text>
+                <CustomText style={{color:"white",textAlign:"center",fontWeight:"bold"}}>razzapp.com</CustomText>
               </View>
             {/* </View> */}
           </View>
@@ -167,6 +197,15 @@ const LikeViewScreen = ({ route, navigation }) => {
           {getModalView(likeViewData, revealInfo, isRevealLoading)}
         </ActionModal>
       )}
+
+      <ActionModal 
+        isVisible={successModalVisible}
+        toggleModal={handleSuccessToggleModal}>
+        <View style={{justifyContent:"center"}}>
+        <Ionicons name="checkmark-circle-sharp" size={80} color="green" style={{alignSelf:"center"}}/>
+        <CustomText style={{textAlign:"center",fontSize:20}}>{"Congratulations!You have " + route.params.revealsBought +   " reveals left!"}</CustomText>
+        </View>
+        </ActionModal>
     </View>
   );
 };
@@ -185,9 +224,9 @@ const getModalView = (likeViewData, revealInfo, isRevealLoading) => {
             alignSelf: "center",
           }}
         />
-        <Text
+        <CustomText
           style={{ textAlign: "center", fontSize: 20, color: "white" }}
-        >{`${likeViewData.firstname} ${likeViewData.lastname}`}</Text>
+        >{`${likeViewData.firstname} ${likeViewData.lastname}`}</CustomText>
       </>
     );
   } else if (isRevealLoading) {
@@ -205,12 +244,12 @@ const getModalView = (likeViewData, revealInfo, isRevealLoading) => {
             alignSelf: "center",
           }}
         />
-        <Text
+        <CustomText
           style={{ textAlign: "center", fontSize: 20, color: "white" }}
-        >{`${revealInfo.firstname} ${revealInfo.lastname}`}</Text>
-        <Text style={{ textAlign: "center", fontSize: 15, color: "white" }}>
+        >{`${revealInfo.firstname} ${revealInfo.lastname}`}</CustomText>
+        <CustomText style={{ textAlign: "center", fontSize: 15, color: "white" }}>
           You have {revealInfo.reveals} reveals remaining!
-        </Text>
+        </CustomText>
       </>
     );
   } else {

@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 
@@ -7,10 +8,10 @@ const Empty = ({icon,description,subDescription}) => (
   <View style={styles.emptyLikesContainer}>
     {/* Use the "heart-outline" icon from Ionicons */}
     {icon}
-    <Text style={styles.emptyLikesTitle}>{description}</Text>
-    <Text style={styles.emptyLikesDescription}>
+    <CustomText style={styles.emptyLikesTitle}>{description}</CustomText>
+    <CustomText style={styles.emptyLikesDescription}>
         {subDescription}
-    </Text>
+    </CustomText>
   </View>
 );
 

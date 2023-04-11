@@ -10,10 +10,12 @@ import {
 import React, { useContext, useState } from "react";
 
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
 import { Picker } from "@react-native-picker/picker";
 import { UserContext } from "../context/UserContext";
 import firegif from "../../assets/images/fire-faster.gif";
 import razzImage from "../../assets/images/razz.png";
+import sadhanaLogo from "../../assets/images/saadhna_infinity_edition.png"
 
 const BannerScreen = ({ navigation }) => {
   // const [age, setAge] = useState(13);
@@ -38,10 +40,11 @@ const BannerScreen = ({ navigation }) => {
             navigation.navigate("MobileNumberInputScreen", { isLogin: true })
           }
         >
-          <Text style={styles.loginText}>Log In</Text>
+          <CustomText style={styles.loginText}>Log In</CustomText>
         </TouchableOpacity>
       </View>
-      <View style={{ flex: 1 }} />
+      {/* <View style={{ flex: 1 }} /> */}
+      <Image source={sadhanaLogo} style={{width: 150, height: 150, alignSelf: "center", marginTop: 20}} />
       <View
         style={{
           flex: 6,
@@ -54,14 +57,14 @@ const BannerScreen = ({ navigation }) => {
           <Image source={razzImage} style={styles.appImage} />
         </View>
         <View style={{ justifyContent: "center", flex: 1 }}>
-          <Text
+          <CustomText
             style={{ color: "white", textAlign: "center", marginHorizontal: 30,color:"#bababa" }}
           >
             By entering your age, you agree to our Terms and Privacy Policy
-          </Text>
+          </CustomText>
         </View>
         <View style={{ width: "100%", alignItems: "center", flex: 2,marginTop:20 }}>
-          <Text style={styles.selectAgeText}>Enter your age</Text>
+          <CustomText style={styles.selectAgeText}>Enter your age</CustomText>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={user.age}

@@ -2,6 +2,7 @@ import { BackHandler, FlatList, SafeAreaView, StatusBar, StyleSheet, Text, Touch
 import React, { useCallback, useEffect, useLayoutEffect } from 'react';
 import { useBackHandler, useFocusEffect } from '@react-navigation/native';
 
+import CustomText from '../components/CustomText';
 import { UserContext } from '../context/UserContext';
 
 const GradeSelectionScreen = ({navigation}) => {
@@ -48,8 +49,8 @@ const GradeSelectionScreen = ({navigation}) => {
         <TouchableOpacity onPress={handleItemPress}>
 
       <View style={[styles.listItem,user.grade != null && user.grade == item.grade ? styles.selected : {}]}>
-        <Text style={[styles.gradeText,user.grade != null && user.grade == item.grade ? styles.selectedText : {}]}>{item.grade}</Text>
-        <Text style={[styles.classOfText,user.grade != null && user.grade == item.grade ? styles.selectedText : {}]} numberOfLines={2}>{item.classOf}</Text>
+        <CustomText style={[styles.gradeText,user.grade != null && user.grade == item.grade ? styles.selectedText : {}]}>{item.grade}</CustomText>
+        <CustomText style={[styles.classOfText,user.grade != null && user.grade == item.grade ? styles.selectedText : {}]} numberOfLines={2}>{item.classOf}</CustomText>
       </View>
       </TouchableOpacity>
 

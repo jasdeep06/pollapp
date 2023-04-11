@@ -48,6 +48,9 @@
         }
       ]
     ],
+    "notification":{
+      "icon":"./assets/images/razz_logo_96x96_greyscale.png"
+    },
     "androidStatusBar": {
       "backgroundColor": "#1e1e1e",
       "translucent": false

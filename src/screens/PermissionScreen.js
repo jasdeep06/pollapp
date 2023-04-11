@@ -16,6 +16,7 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
 import { FontAwesome } from "@expo/vector-icons";
 import { UserContext } from "../context/UserContext";
 import checkImage from "../../assets/images/check.png";
@@ -124,9 +125,9 @@ const PermissionsScreen = ({ navigation }) => {
       <View style={{ flex: 1 }} />
       <View style={{ flex: 4, alignItems: "center" }}>
         <Image source={razzImage} style={{ width: 200, height: 70 }} />
-        <Text style={styles.descriptionText}>
+        <CustomText style={styles.descriptionText}>
           Razz needs to find your school and suggest friends
-        </Text>
+        </CustomText>
         <View style={{ marginTop: 10,width:"100%",alignItems:"center" }}>
           <CustomButton
             buttonText={
@@ -168,10 +169,10 @@ const PermissionsScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <Text style={{ color: "white", margin: 10, textAlign: "center" }}>
+      <CustomText style={{ color: "white", margin: 10, textAlign: "center" }}>
         <FontAwesome name="lock" size={14} color="white" /> Razz cares intensely
         about privacy. We will never text or spam your contacts.
-      </Text>
+      </CustomText>
     </View>
   );
 };

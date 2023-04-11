@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import CustomButton from '../components/CustomButton';
+import CustomText from '../components/CustomText';
 import { UserContext } from '../context/UserContext';
 
 const LastNameScreen = ({navigation}) => {
@@ -33,7 +34,7 @@ const LastNameScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.question}>What's your last name?</Text>
+        <CustomText style={styles.question}>What's your last name?</CustomText>
         <TextInput
           style={styles.input}
           value={user.lastname}

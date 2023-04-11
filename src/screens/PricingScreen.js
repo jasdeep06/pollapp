@@ -1,12 +1,14 @@
-import { Alert, Image, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, ImageBackground, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
+import ImageModal from "../components/ImageModal";
 import Loader from "../components/Loader";
 import PricingCard from "../components/PricingCard";
 import Purchases from "react-native-purchases";
-import { ScrollView } from "react-native-gesture-handler";
 import heartImage from "../../assets/images/heart.png"
 import lifetimeImage from "../../assets/images/lifetime.png"
 import oneImage from "../../assets/images/1_card.png"
@@ -55,12 +57,17 @@ const PricingScreen = ({route,navigation}) => {
   const gender = route.params && route.params.gender;
   const from = route.params && route.params.from;
   const user_id = route.params && route.params.user_id;
+  const [modalVisible,setModalVisible] = useState(false)
 
   const handleCardSelect = (index,pkg) => {
     console.log(index,pkg)
     setSelectedPkg(pkg)
     setSelectedCardIndex(index);
     setTransactionTimeOut(false)
+  };
+
+  const handleToggleModal = () => {
+    setModalVisible(!modalVisible);
   };
 
 useEffect(() => {
@@ -80,6 +87,8 @@ useLayoutEffect(() => {
     headerStyle: {
       backgroundColor: "#1c1c1c",
     },
+    headerTitle: () => <CustomText style={{textAlign:"center",fontSize:20,marginHorizontal:20,color:"#d8d8d8"}}>Buy <CustomText style={{color:"#ff6a1d"}}>Reveals</CustomText> to see who liked you</CustomText>
+    ,
   });
 
 }, [navigation]);
@@ -96,7 +105,8 @@ useFocusEffect(
 
 useEffect(() => {
     if(trasactionVerified && from == 'reveal'){
-        navigation.navigate("LikeViewScreen",{like_id:like_id,gender:gender})
+       console.log("Navigating to reveal screen")
+        navigation.navigate("LikeViewScreen",{like_id:like_id,gender:gender,revealsBought:getRevealsBought(selectedPkg),from:"purchase"})
     }
 },[trasactionVerified])
 
@@ -116,7 +126,7 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
         setTimeout(() => {
             console.log("Retrying...", retryCount)
           checkTransactionVerification(purchaseDate, productId, retryCount + 1);
-        }, 10000); // Retry after 10 seconds
+        }, 2000); // Retry after 10 seconds
       } else {
         setTransactionTimeOut(true)
         setTransactionLoading(false)
@@ -128,7 +138,7 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
       if (retryCount < 6) {
         setTimeout(() => {
           checkTransactionVerification(purchaseDate, productId, retryCount + 1);
-        }, 10000);
+        }, 2000);
       } else {
         console.log('Transaction verification timed out.');
         setTransactionTimeOut(true)
@@ -222,7 +232,7 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
     isLoading || offerings == null || transactionLoading ? 
     <>
     <Loader visible={isLoading || transactionLoading}/>
-    {transactionLoading && <Text style={{textAlign:'center',marginTop:20}}>Verifying Payment.....</Text>}
+    {transactionLoading && <CustomText style={{textAlign:'center',marginTop:20}}>Verifying Payment.....</CustomText>}
     </> :
     // <ScrollView>
     <>
@@ -230,17 +240,33 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
       <View style={styles.container}>
               <StatusBar backgroundColor={"#1c1c1c"} barStyle="light-content" />
 
-      <View style={{flex:1}}>
-      <Text style={{textAlign:"center",fontSize:20,marginHorizontal:20,color:"#d8d8d8"}}>Buy <Text style={{color:"#ff6a1d"}}>Reveals</Text> to see who liked you</Text>
-      <Image source={heartImage} style={{height:40,width:40,alignSelf:"center"}}/>
-      </View>
+      {/* <View style={{flex:1}}> */}
+      {/* <CustomText style={{textAlign:"center",fontSize:20,marginHorizontal:20,color:"#d8d8d8"}}>Buy <CustomText style={{color:"#ff6a1d"}}>Reveals</CustomText> to see who liked you</CustomText> */}
+      {/* <Image source={heartImage} style={{height:40,width:40,alignSelf:"center"}}/> */}
+      {/* </View> */}
       <View style={styles.pricingCards}>{renderPricingCards()}</View>
+      <TouchableOpacity onPress={handleToggleModal}>
+      <CustomText style={{color:"#ff6a1d",fontSize:15}}>You can also buy using cash.Click here to know more!</CustomText>
+      </TouchableOpacity>
       <CustomButton buttonStyles={[styles.nextButton, selectedCardIndex === null ? styles.disabledButton : null]}
                     onPress={handleNextPress}
                     disabled={selectedCardIndex === null}
                     buttonText={getButtonText(transactionLoading,transactionTimeOut,trasactionVerified)}
                     textStyles={selectedCardIndex === null ?  {color:"#a4a4a4"} : {color:"#ffffff"}}
                     />
+      <ImageModal isVisible={modalVisible}
+          toggleModal={handleToggleModal}
+          imageSource={require('../../assets/images/gc.png')}
+          imageSizePercentage={90}>
+        {/* <View style={{flex:1}}>
+        <ImageBackground
+        source={require('../../assets/images/intro.png')}
+        resizeMode="contain"
+        style={{ flex: 1, justifyContent: "center", alignItems: "center"}}
+      >
+      </ImageBackground>
+      </View> */}
+      </ImageModal>
     </View>
     </>
     // </ScrollView>
@@ -257,6 +283,16 @@ const getButtonText = (transactionLoading,transactionTimeOut,trasactionVerified)
     }else{
         return "Proceed To Buy"
     }
+}
+
+const getRevealsBought = (pkg) => {
+  if(pkg.identifier == 'lifetime'){
+    return "infinite"
+  }else if(pkg.identifier == 'reveal-3'){
+    return "3"
+  }else if(pkg.identifier == 'reveal-1'){
+    return "1"
+  }
 }
 
 const styles = StyleSheet.create({

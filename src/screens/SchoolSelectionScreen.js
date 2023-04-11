@@ -12,6 +12,7 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 
 import { AxiosContext } from '../context/AxiosContext';
+import CustomText from '../components/CustomText';
 import { Feather } from '@expo/vector-icons';
 import Loader from '../components/Loader';
 import { UserContext } from '../context/UserContext';
@@ -88,12 +89,12 @@ const SchoolSelectionScreen = ({navigation}) => {
     <TouchableOpacity onPress={() => handleSchoolSelect(item)} style={[styles.listItem,user.school != null && user.school == item.school_id ? styles.selected : {}  ]}>
     <Image source={{ uri: item.logo_url }} style={styles.logo} />
     <View style={styles.schoolInfo}>
-      <Text style={[styles.schoolName,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.name}</Text>
-      <Text style={[styles.schoolLocation,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.city}, {item.state}</Text>
+      <CustomText style={[styles.schoolName,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.name}</CustomText>
+      <CustomText style={[styles.schoolLocation,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.city}, {item.state}</CustomText>
     </View>
     <View style={styles.membersInfo}>
-      <Text style={[styles.membersCount,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.num_members}</Text>
-      <Text style={[styles.membersLabel,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>MEMBERS</Text>
+      <CustomText style={[styles.membersCount,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>{item.num_members}</CustomText>
+      <CustomText style={[styles.membersLabel,user.school != null && user.school == item.school_id ? styles.selectedText : {}]}>MEMBERS</CustomText>
     </View>
   </TouchableOpacity>
   );
@@ -102,7 +103,7 @@ const SchoolSelectionScreen = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#fa7024" />
       {/* <View style={styles.header}>
-        <Text style={styles.headerText}>Pick your school</Text>
+        <CustomText style={styles.headerText}>Pick your school</CustomText>
       </View> */}
       {schoolsLoading ? <Loader visible={schoolsLoading}/> :<>
       <View style={styles.searchBarContainer}>

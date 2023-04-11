@@ -15,6 +15,7 @@ export const UserProvider = ({ children }) => {
     "phone":null,
     "image":null
   });
+  const [userId, setUserId] = useState(null);
 
 
   const updateUser = (updates) => {
@@ -24,12 +25,17 @@ export const UserProvider = ({ children }) => {
     }));
   };
 
+  const updateUserId = (id) => {
+    setUserId(id);
+  }
 
   return (
     <UserContext.Provider
       value={{
         user,
-        updateUser
+        userId,
+        updateUser,
+        updateUserId
       }}
     >
       {children}

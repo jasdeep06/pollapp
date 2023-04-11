@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import CustomButton from '../components/CustomButton';
+import CustomText from '../components/CustomText';
 import { UserContext } from '../context/UserContext';
 
 const FirstNameScreen = ({navigation}) => {
@@ -27,7 +28,7 @@ const FirstNameScreen = ({navigation}) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
-          <Text style={styles.question}>What's your first name?</Text>
+          <CustomText style={styles.question}>What's your first name?</CustomText>
           <TextInput
             style={styles.input}
             value={user.firstname}

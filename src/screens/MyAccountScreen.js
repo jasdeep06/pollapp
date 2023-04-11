@@ -6,14 +6,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React,{useLayoutEffect} from 'react';
+import React,{useEffect, useLayoutEffect} from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
 import { AxiosContext } from '../context/AxiosContext';
 import { CommonActions } from '@react-navigation/native';
 import CustomButton from '../components/CustomButton';
+import CustomText from '../components/CustomText';
 import Loader from '../components/Loader';
+import { UserContext } from '../context/UserContext';
 import deleteImage from "../../assets/images/dustbin.png"
 import signOutImage from "../../assets/images/sign_out.png"
 import { useNavigation } from '@react-navigation/native';
@@ -61,10 +63,13 @@ useLayoutEffect(() => {
 
 
 
+
   const [profileData, setProfileData] = React.useState(null);
   const [isLoadingProfileData, setIsLoadingProfileData] = React.useState(true);
   const { authAxios } = React.useContext(AxiosContext);
-  const { updateAuthToken } = React.useContext(AuthContext);
+  // const { updateAuthToken,authToken } = React.useContext(AuthContext);
+  const {updateAuthState,authState} = React.useContext(AuthContext)
+  const {userId,updateUserId} = React.useContext(UserContext)
 
     const getProfile = async () => {
     setIsLoadingProfileData(true);
@@ -79,18 +84,37 @@ useLayoutEffect(() => {
     getProfile();
     }, []);
 
+    React.useEffect(() => {
+      if(authState.token == null && userId == null){
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+                // { name: 'MobileNumberInputScreen',params:{isLogin:true} }
+                {name:'BannerScreen'}
+            ]
+        }))
+      }
+    }, [authState.token,userId]);
+    
+
   const signOut = async () => {
     try {
       console.log('Signing out...')
       await AsyncStorage.removeItem('authToken');
-      updateAuthToken(null);
-      navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [
-            { name: 'MobileNumberInputScreen',params:{isLogin:true} }
-        ]
-    }))
+      // updateAuthToken(null);
+      updateAuthState({token:null})
+
+      await AsyncStorage.removeItem('userId');
+      updateUserId(null)
+
+    //   navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [
+    //         { name: 'MobileNumberInputScreen',params:{isLogin:true} }
+    //     ]
+    // }))
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -110,8 +134,8 @@ useLayoutEffect(() => {
         ].map((item, index) => (
           <React.Fragment key={index}>
             <View style={styles.infoItem}>
-              <Text style={styles.keyText}>{item.key}:</Text>
-              <Text style={styles.valueText}>{item.value}</Text>
+              <CustomText style={styles.keyText}>{item.key}:</CustomText>
+              <CustomText style={styles.valueText}>{item.value}</CustomText>
             </View>
             {index !== 4 && <View style={styles.divider} />}
           </React.Fragment>

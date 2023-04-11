@@ -14,6 +14,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
 import Loader from "../components/Loader";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
@@ -30,8 +31,9 @@ const PhotoScreen = () => {
     user.photo != null ? user.photo.uri : null
   );
   const [isVerifying, setIsVerifying] = useState(false);
-  const { publicAxios } = React.useContext(AxiosContext);
+  const { verifyAxios } = React.useContext(AxiosContext);
   const [verificationMessage, setVerificationMessage] = useState(null);
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -45,21 +47,23 @@ const PhotoScreen = () => {
   const handlePhotoVerification = async (data) => {
     console.log("Verifying photo");
     setIsVerifying(true);
-    await publicAxios
-      .post("https://verify.razzapp.com/liveness", { image: data.base64 })
+    await verifyAxios
+      .post("/liveness", { image: data.base64 })
       .then((res) => {
         console.log(res.data);
         if (res.data.status == 0) {
           setVerificationMessage("Photo verification successfull!");
           updateUser({ photo: data });
         } else if (res.data.status == 3) {
-          setVerificationMessage("No face found in the photo!Please try again");
+          setVerificationMessage("Face is not clear!Please try again!");
         } else if (res.data.status == 2) {
           setVerificationMessage(
-            "Multiple faces found in the photo!Please try again"
+            "Multiple faces found in the photo!Please try again!"
           );
         } else if (res.data.status == 1) {
-          setVerificationMessage("Face not clear!Please try again");
+          setVerificationMessage("No face found in the photo!Make sure your face is clearly visible and is straight while looking at the camera!");
+        } else if(res.data.status == 4){
+          setVerificationMessage("Your photo was moderated by our system.Please try again!")
         }
         setIsVerifying(false);
       });
@@ -84,6 +88,8 @@ const PhotoScreen = () => {
 
   const takePicture = async () => {
     if (cameraRef) {
+      const ratios = await cameraRef.getSupportedRatiosAsync();
+      console.log(ratios);
       const data = await cameraRef.takePictureAsync({ base64: true ,quality:0.1});
       console.log(data.base64.length)
       setCapturedImage(data.uri);
@@ -98,6 +104,7 @@ const PhotoScreen = () => {
   };
 
   const handleRetake = () => {
+    updateUser({ photo: null })
     setCapturedImage(null);
     setShowCamera(true);
   };
@@ -130,14 +137,14 @@ const PhotoScreen = () => {
         {/* <StatusBar style="light" backgroundColor="#fa7024" /> */}
         <View style={{ flex: 1 }} />
         <View style={{ flex: 2,alignItems:"center" }}>
-          <Text style={styles.title}>Add a profile photo</Text>
+          <CustomText style={styles.title}>Add a profile photo</CustomText>
           {capturedImage ? (
             isVerifying ? (
               <ActivityIndicator />
             ) : (
               <>
                 <Image source={{ uri: capturedImage }} style={styles.image} />
-                <Text>{verificationMessage}</Text>
+                <CustomText style={{textAlign:"center",padding:20,color:"white",fontSize:18}}>{verificationMessage}</CustomText>
               </>
             )
           ) : (
@@ -152,10 +159,10 @@ const PhotoScreen = () => {
         {/* <View style={styles.buttonContainer}>
             {capturedImage &&
           <TouchableOpacity style={styles.button} onPress={handleRetake}>
-            <Text style={styles.buttonText}>Retake Photo</Text>
+            <CustomText style={styles.buttonText}>Retake Photo</CustomText>
           </TouchableOpacity>}
           <TouchableOpacity disabled={user.photo == null} onPress={handleNext} style={[styles.button,user.photo ? {} : styles.disabledButton]}>
-            <Text style={styles.buttonText}>Next</Text>
+            <CustomText style={styles.buttonText}>Next</CustomText>
           </TouchableOpacity>
         </View> */}
         <View style={{width:"100%",alignItems:"center",marginBottom:20}}>

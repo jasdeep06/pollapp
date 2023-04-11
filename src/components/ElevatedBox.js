@@ -1,5 +1,7 @@
 import {Text, TouchableOpacity, View} from 'react-native';
 
+import CustomText from './CustomText';
+
 const ElevatedBox = (props) => {
     return(
         <TouchableOpacity style={[{
@@ -18,7 +20,7 @@ const ElevatedBox = (props) => {
           onPress={props.onPress}
           disabled={props.disabled}>
             {props.icon}
-        <Text style={[{textAlign:"center"},props.textStyle]}>{props.text}</Text>
+        <CustomText style={[{textAlign:"center"},props.textStyle]}>{props.text}</CustomText>
         </TouchableOpacity>
     )
 }

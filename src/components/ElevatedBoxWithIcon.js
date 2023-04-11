@@ -1,5 +1,6 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import CustomText from './CustomText';
 import React from 'react';
 
 const ElevatedBoxWithIcon = (props) => {
@@ -15,9 +16,9 @@ const ElevatedBoxWithIcon = (props) => {
             source={props.icon}
             style={styles.icon}
           />
-          <Text style={[styles.leftText,props.styleLeft]}>{props.leftText}</Text>
+          <CustomText style={[styles.leftText,props.styleLeft]}>{props.leftText}</CustomText>
         </View>
-        <Text style={[styles.rightText,props.styleRight]}>{props.rightText}</Text>
+        <CustomText style={[styles.rightText,props.styleRight]}>{props.rightText}</CustomText>
       </View>
     </TouchableOpacity>
   );

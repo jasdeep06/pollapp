@@ -1,6 +1,8 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React,{useState} from 'react';
 
+import CustomText from './CustomText';
+
 const FriendItem = ({
   imageUrl,
   name,
@@ -42,10 +44,10 @@ const FriendItem = ({
       return (
         <>
           {!accepted && <TouchableOpacity onPress={declineRequest} style={styles.decline}>
-            <Text style={styles.declineText}>{declined ? "DECLINED":"DECLINE"}</Text>
+            <CustomText style={styles.declineText}>{declined ? "DECLINED":"DECLINE"}</CustomText>
           </TouchableOpacity>}
           {!declined && <TouchableOpacity onPress={acceptRequest} style={[styles.button,styles.accept]}>
-            <Text style={styles.buttonText}>{accepted ? "ACCEPTED": "ACCEPT"}</Text>
+            <CustomText style={styles.buttonText}>{accepted ? "ACCEPTED": "ACCEPT"}</CustomText>
           </TouchableOpacity>}
         </>
       );
@@ -54,7 +56,7 @@ const FriendItem = ({
     if (type === 'invite') {
       return (
         <TouchableOpacity onPress={onInvite} style={styles.button}>
-          <Text style={styles.buttonText}>Invite</Text>
+          <CustomText style={styles.buttonText}>Invite</CustomText>
         </TouchableOpacity>
       );
     }
@@ -62,7 +64,7 @@ const FriendItem = ({
     if (type === 'add') {
       return (
         <TouchableOpacity onPress={addFriend} style={[styles.button,{paddingHorizontal:22}]} disabled={added}>
-          <Text style={styles.buttonText}>{added ? "SENT":"ADD"}</Text>
+          <CustomText style={styles.buttonText}>{added ? "SENT":"ADD"}</CustomText>
         </TouchableOpacity>
       );
     }
@@ -75,7 +77,7 @@ const FriendItem = ({
       <View style={styles.imageNameContainer}>
         <Image source={{ uri: imageUrl }} style={[styles.image,gender == 'boy' ? {borderColor:"#3f85fa",borderWidth:2.5} : {borderColor:"#fd4996",borderWidth:2.5}]} />
         <View style={{flexDirection:"column"}}>
-        <Text style={styles.name}>{name}</Text>
+        <CustomText style={styles.name}>{name}</CustomText>
         {getNumberView(number,contact_name)}
         </View>
       </View>
@@ -87,12 +89,12 @@ const FriendItem = ({
 
 const getNumberView = (number,contact_name) => {
   if(number != null){
-    return  <Text style={{color:"#7d7d7d",marginLeft:10,fontSize:12}}>{number}</Text>
+    return  <CustomText style={{color:"#7d7d7d",marginLeft:10,fontSize:12}}>{number}</CustomText>
   }else
   if(contact_name != null && contact_name != "Not in Contacts"){
-    return <Text style={{color:"#7c7c7c",marginLeft:10,fontSize:12}}><Text style={{color:"#ff9155"}}>{contact_name}</Text>(Contacts)</Text>
+    return <CustomText style={{color:"#7c7c7c",marginLeft:10,fontSize:12}}><CustomText style={{color:"#ff9155"}}>{contact_name}</CustomText>(Contacts)</CustomText>
   }else if(contact_name ==  "Not in Contacts"){
-    return <Text style={{color:"#7c7c7c",marginLeft:10,fontSize:12}}>Not in Contacts</Text>
+    return <CustomText style={{color:"#7c7c7c",marginLeft:10,fontSize:12}}>Not in Contacts</CustomText>
   }
 }
 

@@ -11,13 +11,17 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 
+import { AuthContext } from "../context/AuthContext";
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
 import ElevatedBox from "../components/ElevatedBox";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader";
+import { MetaContext } from "../context/MetaContext";
+import OneSignal from 'react-native-onesignal';
 import PollsLoader from "../components/PollsLoader";
 import ProgressBar from "../components/ProgressBar";
 import Purchases from "react-native-purchases";
@@ -132,7 +136,9 @@ const PollScreen = ({ navigation }) => {
   const [countdown, setCountdown] = useState(null);
   const appState = React.useRef(AppState.currentState);
   // const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [fromBackgroundToActive,setFromBackgroundToActive] = useState(false) 
+  const [fromBackgroundToActive,setFromBackgroundToActive] = useState(false)
+  const {authState} = useContext(AuthContext)
+  const {updateMetadata} = useContext(MetaContext)
 
   useEffect(() => {
     if (countdown !== null) {
@@ -147,6 +153,11 @@ const PollScreen = ({ navigation }) => {
       return () => clearInterval(timer);
     }
   }, [countdown]);
+
+  useEffect(() => {
+    OneSignal.setAppId("78dca1f0-2a43-4389-94ff-48b36c79e1f5");
+    OneSignal.promptForPushNotificationsWithUserResponse()
+  },[])
 
 
   // useEffect(() => {
@@ -207,6 +218,7 @@ const PollScreen = ({ navigation }) => {
   };
 
   const getPolls = async () => {
+    console.log(authState)
     const response = await authAxios.get("get_polls");
     console.log(response.data);
     if (response.data.status == 0) {
@@ -216,6 +228,9 @@ const PollScreen = ({ navigation }) => {
       setSelectedIndex(null)
       setShuffleId(0)
       setPolls(response.data.data);
+      // console.log("Updating metadata")
+      updateMetadata({unread_likes: response.data.unread_likes,
+        friend_requests: response.data.friend_requests})
       setIsPollsLoading(false);
     } else if (response.data.status == -2) {
       setStatus(-2);
@@ -341,7 +356,7 @@ const PollScreen = ({ navigation }) => {
               style={{ height: playAgainHeight, width: playAgainWidth }}
             />
             <Image source={lockImage} style={{ height: 120, width: 120 }} />
-            <Text
+            <CustomText
               style={{
                 fontSize: 24,
                 marginVertical: 20,
@@ -350,10 +365,10 @@ const PollScreen = ({ navigation }) => {
               }}
             >
               New polls in..
-            </Text>
+            </CustomText>
             <View style={styles.timerContainer}>
               <View style={styles.timerPart}>
-                <Text style={styles.timerText}>{mm}</Text>
+                <CustomText style={styles.timerText}>{mm}</CustomText>
               </View>
               <Image
                 source={dotImage}
@@ -361,7 +376,7 @@ const PollScreen = ({ navigation }) => {
                 resizeMode="contain"
               />
               <View style={styles.timerPart}>
-                <Text style={styles.timerText}>{ss}</Text>
+                <CustomText style={styles.timerText}>{ss}</CustomText>
               </View>
             </View>
           </>
@@ -369,9 +384,9 @@ const PollScreen = ({ navigation }) => {
 
         {status === -1 && (
           // <>
-          //   <Text style={styles.infoText}>
+          //   <CustomText style={styles.infoText}>
           //     You need to have at least 12 friends to participate in a poll
-          //   </Text>
+          //   </CustomText>
           //   <CustomButton
           //     buttonText="Add Friends"
           //     buttonStyles={styles.addButton}
@@ -404,7 +419,7 @@ const PollScreen = ({ navigation }) => {
       <SafeAreaView
         style={[styles.container, { backgroundColor: randomColor }]}
       >
-        <Text style={styles.pollText}>Poll</Text>
+        <CustomText style={styles.pollText}>Poll</CustomText>
         <ProgressBar
           colorHex={"#FFFFFF"}
           style={styles.progressBar}
@@ -414,7 +429,7 @@ const PollScreen = ({ navigation }) => {
           stepSize={1}
           currentStep={currentIndex + 1}
         />
-        <Text style={styles.stepText}>{currentIndex + 1}/12</Text>
+        <CustomText style={styles.stepText}>{currentIndex + 1}/12</CustomText>
         {!isPollsLoading ? (
           <View style={styles.content}>
             <View>
@@ -425,9 +440,9 @@ const PollScreen = ({ navigation }) => {
               <SvgUri width={120} height={120} style={{alignSelf:"center"}} uri={"https://ving-assets.s3.ap-south-1.amazonaws.com/svgs/"+ polls[currentIndex].image.replace(".png",'.svg')} />
               {/* <DynamicImage
             imageName={polls[currentIndex].image}/> */}
-              <Text style={styles.questionText}>
+              <CustomText style={styles.questionText}>
                 {polls[currentIndex].ques}
-              </Text>
+              </CustomText>
             </View>
             <View style={styles.column}>
               {getOptionView(
@@ -452,15 +467,15 @@ const PollScreen = ({ navigation }) => {
                     // color={shuffleId == 2 ? "black" : "white"}
                     color="white"
                   />
-                  <Text
+                  <CustomText
                     style={[
                       styles.footerText,
                       // shuffleId == 2 && { color: "black" },
                     ]}
                   >
                     Shuffle
-                  </Text>
-                  <Text style={{color:"white",alignSelf:"center"}}>{"(" + (shuffleId+1) + "/" + num_shuffles + ")"}</Text>
+                  </CustomText>
+                  <CustomText style={{color:"white",alignSelf:"center"}}>{"(" + (shuffleId+1) + "/" + num_shuffles + ")"}</CustomText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.skipButton}
@@ -471,7 +486,7 @@ const PollScreen = ({ navigation }) => {
                     size={32}
                     color="white"
                   />
-                  <Text style={styles.footerText}>Skip</Text>
+                  <CustomText style={styles.footerText}>Skip</CustomText>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -568,7 +583,7 @@ const getContinueView = (isSendingResponse, handleSkip) => {
   } else {
     return (
       <TouchableOpacity onPress={handleSkip}>
-        <Text style={styles.continueText}>Tap to continue</Text>
+        <CustomText style={styles.continueText}>Tap to continue</CustomText>
       </TouchableOpacity>
     );
   }

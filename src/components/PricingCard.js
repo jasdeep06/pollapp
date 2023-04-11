@@ -1,6 +1,8 @@
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 
+import CustomText from "./CustomText";
+
 const screenHeight = Dimensions.get("window").height;
 console.log(screenHeight)
 const cardHeight = (screenHeight-250) / 2; // 200 is an arbitrary value to accommodate other elements on the screen
@@ -17,9 +19,9 @@ const PricingCard = ({ index, imageSrc, price, description, isSelected, onSelect
 
   const renderDescription = () => {
     return description.map((item, index) => (
-      <Text key={index} style={[styles.descriptionItem, isSelected ? styles.selectedDescriptionItem : null,{fontWeight:"bold"}]}>
-        {index == 0 ? item : item + " Days"} <Text style={[styles.descriptionItem, isSelected ? styles.selectedDescriptionItem : null,{fontWeight:"normal"}]}>{index == 0 ? "Reveal(s)":"Validity"}</Text>
-      </Text>
+      <CustomText key={index} style={[styles.descriptionItem, isSelected ? styles.selectedDescriptionItem : null,{fontWeight:"bold"}]}>
+        {index == 0 ? item : item + " Days"} <CustomText style={[styles.descriptionItem, isSelected ? styles.selectedDescriptionItem : null,{fontWeight:"normal"}]}>{index == 0 ? "Reveal(s)":"Validity"}</CustomText>
+      </CustomText>
     ));
   };
 
@@ -31,9 +33,9 @@ const PricingCard = ({ index, imageSrc, price, description, isSelected, onSelect
     >
       {/* <Image source={{ uri: imageSrc }} style={styles.image} /> */}
       <Image source={imageSrc} style={styles.image}/>
-      <Text style={[styles.price, isSelected ? styles.selectedPrice : null]}>
+      <CustomText style={[styles.price, isSelected ? styles.selectedPrice : null]}>
         {price}
-      </Text>
+      </CustomText>
       <View style={styles.description}>{renderDescription()}</View>
     </TouchableOpacity>
   );

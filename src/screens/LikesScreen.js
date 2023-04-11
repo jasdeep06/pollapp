@@ -2,10 +2,14 @@ import { Image, RefreshControl, ScrollView, StatusBar, Text, View } from "react-
 import React, { useEffect } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
+import CustomText from "../components/CustomText";
 import ElevatedBoxWIthIcon from "../components/ElevatedBoxWithIcon";
 import Empty from "../components/Empty";
 import {Ionicons} from "@expo/vector-icons"
 import Loader from "../components/Loader";
+import { MetaContext } from "../context/MetaContext";
+import OneSignal from 'react-native-onesignal';
+import { UserContext } from "../context/UserContext";
 import blackFlameImage from '../../assets/images/top_black_flame_png.png'
 import blueFlameImage from '../../assets/images/blue_flame.png'
 import { getStatusBarHeight } from "react-native-status-bar-height";
@@ -17,6 +21,8 @@ const LikesScreen = ({ navigation }) => {
   const { authAxios } = React.useContext(AxiosContext);
   const [likes, setLikes] = React.useState([]);
   const [isFetching, setIsFetching] = React.useState(true);
+  const {updateMetadata} = React.useContext(MetaContext)
+  const {userId} = React.useContext(UserContext)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -34,6 +40,8 @@ const LikesScreen = ({ navigation }) => {
       console.log("Likes fetched successfully");
       console.log(response.datax);
       setLikes(response.data.data);
+      updateMetadata(updateMetadata({unread_likes: response.data.unread_likes,
+        friend_requests: response.data.friend_requests}))
       setIsFetching(false);
     } else {
       console.log(response.data);
@@ -44,6 +52,26 @@ const LikesScreen = ({ navigation }) => {
     React.useCallback(() => {
       getLikes();
     }, [])
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {    
+    const oneSignalInit = async () => {
+    console.log("firing onesignal...")
+    OneSignal.setAppId("78dca1f0-2a43-4389-94ff-48b36c79e1f5");
+    OneSignal.promptForPushNotificationsWithUserResponse()
+    OneSignal.setExternalUserId(userId)
+    const deviceState = await OneSignal.getDeviceState();
+    const hasPermission = deviceState.hasNotificationPermission
+    console.log("Push disabled ",deviceState)
+    if(!hasPermission){
+      console.log("triggring prompt")
+      OneSignal.addTrigger("showPrompt",true)
+    }
+
+    }
+    oneSignalInit()
+  }, [])
   );
 
   const handleLikePress = (like_id, gender) => {
@@ -60,9 +88,9 @@ const LikesScreen = ({ navigation }) => {
     >
       <View style={{marginVertical:10,marginBottom:20,alignItems:"center"}}>
       <Image source={blackFlameImage} style={{width:80,height:80}}/>
-      <Text style={{ fontSize: 18, color: "#6c6c6c" }}>
+      <CustomText style={{ fontSize: 18, color: "#6c6c6c" }}>
         See who liked you!
-      </Text>
+      </CustomText>
       </View>
       {!isFetching ? (
         likes.length > 0 ? (

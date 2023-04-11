@@ -15,6 +15,7 @@ import { AuthContext } from "../context/AuthContext";
 import { AxiosContext } from "../context/AxiosContext";
 import { CommonActions } from "@react-navigation/native";
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { UserContext } from "../context/UserContext";
 import useOtpResend from "../hooks/useOtpResend";
@@ -64,8 +65,9 @@ const saveToStorage = async (key, value) => {
 
 const OtpVerificationScreen = ({navigation,route}) => {
 
-  const {user,updateUser} = React.useContext(UserContext);
-  const {updateAuthToken} = React.useContext(AuthContext);
+  const {user,updateUserId} = React.useContext(UserContext);
+  // const {updateAuthToken,updateIsSignUp} = React.useContext(AuthContext);
+  const {updateAuthState} = React.useContext(AuthContext)
   const {publicAxios} = React.useContext(AxiosContext);
   const isLogin = route.params?.isLogin || false;
 
@@ -146,57 +148,65 @@ useEffect(() => {
     if(otpResponse && otpResponse.data.status == 0){
         console.log(otpResponse.data.jwt_token)
         saveToStorage("authToken",otpResponse.data.jwt_token)
-        updateAuthToken(otpResponse.data.jwt_token)
-        if(isLogin){
-        // navigation.navigate("Tabs")
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [
-              { name: 'Tabs' },
+        // updateAuthToken(otpResponse.data.jwt_token)
+        // updateIsSignUp(!isLogin)
+        updateAuthState({token:otpResponse.data.jwt_token,isSignUp:!isLogin})
+        
+        console.log("Setting user_id",otpResponse.data.user_id)
+        saveToStorage("userId",otpResponse.data.user_id)
+        updateUserId(otpResponse.data.user_id)
 
-            ],
-          })
-        )
-        }else{
-          // navigation.navigate("IntroScreen")
-        //   navigation.dispatch(
-        //     CommonActions.reset({
-        //       index: 0,
-        //       routes: [
-        //         { name: 'IntroScreen' },
-        //       ],
-        // })
-        //   )
-        console.log("navigating to intro screen")
-        console.log('Current navigation state:', JSON.stringify(navigation.getState(), null, 2));
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'IntroScreen' }],
-        })
-      }
+      //   if(isLogin){
+      //   navigation.navigate("Tabs")
+      //   // navigation.dispatch(
+      //   //   CommonActions.reset({
+      //   //     index: 0,
+      //   //     routes: [
+      //   //       { name: 'Tabs' },
+
+      //   //     ],
+      //   //   })
+      //   // )
+      //   }else{
+      //     navigation.navigate("IntroScreen")
+      //   //   navigation.dispatch(
+      //   //     CommonActions.reset({
+      //   //       index: 0,
+      //   //       routes: [
+      //   //         { name: 'IntroScreen' },
+      //   //       ],
+      //   // })
+      //   //   )
+      //   // console.log("navigating to intro screen")
+      //   // console.log('Current navigation state:', JSON.stringify(navigation.getState(), null, 2));
+      //   // navigation.reset({
+      //   //   index: 0,
+      //   //   routes: [{ name: 'IntroScreen' }],
+      //   // })
+      // }
+      
     }
 
 },[otpResponse])
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text style={styles.title}>Enter the OTP you received</Text>
+        <CustomText style={styles.title}>Enter the OTP you received</CustomText>
         <View style={styles.root}>
           <CodeField
             value={otp}
             onChangeText={handleOtpChange}
             renderCell={({ index, symbol, isFocused }) => (
-              <Text key={index} style={styles.cell}>
+              <CustomText key={index} style={styles.cell}>
                 {symbol || (isFocused ? <Cursor /> : null)}
-              </Text>
+              </CustomText>
             )}
             cellCount={4}
             keyboardType="number-pad"
             autoFocus
           />
         </View>
-        {/* {timeRem > 0 ? <Text>Did not received the Otp?Resend in {timeRem}s</Text> : <Text style={{"textDecorationLine":"underline",color:"blue"}} onPress={handleResendOtp}>Resend Otp</Text>} */}
+        {/* {timeRem > 0 ? <CustomText>Did not received the Otp?Resend in {timeRem}s</CustomText> : <CustomText style={{"textDecorationLine":"underline",color:"blue"}} onPress={handleResendOtp}>Resend Otp</CustomText>} */}
             {getStatusRender(timeRem,resendResponse,resendOngoing,handleResendOtp)}
       </View>
       <View>
@@ -217,9 +227,9 @@ useEffect(() => {
 
 const getStatusRender = (timeRem,resendResponse,resendOngoing,handleResendOtp) => {
     if(timeRem > 0){
-        return <Text style={{textAlign:"center"}}>Did not received the Otp?Resend in {timeRem}s</Text>
+        return <CustomText style={{textAlign:"center"}}>Did not received the Otp?Resend in {timeRem}s</CustomText>
     }else if(!resendOngoing){
-        return <Text style={{"textDecorationLine":"underline",color:"blue",textAlign:"center"}} onPress={handleResendOtp}>Resend Otp</Text>
+        return <CustomText style={{"textDecorationLine":"underline",color:"blue",textAlign:"center"}} onPress={handleResendOtp}>Resend Otp</CustomText>
     }else if(resendOngoing){
         return <ActivityIndicator size="small" color="white" />
     }

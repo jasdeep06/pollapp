@@ -1,6 +1,7 @@
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 
+import CustomText from '../components/CustomText';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { UserContext } from '../context/UserContext';
 import boyImage from "../../assets/images/boy.png"
@@ -47,7 +48,7 @@ const GenderScreen = ({navigation}) => {
       <View style={styles.content}>
         <View style={{flex:1}}/>
         <View style={{flex:2}}>
-        <Text style={styles.question}>What's your gender?</Text>
+        <CustomText style={styles.question}>What's your gender?</CustomText>
         <View style={styles.iconsContainer}>
           <TouchableOpacity
             style={[
@@ -58,7 +59,7 @@ const GenderScreen = ({navigation}) => {
           >
             {/* <MaterialCommunityIcons name="face-man-shimmer" size={60} color="white" /> */}
             <Image source={boyImage} style={{height:100,width:100}}/>
-            <Text style={styles.iconLabel}>Boy</Text>
+            <CustomText style={styles.iconLabel}>Boy</CustomText>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -69,7 +70,7 @@ const GenderScreen = ({navigation}) => {
           >
             {/* <MaterialCommunityIcons name="face-woman-shimmer" size={60} color="white" /> */}
             <Image source={girlImage} style={{height:100,width:100}}/>
-            <Text style={styles.iconLabel}>Girl</Text>
+            <CustomText style={styles.iconLabel}>Girl</CustomText>
           </TouchableOpacity>
         </View>
       </View>
