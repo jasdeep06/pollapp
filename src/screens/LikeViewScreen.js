@@ -7,6 +7,7 @@ import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
 import ElevatedBox from "../components/ElevatedBox";
+import ErrorView from "../components/ErrorView";
 import { Ionicons } from '@expo/vector-icons';
 import Loader from "../components/Loader";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -33,6 +34,7 @@ const LikeViewScreen = ({ route, navigation }) => {
   const [isRevealLoading, setIsRevealLoading] = useState(false);
 
   const [successModalVisible,setSuccessModalVisible] = useState(false)
+  const [error,setError] = useState(null)
 
   const handleToggleModal = () => {
     setModalVisible(!modalVisible);
@@ -43,6 +45,7 @@ const LikeViewScreen = ({ route, navigation }) => {
   }
 
   const handleRevealPress = async () => {
+    try{
     if (!likeViewData.revealed) {
       const response = await revealLike();
       if (response.data.status === 0) {
@@ -58,6 +61,10 @@ const LikeViewScreen = ({ route, navigation }) => {
     } else {
       handleToggleModal();
     }
+  }catch(err){
+    console.log(err)
+    setError(true)
+  }
   };
 
   useLayoutEffect(() => {
@@ -71,20 +78,31 @@ const LikeViewScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   const revealLike = async () => {
+    try{
     setIsRevealLoading(true);
     const response = await authAxios.get("/reveal_like", {
       params: { like_id: like_id },
     });
-    console.log(response.data);
+    // console.log(response.data);
     if (response.data.status == 0) {
       console.log(response.data.data);
       setRevealInfo(response.data.data);
       setIsRevealLoading(false);
     }
     return response;
+    // else{
+    //   console.log(response.data)
+    //   setError(true)
+    // }  
+  }catch(err){
+    console.log(err)
+    setError(true)
+  }
   };
 
   const getLikeViewData = async () => {
+    setError(null)
+    try{
     setIsLoadingLikeViewData(true);
     const response = await authAxios.get(
       "/get_like_details",
@@ -94,7 +112,14 @@ const LikeViewScreen = ({ route, navigation }) => {
       setLikeViewData(response.data.data);
       console.log(response.data.data);
       setIsLoadingLikeViewData(false);
+    }else{
+      console.log(response.data)
+      setError(true)
     }
+  }catch(err){
+    console.log(err)
+    setError(true)
+  }
   };
 
   // useEffect(() => {
@@ -120,7 +145,9 @@ const LikeViewScreen = ({ route, navigation }) => {
   },[modalVisible,successModalVisible])
 
 
-
+  if(error){
+    return <ErrorView onRetry={getLikeViewData}/>
+  }
   return (
     <View
       style={{
@@ -258,12 +285,14 @@ const getModalView = (likeViewData, revealInfo, isRevealLoading) => {
 };
 
 const getButtonText = (likeViewData, revelInfo) => {
+  console.log("lvd ",likeViewData)
+  console.log("ri ",revelInfo)
   if (likeViewData && likeViewData.revealed == false && revelInfo != null) {
     return `${revelInfo.firstname} ${revelInfo.lastname}`;
   } else if (likeViewData && likeViewData.revealed == true) {
     return `${likeViewData.firstname} ${likeViewData.lastname}`;
   } else {
-    return "See who sent it";
+    return "Reveal who sent it";
   }
 };
 

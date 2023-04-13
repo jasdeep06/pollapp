@@ -13,6 +13,7 @@ const CustomButton = (props) => {
 
   return (
     <TouchableOpacity
+      delayPressIn={0}
       style={{ ...styles.button, ...buttonStylesModified }}
       {...props}
     >

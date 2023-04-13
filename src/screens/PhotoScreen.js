@@ -33,6 +33,7 @@ const PhotoScreen = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const { verifyAxios } = React.useContext(AxiosContext);
   const [verificationMessage, setVerificationMessage] = useState(null);
+  const [error,setError] = useState(false);
 
 
   useLayoutEffect(() => {
@@ -45,6 +46,7 @@ const PhotoScreen = () => {
   }, [navigation]);
 
   const handlePhotoVerification = async (data) => {
+    try{
     console.log("Verifying photo");
     setIsVerifying(true);
     await verifyAxios
@@ -64,9 +66,17 @@ const PhotoScreen = () => {
           setVerificationMessage("No face found in the photo!Make sure your face is clearly visible and is straight while looking at the camera!");
         } else if(res.data.status == 4){
           setVerificationMessage("Your photo was moderated by our system.Please try again!")
+        }else{
+          setVerificationMessage("Due to a netwwork issue,we could not verify your image.Kindly retake it!")
+          // setCapturedImage(null);
         }
         setIsVerifying(false);
       });
+    }catch(err){
+      console.log(err)
+      setVerificationMessage("Due to a netwwork issue,we could not verify your image.Kindly retake it!")
+      setIsVerifying(false);
+    }
   };
 
   const navigation = useNavigation();

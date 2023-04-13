@@ -66,10 +66,10 @@ const saveToStorage = async (key, value) => {
 const OtpVerificationScreen = ({navigation,route}) => {
 
   const {user,updateUserId} = React.useContext(UserContext);
-  // const {updateAuthToken,updateIsSignUp} = React.useContext(AuthContext);
   const {updateAuthState} = React.useContext(AuthContext)
   const {publicAxios} = React.useContext(AxiosContext);
   const isLogin = route.params?.isLogin || false;
+  const [errorMessage,setErrorMessage] = useState(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -101,6 +101,7 @@ const OtpVerificationScreen = ({navigation,route}) => {
       "otp": otp,
       "concern":"login"
     })
+    setErrorMessage(null)
     return publicAxios.post("/verify_otp", !isLogin ?  {
       "mobile": "91" + user.phone,
       "otp": otp,
@@ -131,60 +132,37 @@ const OtpVerificationScreen = ({navigation,route}) => {
   },[navigation])
 
     const resendOtp = async () => {
-      return publicAxios.post('/get_otp', { phone: user.phone,"task":"resend" })
+
+      return publicAxios.post('/get_otp', { mobile: '91'+ user.phone,"task":"resend" })
     }
 
-  const { otp, otpResponse, handleOtpChange, handleOtpSubmit,isOtpValidating } =
+  const { otp, otpResponse,otpError, handleOtpChange, handleOtpSubmit,isOtpValidating } =
     useOtpValidation(validateOtp);
 
-const {timeRem, resendResponse, handleResendOtp,resendOngoing} = useOtpResend(resendOtp,10);
+const {timeRem, resendResponse,resendError, handleResendOtp,resendOngoing} = useOtpResend(resendOtp,60);
 
 useEffect(() => {
-  // console.log(otpResponse)
-    //console.log(otpResponse.data.status)
+  
     if(otpResponse){
       console.log(otpResponse.data)
     }
     if(otpResponse && otpResponse.data.status == 0){
         console.log(otpResponse.data.jwt_token)
         saveToStorage("authToken",otpResponse.data.jwt_token)
-        // updateAuthToken(otpResponse.data.jwt_token)
-        // updateIsSignUp(!isLogin)
         updateAuthState({token:otpResponse.data.jwt_token,isSignUp:!isLogin})
         
         console.log("Setting user_id",otpResponse.data.user_id)
         saveToStorage("userId",otpResponse.data.user_id)
         updateUserId(otpResponse.data.user_id)
-
-      //   if(isLogin){
-      //   navigation.navigate("Tabs")
-      //   // navigation.dispatch(
-      //   //   CommonActions.reset({
-      //   //     index: 0,
-      //   //     routes: [
-      //   //       { name: 'Tabs' },
-
-      //   //     ],
-      //   //   })
-      //   // )
-      //   }else{
-      //     navigation.navigate("IntroScreen")
-      //   //   navigation.dispatch(
-      //   //     CommonActions.reset({
-      //   //       index: 0,
-      //   //       routes: [
-      //   //         { name: 'IntroScreen' },
-      //   //       ],
-      //   // })
-      //   //   )
-      //   // console.log("navigating to intro screen")
-      //   // console.log('Current navigation state:', JSON.stringify(navigation.getState(), null, 2));
-      //   // navigation.reset({
-      //   //   index: 0,
-      //   //   routes: [{ name: 'IntroScreen' }],
-      //   // })
-      // }
       
+    }else if(otpResponse && otpResponse.data.status == 1){
+      setErrorMessage("The OTP you entered is incorrect. Please try again!")
+    }else if(otpResponse && otpResponse.data.status == 2){
+      setErrorMessage("The mobile number you entered is not registered. Please signup!")
+    }else if(otpResponse && otpResponse.data.status == 3){
+      setErrorMessage("Ops!We encontered an error. Please try again!")
+    }else if(otpResponse && otpResponse.data.status == 4){
+      setErrorMessage("The mobile number you entered is already registered. Please login!")
     }
 
 },[otpResponse])
@@ -206,8 +184,11 @@ useEffect(() => {
             autoFocus
           />
         </View>
-        {/* {timeRem > 0 ? <CustomText>Did not received the Otp?Resend in {timeRem}s</CustomText> : <CustomText style={{"textDecorationLine":"underline",color:"blue"}} onPress={handleResendOtp}>Resend Otp</CustomText>} */}
             {getStatusRender(timeRem,resendResponse,resendOngoing,handleResendOtp)}
+            {errorMessage && <CustomText style={{color:"white",textAlign:"center",fontSize:18,marginTop:10}}>{errorMessage}</CustomText>}
+            {otpError && <CustomText style={{color:"white",textAlign:"center",fontSize:18,marginTop:10}}>{"Some error occured on our servers!Please try again!"}</CustomText>}
+            {resendError && <CustomText style={{color:"white",textAlign:"center",fontSize:18,marginTop:10}}>{"Some error occured on our servers!Please try again!"}</CustomText>}
+
       </View>
       <View>
         <CustomButton
@@ -229,7 +210,9 @@ const getStatusRender = (timeRem,resendResponse,resendOngoing,handleResendOtp) =
     if(timeRem > 0){
         return <CustomText style={{textAlign:"center"}}>Did not received the Otp?Resend in {timeRem}s</CustomText>
     }else if(!resendOngoing){
-        return <CustomText style={{"textDecorationLine":"underline",color:"blue",textAlign:"center"}} onPress={handleResendOtp}>Resend Otp</CustomText>
+        return <TouchableOpacity onPress={handleResendOtp}>
+        <CustomText style={{"textDecorationLine":"underline",color:"blue",textAlign:"center"}} >Resend Otp</CustomText>
+        </TouchableOpacity>
     }else if(resendOngoing){
         return <ActivityIndicator size="small" color="white" />
     }

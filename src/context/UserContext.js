@@ -4,7 +4,7 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
-    "age":13,
+    "age":14,
     "location":null,
     "contacts":null,
     "firstname":"",
@@ -13,7 +13,7 @@ export const UserProvider = ({ children }) => {
     "school_id":null,
     "gender":null,
     "phone":null,
-    "image":null
+    "photo":null
   });
   const [userId, setUserId] = useState(null);
 

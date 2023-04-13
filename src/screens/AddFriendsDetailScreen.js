@@ -11,6 +11,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
 import CustomText from "../components/CustomText";
+import ErrorView from "../components/ErrorView";
 import { Feather } from "@expo/vector-icons";
 import FriendItem from "../components/FriendItem";
 import Loader from "../components/Loader";
@@ -24,6 +25,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
   const [data, setData] = useState(null)
   const { authAxios } = React.useContext(AxiosContext);
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(false)
 
 
   const sendFriendRequest = async (user_id) => {
@@ -49,6 +51,8 @@ const AddFriendsDetailScreen = ({ navigation }) => {
 
   const getData = async () => {
     if(context == "request"){
+      try{
+        setError(false)
       setIsLoading(true)
       const response = await authAxios.get("/get_requests")
       console.log(response.data)
@@ -57,8 +61,17 @@ const AddFriendsDetailScreen = ({ navigation }) => {
         setData(response.data.data)
         setFilteredData(response.data.data)
         setIsLoading(false)
+      }else{
+        console.log(response.data)
+        setError(true)
       }
+    }catch(error){
+      setError(true)
+      console.log(error)
+    }
   }else if(context == "add"){
+    try{
+    setError(false)
     setIsLoading(true)
     const response = await authAxios.get("/get_school_friends")
     if(response.data.status == 0){
@@ -66,7 +79,14 @@ const AddFriendsDetailScreen = ({ navigation }) => {
       setData(response.data.data)
       setFilteredData(response.data.data)
       setIsLoading(false)
+    }else{
+      console.log(response.data)
+      setError(true)
     }
+  }catch(error){
+    setError(true)
+    console.log(error)
+  }
   }
 }
 
@@ -106,6 +126,10 @@ const AddFriendsDetailScreen = ({ navigation }) => {
       headerTitle: getHeaderTitle(),
     });
   }, [navigation]);
+
+  if(error){
+    <ErrorView onRetry={getData} />
+  }
 
   return (
     isLoading || data == null ? <Loader visible={isLoading}/> :

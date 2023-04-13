@@ -13,6 +13,7 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 
 import { AxiosContext } from '../context/AxiosContext';
 import CustomText from '../components/CustomText';
+import ErrorView from '../components/ErrorView';
 import { Feather } from '@expo/vector-icons';
 import Loader from '../components/Loader';
 import { UserContext } from '../context/UserContext';
@@ -31,6 +32,7 @@ const SchoolSelectionScreen = ({navigation}) => {
   const [filteredData, setFilteredData] = useState(null);
   const {publicAxios} = React.useContext(AxiosContext);
   const [schoolsLoading, setSchoolsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const handleSearch = (text) => {
     setSearchText(text);
@@ -62,26 +64,29 @@ const SchoolSelectionScreen = ({navigation}) => {
     });
   }, [navigation]);
 
+  const fetchNearbySchools = async () => {
+    try {
+      setError(false);
+      console.log(user.location);
+      const response = await publicAxios.get("/get_nearby_schools", {
+        params: {
+          lat: user.location.coords.latitude,
+          long: user.location.coords.longitude,
+        }
+      });
+
+      console.log(response.data.data);
+      setSchools(response.data.data);
+      setFilteredData(response.data.data);
+      setSchoolsLoading(false);
+    } catch (err) {
+      setError(true);
+      setSchoolsLoading(false);
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchNearbySchools = async () => {
-      try {
-        console.log(user.location);
-        const response = await publicAxios.get("/get_nearby_schools", {
-          params: {
-            lat: user.location.coords.latitude,
-            long: user.location.coords.longitude,
-          }
-        });
-  
-        console.log(response.data.data);
-        setSchools(response.data.data);
-        setFilteredData(response.data.data);
-        setSchoolsLoading(false);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-  
     fetchNearbySchools();
   }, []);
   
@@ -116,11 +121,12 @@ const SchoolSelectionScreen = ({navigation}) => {
       placeholderTextColor="#888"
     />
   </View>
+  { error ? <ErrorView onRetry={fetchNearbySchools}/> :
     <FlatList
       data={filteredData}
       renderItem={renderItem}
       keyExtractor={(item) => item.school_id}
-    />
+    />}
     </>}
     </SafeAreaView>
   );

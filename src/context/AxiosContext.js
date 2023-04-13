@@ -16,6 +16,7 @@ export const AxiosProvider = ({ children }) => {
 
   const authAxios = axios.create({
     baseURL: apiBaseURL,
+    timeout:50000
   });
 
   const publicAxios = axios.create({

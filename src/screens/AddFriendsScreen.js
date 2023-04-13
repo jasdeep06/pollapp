@@ -17,6 +17,7 @@ import {
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
+import ErrorView from "../components/ErrorView";
 import FriendItem from "../components/FriendItem";
 import { Linking } from "react-native";
 import Loader from "../components/Loader";
@@ -37,13 +38,15 @@ const AddFriendsScreen = ({ navigation }) => {
   const whatsappAspectRatio = 752/237
   const imageHeight = whatsappWidth/whatsappAspectRatio
   const {updateMetadata} = React.useContext(MetaContext)
+  const [error, setError] = React.useState(false);
 
   const getAddFriendsData = async () => {
+    try{
+    setError(false)
     setIsLoading(true);
     const response = await authAxios.get(
       "/get_school_friends_and_requests"
     );
-    console.log("gsfar ",response.data);
     if (response.data.status == 0) {
       setAddFriendsData(response.data.data);
       setUserData({
@@ -55,7 +58,14 @@ const AddFriendsScreen = ({ navigation }) => {
       updateMetadata({unread_likes: response.data.unread_likes,
         friend_requests: response.data.friend_requests})
       setIsLoading(false);
+    }else{
+      console.log(response.data)
+      setError(true)
     }
+  }catch(error){
+    setError(true)
+    console.log(error)
+  }
   };
 
   const shareWhatsAppMessage = async (message) => {
@@ -106,6 +116,9 @@ const AddFriendsScreen = ({ navigation }) => {
     });
   };
 
+  if(error){
+    return <ErrorView onRetry={getAddFriendsData}/>
+  }
   return isLoading ? (
     <Loader visible={isLoading} />
   ) : (

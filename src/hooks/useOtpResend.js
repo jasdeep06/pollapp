@@ -4,6 +4,7 @@ export default useOtpResend = (resendOtp,maxTime) => {
     const [timeRem,setTimeRem] = useState(maxTime);
     const [resendResponse,setResendResponse] = useState(null);
     const [resendOngoing,setResendOngoing] = useState(false);
+    const [resendError,setResendError] = useState(false);
 
     useEffect(() => {
         if(timeRem > 0){
@@ -16,11 +17,20 @@ export default useOtpResend = (resendOtp,maxTime) => {
 
     const handleResendOtp = async () => {
         try{
+            setResendError(false)
             setResendOngoing(true);
             const response = await resendOtp();
-            console.log(response)
-            setResendResponse(response);
+            console.log(response.data)
+            if(response.data.status == 0){
+                setResendResponse(response);
+            }else{
+                setResendError(true);
+                setResendOngoing(false);
+                console.log(response.data)
+            }
         }catch (err){
+            setResendError(true);
+            setResendOngoing(false);
             console.log(err);
         }
     }
@@ -32,6 +42,6 @@ export default useOtpResend = (resendOtp,maxTime) => {
         }
     },[resendResponse])
 
-    return { timeRem, resendResponse, handleResendOtp,resendOngoing}
+    return { timeRem, resendResponse,resendError, handleResendOtp,resendOngoing}
 
 }

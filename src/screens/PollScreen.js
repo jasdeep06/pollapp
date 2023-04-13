@@ -18,6 +18,7 @@ import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
 import ElevatedBox from "../components/ElevatedBox";
+import ErrorView from "../components/ErrorView";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
@@ -32,7 +33,7 @@ import flameImage from "../../assets/images/smaller_size_flame.gif"
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { images } from "../screens/images";
 import lockImage from "../../assets/images/lock_poll.png";
-import notEnoughImage from "../../assets/images/not_enough_friends.png"
+import notEnoughImage from "../../assets/images/not_enough_friends_8_friends.png"
 import playAgainImage from "../../assets/images/play_again.png";
 import razzImage from "../../assets/images/razz_60_percent.png"
 import { useFocusEffect } from "@react-navigation/native";
@@ -139,6 +140,7 @@ const PollScreen = ({ navigation }) => {
   const [fromBackgroundToActive,setFromBackgroundToActive] = useState(false)
   const {authState} = useContext(AuthContext)
   const {updateMetadata} = useContext(MetaContext)
+  const [error,setError] = useState(false)
 
   useEffect(() => {
     if (countdown !== null) {
@@ -200,7 +202,8 @@ const PollScreen = ({ navigation }) => {
     AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
+      // AppState.removeEventListener('change', handleAppStateChange);
+      handleAppStateChange.remove()
     };
   }, []);
 
@@ -218,6 +221,8 @@ const PollScreen = ({ navigation }) => {
   };
 
   const getPolls = async () => {
+    try{
+    setError(false)
     console.log(authState)
     const response = await authAxios.get("get_polls");
     console.log(response.data);
@@ -237,7 +242,14 @@ const PollScreen = ({ navigation }) => {
       setCountdown(response.data.data);
     } else if (response.data.status == -1) {
       setStatus(-1);
+    }else{
+      console.log(response.data)
+      setError(true)
     }
+  }catch(err){
+    console.log(err)
+    setError(true)
+  }
   };
 
   const formatTime = (time) => {
@@ -284,6 +296,9 @@ const PollScreen = ({ navigation }) => {
     if (response.data.status == 0) {
       console.log("response sent");
       setIsSendingResponse(false);
+    }else{
+      console.log(response.data)
+      setIsSendingResponse(false)
     }
   };
   const handleOptionSelect = (shuffleId, selectedIndex) => {
@@ -332,6 +347,10 @@ const PollScreen = ({ navigation }) => {
     console.log("getting polls...");
     getPolls();
   }, []);
+
+  if(error){
+    return <ErrorView onRetry={getPolls} />
+  }
 
   if (status == -1 || status == -2) {
     const screenWidth = Dimensions.get("screen").width;
@@ -473,7 +492,7 @@ const PollScreen = ({ navigation }) => {
                       // shuffleId == 2 && { color: "black" },
                     ]}
                   >
-                    Shuffle
+                    Shuffle Options
                   </CustomText>
                   <CustomText style={{color:"white",alignSelf:"center"}}>{"(" + (shuffleId+1) + "/" + num_shuffles + ")"}</CustomText>
                 </TouchableOpacity>
@@ -639,11 +658,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   shuffleButton: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
   },
   skipButton: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
   },
   footerText: {

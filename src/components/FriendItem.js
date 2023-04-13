@@ -1,6 +1,7 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React,{useState} from 'react';
 
+import CircularImageModal from './CircularImageModal';
 import CustomText from './CustomText';
 
 const FriendItem = ({
@@ -20,6 +21,11 @@ const FriendItem = ({
   const [accepted,setAccepted] = useState(false)
   const [declined,setDeclined] = useState(false)
   const [added,setAdded] = useState(false)
+  const [imageModalVisible,setImageModalVisible] = useState(false)
+
+  const handleImageModal = () => {
+    setImageModalVisible(!imageModalVisible)
+  }
   
   const acceptRequest = async (user_id) => {
     setAccepted(true)
@@ -73,6 +79,8 @@ const FriendItem = ({
   };
 
   return (
+    <>
+    <TouchableOpacity onPress={handleImageModal}>
     <View style={[styles.container,itemStyle]}>
       <View style={styles.imageNameContainer}>
         <Image source={{ uri: imageUrl }} style={[styles.image,gender == 'boy' ? {borderColor:"#3f85fa",borderWidth:2.5} : {borderColor:"#fd4996",borderWidth:2.5}]} />
@@ -83,6 +91,9 @@ const FriendItem = ({
       </View>
       <View style={styles.buttonsContainer}>{renderButtons()}</View>
     </View>
+    </TouchableOpacity>
+    <CircularImageModal imageUri={imageUrl} toggleModal={handleImageModal} isVisible={imageModalVisible} diameterPercentage={50}/>
+    </>
   );
 };
 

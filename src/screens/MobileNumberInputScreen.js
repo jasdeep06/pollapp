@@ -20,6 +20,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
     const [isSendingOtp, setIsSendingOtp] = useState(false);
     const {publicAxios} = React.useContext(AxiosContext);
     const isLogin = route.params?.isLogin || false;
+    const [error, setError] = useState(false);
 
     useLayoutEffect(() => {
       navigation.setOptions({
@@ -32,6 +33,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
 
     const handleNextButton = async () => {
       console.log('Mobile Number:', user.phone);
+      setError(false);
       setIsSendingOtp(true);
       try{
       const result  = await publicAxios.post('/get_otp', { mobile: "91" + user.phone,"task":"send" })
@@ -41,11 +43,14 @@ const MobileNumberInputScreen = ({navigation,route}) => {
         setIsSendingOtp(false);
       }
       else{
-        console.log(respose.data.status)
-        console.log("Error sending OTP");
+        console.log(respose.data)
+        setError(true);
+        setIsSendingOtp(false);
       }
     }catch(err){
       console.log(err);
+      setError(true)
+      setIsSendingOtp(false);
     };
   }
     const handleMobileNumberChange = (text) => {
@@ -87,6 +92,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
         </CustomText>:<CustomText style={styles.warning}>
           We will send you an OTP.
         </CustomText>}
+        {error && <CustomText style={{color:"white",textAlign:"center",fontSize:18,margin:10}}>{"Some error occured on our servers!Please try again!"}</CustomText>}
         </View>
 
         {/* <View style={styles.buttonContainer}> */}

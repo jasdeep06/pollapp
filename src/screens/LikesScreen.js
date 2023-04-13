@@ -5,6 +5,7 @@ import { AxiosContext } from "../context/AxiosContext";
 import CustomText from "../components/CustomText";
 import ElevatedBoxWIthIcon from "../components/ElevatedBoxWithIcon";
 import Empty from "../components/Empty";
+import ErrorView from "../components/ErrorView";
 import {Ionicons} from "@expo/vector-icons"
 import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
@@ -12,6 +13,7 @@ import OneSignal from 'react-native-onesignal';
 import { UserContext } from "../context/UserContext";
 import blackFlameImage from '../../assets/images/top_black_flame_png.png'
 import blueFlameImage from '../../assets/images/blue_flame.png'
+import flameLogo from "../../assets/images/flame_logo.png"
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import pinkFlameImage from '../../assets/images/pink_flame.png'
 import seenFlameImage from '../../assets/images/seen_flame.png'
@@ -23,6 +25,7 @@ const LikesScreen = ({ navigation }) => {
   const [isFetching, setIsFetching] = React.useState(true);
   const {updateMetadata} = React.useContext(MetaContext)
   const {userId} = React.useContext(UserContext)
+  const [error,setError] = React.useState(false)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -33,6 +36,8 @@ const LikesScreen = ({ navigation }) => {
   );
 
   const getLikes = async () => {
+    try{
+    setError(false)
     setIsFetching(true);
     const response = await authAxios.get("/get_likes");
     console.log(response.data);
@@ -44,8 +49,13 @@ const LikesScreen = ({ navigation }) => {
         friend_requests: response.data.friend_requests}))
       setIsFetching(false);
     } else {
+      setError(true)
       console.log(response.data);
     }
+  }catch(e){
+    console.log(e)
+    setError(true)
+  }
   };
 
   useFocusEffect(
@@ -78,6 +88,9 @@ const LikesScreen = ({ navigation }) => {
     // console.log(like_id)
     navigation.navigate("LikeViewScreen", { like_id: like_id, gender: gender });
   };
+  if(error){
+    return <ErrorView onRetry={getLikes}/>
+  }
   return (
     <View
       style={{
@@ -116,7 +129,9 @@ const LikesScreen = ({ navigation }) => {
             })}
           </ScrollView>
         ) : (
-          <Empty icon={<Ionicons name="flame-outline" size={80} color="#ccc" />} 
+          <Empty 
+          //icon={<Ionicons name="flame-outline" size={80} color="#ccc" />} 
+                      icon = {<Image source={flameLogo} style={{width:120,height:120}}/>}
                       description={"No likes yet!"}
                       subDescription={"Your likes will appear here!"}/>
         )

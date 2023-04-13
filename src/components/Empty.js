@@ -25,13 +25,14 @@ const styles = StyleSheet.create({
   emptyLikesTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#ccc",
+    color: "#a4a4a4",
     marginBottom: 10,
   },
   emptyLikesDescription: {
     fontSize: 16,
     textAlign: "center",
-    color: "#ccc",
+    color: "#a4a4a4",
+    fontWeight: "bold"
   },
 });
 

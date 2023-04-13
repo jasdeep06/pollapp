@@ -1,10 +1,11 @@
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   Image,
+  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import React,{useEffect, useLayoutEffect} from 'react';
 
@@ -14,9 +15,12 @@ import { AxiosContext } from '../context/AxiosContext';
 import { CommonActions } from '@react-navigation/native';
 import CustomButton from '../components/CustomButton';
 import CustomText from '../components/CustomText';
+import ErrorView from '../components/ErrorView';
 import Loader from '../components/Loader';
+import { MetaContext } from '../context/MetaContext';
 import { UserContext } from '../context/UserContext';
 import deleteImage from "../../assets/images/dustbin.png"
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import signOutImage from "../../assets/images/sign_out.png"
 import { useNavigation } from '@react-navigation/native';
 
@@ -69,15 +73,27 @@ useLayoutEffect(() => {
   const { authAxios } = React.useContext(AxiosContext);
   // const { updateAuthToken,authToken } = React.useContext(AuthContext);
   const {updateAuthState,authState} = React.useContext(AuthContext)
-  const {userId,updateUserId} = React.useContext(UserContext)
+  const {userId,updateUserId,updateUser} = React.useContext(UserContext)
+  const [error,setError] = React.useState(false)
+  const {updateMetadata} = React.useContext(MetaContext)
+
 
     const getProfile = async () => {
+    try{
+    setError(false)
     setIsLoadingProfileData(true);
     const response = await authAxios.get("/get_profile")
     if (response.data.status == 0) {
         setProfileData(response.data.data);
         setIsLoadingProfileData(false);
+    }else{
+      setError(true)
+      console.log(response.data)
     }
+  }catch(error){
+    setError(true)
+    console.log(error)
+  }
   }
 
     React.useEffect(() => {
@@ -85,7 +101,9 @@ useLayoutEffect(() => {
     }, []);
 
     React.useEffect(() => {
+      console.log("in useEffect")
       if(authState.token == null && userId == null){
+        console.log("both null")
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -108,6 +126,24 @@ useLayoutEffect(() => {
       await AsyncStorage.removeItem('userId');
       updateUserId(null)
 
+      updateUser({
+        "age":14,
+        "location":null,
+        "contacts":null,
+        "firstname":"",
+        "lastname":"",
+        "grade":null,
+        "school_id":null,
+        "gender":null,
+        "phone":null,
+        "photo":null
+      })
+
+      updateMetadata({
+        unread_likes: 0,
+        friend_requests: 0
+      })
+
     //   navigation.dispatch(
     //   CommonActions.reset({
     //     index: 0,
@@ -119,6 +155,11 @@ useLayoutEffect(() => {
       console.error('Error signing out:', error);
     }
   };
+
+
+  if(error){
+    return <ErrorView onRetry={getProfile}/>
+  }
 
   return (
     <View style={styles.container}>
@@ -157,9 +198,12 @@ useLayoutEffect(() => {
           buttonStyles={styles.customButtonStyle}
           icon={<Image source={deleteImage} style={{width:24,height:24,marginRight:5}}/>}
           // Add your delete account logic onPress
-          onPress={() => {}}
+          onPress={() => Linking.openURL(`mailto:contact@vinglabs.com?subject=Please%20delete%20my%20account&body=${profileData.mobile}`)}
         />
       </View>
+      <TouchableOpacity onPress={() => Linking.openURL(`mailto:contact@vinglabs.com?subject=${profileData.mobile} needs help.`)}>
+      <CustomText style={{textAlign:"center",fontSize:18}}>{"For any queries drop us an email by clicking here!"}</CustomText>
+      </TouchableOpacity>
       </>}
     </View>
   );

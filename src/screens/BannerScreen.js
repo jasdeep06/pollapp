@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -47,7 +48,7 @@ const BannerScreen = ({ navigation }) => {
       <Image source={sadhanaLogo} style={{width: 150, height: 150, alignSelf: "center", marginTop: 20}} />
       <View
         style={{
-          flex: 6,
+          flex: 1,
           justifyContent: "space-between",
           alignItems: "center",
         }}
@@ -56,14 +57,14 @@ const BannerScreen = ({ navigation }) => {
           <Image style={styles.appLogo} source={firegif} />
           <Image source={razzImage} style={styles.appImage} />
         </View>
-        <View style={{ justifyContent: "center", flex: 1 }}>
+        <View style={{ justifyContent: "center" }}>
           <CustomText
             style={{ color: "white", textAlign: "center", marginHorizontal: 30,color:"#bababa" }}
           >
             By entering your age, you agree to our Terms and Privacy Policy
           </CustomText>
         </View>
-        <View style={{ width: "100%", alignItems: "center", flex: 2,marginTop:20 }}>
+        <View style={{ width: "100%", alignItems: "center",marginTop:20 }}>
           <CustomText style={styles.selectAgeText}>Enter your age</CustomText>
           <View style={styles.pickerWrapper}>
             <Picker
@@ -75,6 +76,13 @@ const BannerScreen = ({ navigation }) => {
               {generateAgeOptions()}
             </Picker>
           </View>
+          <TouchableOpacity onPress={() =>
+            navigation.navigate("MobileNumberInputScreen", { isLogin: true })
+          }>
+          <CustomText style={{color:"white"}}>Already have an account?
+              <CustomText style={{color:"#fa7024",fontWeight:"bold"}} > Log In</CustomText>
+          </CustomText>
+          </TouchableOpacity>
         </View>
         <CustomButton
           buttonText={"Get Started"}
@@ -108,7 +116,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "white",
     borderRadius: 5,
-    marginBottom: 20,
+    marginBottom: 10,
     width: "80%",
     backgroundColor:"#1e1e1e"
   },
@@ -118,7 +126,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   loginText: {
-    color: "#ffffff",
+    color: "#fa7024",
     fontSize: 16,
     fontWeight: "bold",
     marginRight:10

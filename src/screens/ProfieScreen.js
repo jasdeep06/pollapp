@@ -12,6 +12,7 @@ import {
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
+import ErrorView from "../components/ErrorView";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader";
@@ -20,6 +21,7 @@ import { MetaContext } from "../context/MetaContext";
 import { Octicons } from "@expo/vector-icons";
 import React from "react";
 import friendsImage from "../../assets/images/friends.png"
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import gradeImage from "../../assets/images/grade.png"
 import likesImage from "../../assets/images/likes.png"
@@ -33,6 +35,7 @@ const ProfileScreen = ({ navigation }) => {
   const [profileData, setProfileData] = React.useState(null);
   const [isLoadingProfileData, setIsLoadingProfileData] = React.useState(true);
   const {updateMetadata} = React.useContext(MetaContext)
+  const [error, setError] = React.useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -43,6 +46,8 @@ const ProfileScreen = ({ navigation }) => {
 
 
   const getProfile = async () => {
+    try{
+    setError(false)
     setIsLoadingProfileData(true);
     const response = await authAxios.get("/get_profile");
     console.log(response.data)
@@ -53,6 +58,10 @@ const ProfileScreen = ({ navigation }) => {
           friend_requests: response.data.friend_requests})
         setIsLoadingProfileData(false);
     }
+  }catch(e){
+    console.log(e)
+    setError(true)
+  }
   }
 
   useFocusEffect(
@@ -60,6 +69,10 @@ const ProfileScreen = ({ navigation }) => {
         getProfile()
     },[])
   )
+
+  if(error){
+    return <ErrorView onRetry={getProfile}/>
+  }
 
   return (
     <View style={styles.container}>

@@ -5,6 +5,7 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
+import ErrorView from "../components/ErrorView";
 import ImageModal from "../components/ImageModal";
 import Loader from "../components/Loader";
 import PricingCard from "../components/PricingCard";
@@ -58,6 +59,7 @@ const PricingScreen = ({route,navigation}) => {
   const from = route.params && route.params.from;
   const user_id = route.params && route.params.user_id;
   const [modalVisible,setModalVisible] = useState(false)
+  const [error,setError] = useState(false)
 
   const handleCardSelect = (index,pkg) => {
     console.log(index,pkg)
@@ -197,18 +199,24 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
       }
   }
 
-
+  const get_offerings = async () => {
+    console.log("Getting offerings")
+    try{
+    setError(false)
+    Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
+    console.log("COnfiguring rc for user",user_id)
+    Purchases.configure({apiKey:'goog_bClHlaubcaVscmrRoRbWdxZmcyD',appUserId:user_id})
+    Purchases.logIn(user_id)
+    const offerings = await Purchases.getOfferings();
+    setOfferings(parsePurchases(offerings))
+    setIsLoading(false)
+    }catch(e){
+        console.log(e)
+        setError(true)
+    }
+}
 
   useEffect(() => {
-    const get_offerings = async () => {
-        Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
-        console.log("COnfiguring rc for user",user_id)
-        Purchases.configure({apiKey:'goog_bClHlaubcaVscmrRoRbWdxZmcyD',appUserId:user_id})
-        Purchases.logIn(user_id)
-        const offerings = await Purchases.getOfferings();
-        setOfferings(parsePurchases(offerings))
-        setIsLoading(false)
-    }
 
     get_offerings()
   },[]);
@@ -227,6 +235,10 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
       />
     ));
   };
+
+  if(error){
+    <ErrorView onPress={get_offerings}/>
+  }
 
   return (
     isLoading || offerings == null || transactionLoading ? 
