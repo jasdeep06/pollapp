@@ -2,9 +2,9 @@
     "build": {
       "development": {
         "distribution": "internal",
-        "developmentClient":false,
+        "developmentClient":true,
         "android":{
-            "buildType":"app-bundle"
+            "buildType":"apk"
         }
       }
     }
