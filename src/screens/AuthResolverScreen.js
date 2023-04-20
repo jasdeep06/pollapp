@@ -1,3 +1,4 @@
+import * as Application from 'expo-application';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -5,10 +6,23 @@ import React, { useContext, useEffect } from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
+import Constants from "expo-constants"
 import Purchases from 'react-native-purchases';
 import { UserContext } from '../context/UserContext';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
+// import * as Updates from "expo-updates";
+
+
+
+
+
+
+
+
+
+
 
 const AuthResolverScreen = () => {
   // const { authToken,authLoading,updateAuthToken,updateAuthLoading } = useContext(AuthContext);
@@ -16,18 +30,14 @@ const AuthResolverScreen = () => {
   const [tokenUpdated, setTokenUpdated] = React.useState(false);
   const {updateUserId} = useContext(UserContext);
 
+  console.log("Version ",Application.nativeBuildVersion)
   const navigation = useNavigation();
 
-  // useEffect(() => {
-  //   const hideSplash = async () => {
-  //     await SplashScreen.hideAsync();
-  //   }
-  //   if(tokenUpdated){
-  //     console.log("token updated hiding splash")
-  //     hideSplash();
-  //   }
-
-  // },[tokenUpdated])
+  
+  // const checkForUpdate = async () => {
+  //   const update = await Updates.checkForUpdateAsync();
+  //   console.log(update)
+  // }
 
   useEffect(() => {
     const initApp = async () => {
@@ -35,6 +45,7 @@ const AuthResolverScreen = () => {
       updateAuthState({loading:true})
       try {
         await SplashScreen.preventAutoHideAsync();
+        // await checkForUpdate();
         console.log("checking for auth token")
         const token = await AsyncStorage.getItem('authToken');
         console.log("token is",token)

@@ -185,6 +185,9 @@ const PhotoScreen = () => {
           disabled={user.photo == null} 
           textStyles={styles.buttonText} 
           onPress={handleNext}/>
+          {!capturedImage && <TouchableOpacity onPress={handleNext}>
+            <CustomText style={{color:"white",fontSize:18,fontWeight:"bold"}}>Skip</CustomText>
+          </TouchableOpacity>}
         </View>
       </View>
     );

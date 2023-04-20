@@ -4,15 +4,18 @@ import {
   BackHandler,
   Dimensions,
   Image,
+  Linking,
   SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View
 } from "react-native";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
+import ActionModal from "../components/ActionModal";
 import { AuthContext } from "../context/AuthContext";
 import { AxiosContext } from "../context/AxiosContext";
 import CustomButton from "../components/CustomButton";
@@ -26,8 +29,10 @@ import OneSignal from 'react-native-onesignal';
 import PollsLoader from "../components/PollsLoader";
 import ProgressBar from "../components/ProgressBar";
 import Purchases from "react-native-purchases";
+import Share from "react-native-share";
 import Svg from "react-native-svg";
 import { SvgUri } from "react-native-svg";
+import { captureRef } from "react-native-view-shot";
 import dotImage from "../../assets/images/dot.png";
 import flameImage from "../../assets/images/smaller_size_flame.gif"
 import { getStatusBarHeight } from "react-native-status-bar-height";
@@ -36,7 +41,9 @@ import lockImage from "../../assets/images/lock_poll.png";
 import notEnoughImage from "../../assets/images/not_enough_friends_8_friends.png"
 import playAgainImage from "../../assets/images/play_again.png";
 import razzImage from "../../assets/images/razz_60_percent.png"
+import shareImage from '../../assets/images/poll.png'
 import { useFocusEffect } from "@react-navigation/native";
+import whatsappImage from "../../assets/images/whatsapp.png";
 
 // import DynamicImage from "../components/DynamicImage";
 
@@ -141,6 +148,15 @@ const PollScreen = ({ navigation }) => {
   const {authState} = useContext(AuthContext)
   const {updateMetadata} = useContext(MetaContext)
   const [error,setError] = useState(false)
+  const [isMock,setIsMock] = useState(false)
+  const viewRef = useRef(null);
+  const [inviteModalVisible,setInviteModalVisible] = useState(false)
+
+  const screenWidth = Dimensions.get("window").width
+
+  const whatsappWidth = screenWidth * 0.8
+  const whatsappAspectRatio = 752/237
+  const imageHeight = whatsappWidth/whatsappAspectRatio
 
   useEffect(() => {
     if (countdown !== null) {
@@ -161,6 +177,9 @@ const PollScreen = ({ navigation }) => {
     OneSignal.promptForPushNotificationsWithUserResponse()
   },[])
 
+  const toggleInviteModal = () => {
+    setInviteModalVisible(!inviteModalVisible)
+  }
 
   // useEffect(() => {
   //   const backHandler = BackHandler.addEventListener(
@@ -175,6 +194,22 @@ const PollScreen = ({ navigation }) => {
   //   return () => backHandler.remove()
 
   // },[])
+
+  const shareWhatsAppMessage = async (message) => {
+    const url = `whatsapp://send?text=${encodeURIComponent(message)}`;
+
+    try {
+      const canOpenURL = await Linking.canOpenURL(url);
+      if (canOpenURL) {
+        await Linking.openURL(url);
+      } else {
+        console.error("WhatsApp is not installed on the device");
+      }
+    } catch (error) {
+      console.error("Error opening WhatsApp:", error);
+    }
+  };
+
   
 
   
@@ -183,6 +218,33 @@ const PollScreen = ({ navigation }) => {
       getPolls()
     }
   },[fromBackgroundToActive])
+
+
+  const captureAndShare = async () => {
+    try{
+    const uri = await captureRef(viewRef, {
+      format:'png',
+      quality:1
+    })
+    const {success} = await Share.open({url:uri,failOnCancel:false})
+    if(success){
+      ToastAndroid.showWithGravity(
+        'Shared Successfully!',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
+    }
+    else{
+      ToastAndroid.showWithGravity(
+        'Could not share!',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
+    }
+  }catch(e){
+    console.log(e)
+  }
+  }
 
 
   useEffect(() => {
@@ -233,6 +295,7 @@ const PollScreen = ({ navigation }) => {
       setSelectedIndex(null)
       setShuffleId(0)
       setPolls(response.data.data);
+      setIsMock(response.data.mock_mode)
       // console.log("Updating metadata")
       updateMetadata({unread_likes: response.data.unread_likes,
         friend_requests: response.data.friend_requests})
@@ -273,6 +336,9 @@ const PollScreen = ({ navigation }) => {
       setShuffleId(shuffleId + 1);
     } else if (shuffleId == num_shuffles - 1) {
       setShuffleId(0);
+      if(isMock){
+      setInviteModalVisible(true)
+      }
     }
   };
 
@@ -437,18 +503,19 @@ const PollScreen = ({ navigation }) => {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: randomColor }]}
+        ref={viewRef}
       >
         <CustomText style={styles.pollText}>Poll</CustomText>
-        <ProgressBar
+        {!isPollsLoading && <ProgressBar
           colorHex={"#FFFFFF"}
           style={styles.progressBar}
           minThickness={0.5}
           maxThickness={3}
-          totalSteps={12}
+          totalSteps={polls.length}
           stepSize={1}
           currentStep={currentIndex + 1}
-        />
-        <CustomText style={styles.stepText}>{currentIndex + 1}/12</CustomText>
+        />}
+        {!isPollsLoading && <CustomText style={styles.stepText}>{currentIndex + 1}/{polls.length}</CustomText>}
         {!isPollsLoading ? (
           <View style={styles.content}>
             <View>
@@ -470,7 +537,8 @@ const PollScreen = ({ navigation }) => {
                 currentIndex,
                 randomColor,
                 selectedIndex,
-                handleOptionSelect
+                handleOptionSelect,
+                isMock
               )}
             </View>
             {selectedIndex == null ? (
@@ -507,10 +575,35 @@ const PollScreen = ({ navigation }) => {
                   />
                   <CustomText style={styles.footerText}>Skip</CustomText>
                 </TouchableOpacity>
+                {/* <TouchableOpacity onPress={captureAndShare}>
+                <CustomText>Share</CustomText>
+                </TouchableOpacity> */}
               </View>
             ) : (
-              getContinueView(isSendingResponse, handleSkip)
+              getContinueView(isSendingResponse, handleSkip,captureAndShare,isMock)
             )}
+            <ActionModal 
+              isVisible={inviteModalVisible} 
+              backdropOpacity={0.5} 
+              toggleModal={toggleInviteModal}>
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
+              <CustomText style={{fontSize:18,textAlign:"center",marginHorizontal:5}}>Could not find the name you were looking for?</CustomText>
+        <TouchableOpacity 
+          onPress={() =>
+                shareWhatsAppMessage(
+                  "Hey, I just found this awesome app called Razz! It's a fun way to see who likes you! https://play.google.com/store/apps/details?id=com.jas1994.pollapp"
+                )}
+          // onPress={() => {navigation.navigate("IntroScreen")}}
+                
+                >
+        <Image source={whatsappImage} 
+              style={{width:whatsappWidth,height:imageHeight}}
+              
+              />
+              </TouchableOpacity>
+
+      </View>
+            </ActionModal>
           </View>
         ) : (
           <Loader visible={isPollsLoading} />
@@ -533,16 +626,23 @@ const renderOption = (
   shuffle_id,
   randomColor,
   selectedIndex,
-  handleOptionSelect
+  handleOptionSelect,
+  isMock
 ) => {
   const selected = selectedIndex === index;
   const backgroundColor = selected ? lightenColor(randomColor, 90) : "white";
+
+  function isUUIDv4(inputString) {
+    const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidv4Regex.test(inputString);
+  }
 
   return (
     <ElevatedBox
       key={index}
       style={{ flex: 1, padding: 20, backgroundColor }}
-      text={option.firstname + " " + option.lastname}
+      text={isUUIDv4(option.user_id) ? option.firstname + " " + option.lastname : <CustomText><CustomText style={{fontSize:17}}>{option.firstname}</CustomText><CustomText style={{color:"#888888"}}>{" (" + option.lastname + ")"}</CustomText></CustomText> }
+      // textStyle = {selected ? {color:"white"} :{}}
       onPress={() => handleOptionSelect(shuffle_id, index)}
       disabled={selectedIndex != null}
     />
@@ -555,7 +655,8 @@ const getOptionView = (
   currentIndex,
   randomColor,
   selectedIndex,
-  handleOptionSelect
+  handleOptionSelect,
+  isMock
 ) => {
   const sampledOptions = polls[currentIndex]["options"].slice(
     shuffle_id * 4,
@@ -574,7 +675,8 @@ const getOptionView = (
               shuffle_id,
               randomColor,
               selectedIndex,
-              handleOptionSelect
+              handleOptionSelect,
+              isMock
             )
           )}
       </View>
@@ -588,7 +690,8 @@ const getOptionView = (
               shuffle_id,
               randomColor,
               selectedIndex,
-              handleOptionSelect
+              handleOptionSelect,
+              isMock
             )
           )}
       </View>
@@ -596,14 +699,26 @@ const getOptionView = (
   );
 };
 
-const getContinueView = (isSendingResponse, handleSkip) => {
+const getContinueView = (isSendingResponse, handleSkip,captureAndShare,isMock) => {
+  const screenWidth = Dimensions.get("screen").width;
+  const shareWidth = screenWidth * 0.6;
+  const shareHeight = screenWidth/4.63
   if (isSendingResponse) {
     return <ActivityIndicator />;
   } else {
     return (
+      <View style={{justifyContent:"center"}}>
       <TouchableOpacity onPress={handleSkip}>
         <CustomText style={styles.continueText}>Tap to continue</CustomText>
       </TouchableOpacity>
+      {isMock &&
+      <>
+      <TouchableOpacity onPress={captureAndShare}>
+      <Image source={shareImage} style={{width:shareWidth,height:shareHeight,alignSelf:"center",marginTop:10}} resizeMode="contain"/>
+      </TouchableOpacity>
+      <CustomText style={{color:"white",textAlign:"center",fontWeight:"bold"}}>razzapp.com</CustomText>
+      </>}
+      </View>
     );
   }
 };
@@ -673,7 +788,7 @@ const styles = StyleSheet.create({
   continueText: {
     textAlign: "center",
     color: "white",
-    fontSize: 20,
+    fontSize: 22,
   },
   separator: {
     height: 40, // The height of the boxes (fontSize of timerText + paddingVertical * 2)

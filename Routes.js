@@ -248,7 +248,7 @@ export default function Routes() {
           <Stack.Screen
             name="MobileNumberInputScreen"
             component={MobileNumberInputScreen}
-            options={{ headerShown: false }}
+            options={{ headerShown: true,headerTitle:"" }}
           />
           <Stack.Screen
             name="OtpVerificationScreen"

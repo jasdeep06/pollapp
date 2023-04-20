@@ -8,6 +8,7 @@ import axios from "axios";
 
 export const apiBaseURL = "https://api.razzapp.com/"
 export const verifyBaseURL = "https://verify.razzapp.com/"
+// export const apiBaseURL = "http://65.0.2.61:8001/"
 
 export const AxiosContext = createContext();
 
@@ -21,10 +22,16 @@ export const AxiosProvider = ({ children }) => {
 
   const publicAxios = axios.create({
     baseURL: apiBaseURL,
+    timeout:50000
   });
 
   const verifyAxios = axios.create({
     baseURL:verifyBaseURL
+  })
+
+  const sendOtpAxios = axios.create({
+    baseURL:apiBaseURL,
+    timeout:50000
   })
 
   authAxios.interceptors.request.use(
@@ -47,10 +54,22 @@ export const AxiosProvider = ({ children }) => {
     }
   );
 
+  sendOtpAxios.interceptors.request.use(
+    (config) => {
+      config.headers.token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoib3RwX2NoZWNraW5nIn0.jSt0GUL38dl5gt9HP-4o25BhHyxHSRGOKDpfkaxaDBc";
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+
+
   
 
   return (
-    <AxiosContext.Provider value={{ authAxios, publicAxios,verifyAxios }}>
+    <AxiosContext.Provider value={{ authAxios, publicAxios,verifyAxios,sendOtpAxios }}>
       {children}
     </AxiosContext.Provider>
   );

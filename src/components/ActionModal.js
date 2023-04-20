@@ -4,11 +4,11 @@ import { StyleSheet, View } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 
-const ActionModal = ({ isVisible, toggleModal, children,modalStyle }) => {
+const ActionModal = ({ isVisible, toggleModal, children,modalStyle,backdropOpacity }) => {
 
   return (
     <View>
-      <Modal isVisible={isVisible} style={[styles.modal,modalStyle]} backdropOpacity={0.9}>
+      <Modal isVisible={isVisible} style={[styles.modal,modalStyle]} backdropOpacity={backdropOpacity ? backdropOpacity : 0.9}>
         <View>
           <View style={styles.closeIcon}>
           <Feather name="x" size={24} color="black" onPress={toggleModal}/>

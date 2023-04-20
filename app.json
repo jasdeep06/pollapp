@@ -16,7 +16,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jas1994.pollapp"
+      "bundleIdentifier": "com.jas1994.pollapp",
+      "splash":{
+        "image":"./assets/images/splash_logo_resized.png",
+        "backgroundColor":"#1e1e1e"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +29,7 @@
       },
       "permissions": [],
       "package": "com.jas1994.pollapp",
-      "versionCode": 7,
+      "versionCode": 8,
       "resolutions": {
         "mdpi": {
           "supportsTablet": false

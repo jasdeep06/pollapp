@@ -67,7 +67,7 @@ const OtpVerificationScreen = ({navigation,route}) => {
 
   const {user,updateUserId} = React.useContext(UserContext);
   const {updateAuthState} = React.useContext(AuthContext)
-  const {publicAxios} = React.useContext(AxiosContext);
+  const {publicAxios,sendOtpAxios} = React.useContext(AxiosContext);
   const isLogin = route.params?.isLogin || false;
   const [errorMessage,setErrorMessage] = useState(null);
 
@@ -133,7 +133,7 @@ const OtpVerificationScreen = ({navigation,route}) => {
 
     const resendOtp = async () => {
 
-      return publicAxios.post('/get_otp', { mobile: '91'+ user.phone,"task":"resend" })
+      return sendOtpAxios.post('/get_otp', { mobile: '91'+ user.phone,"task":"resend" })
     }
 
   const { otp, otpResponse,otpError, handleOtpChange, handleOtpSubmit,isOtpValidating } =

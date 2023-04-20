@@ -18,9 +18,9 @@ const MobileNumberInputScreen = ({navigation,route}) => {
     // const [mobileNumber, setMobileNumber] = useState('');
     const {user,updateUser} = React.useContext(UserContext);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
-    const {publicAxios} = React.useContext(AxiosContext);
+    const {publicAxios,sendOtpAxios} = React.useContext(AxiosContext);
     const isLogin = route.params?.isLogin || false;
-    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     useLayoutEffect(() => {
       navigation.setOptions({
@@ -33,23 +33,31 @@ const MobileNumberInputScreen = ({navigation,route}) => {
 
     const handleNextButton = async () => {
       console.log('Mobile Number:', user.phone);
-      setError(false);
+      setErrorMessage(null);
       setIsSendingOtp(true);
       try{
-      const result  = await publicAxios.post('/get_otp', { mobile: "91" + user.phone,"task":"send" })
+      const result  = await sendOtpAxios.post('/get_otp', { mobile: "91" + user.phone,"task":"send",isLogin:isLogin })
       if(result.data.status == 0){
         console.log("OTP sent successfully");
         navigation.navigate("OtpVerificationScreen",{isLogin:isLogin})
         setIsSendingOtp(false);
+      }else if(result.data.status == 2){
+        if(isLogin){
+          setErrorMessage("The mobile number you entered is not registered. Please signup!");
+          setIsSendingOtp(false)
+        }else{
+          setErrorMessage("The mobile number you entered is already registered. Please login!");
+          setIsSendingOtp(false)
+        }
       }
       else{
         console.log(respose.data)
-        setError(true);
+        setErrorMessage("Some error occured on our servers!Please try again!");
         setIsSendingOtp(false);
       }
     }catch(err){
       console.log(err);
-      setError(true)
+      setErrorMessage("Some error occured on our servers!Please try again!")
       setIsSendingOtp(false);
     };
   }
@@ -92,7 +100,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
         </CustomText>:<CustomText style={styles.warning}>
           We will send you an OTP.
         </CustomText>}
-        {error && <CustomText style={{color:"white",textAlign:"center",fontSize:18,margin:10}}>{"Some error occured on our servers!Please try again!"}</CustomText>}
+        {errorMessage && <CustomText style={{color:"white",textAlign:"center",fontSize:18,margin:10}}>{errorMessage}</CustomText>}
         </View>
 
         {/* <View style={styles.buttonContainer}> */}

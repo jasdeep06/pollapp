@@ -44,11 +44,11 @@ const BannerScreen = ({ navigation }) => {
           <CustomText style={styles.loginText}>Log In</CustomText>
         </TouchableOpacity>
       </View>
-      {/* <View style={{ flex: 1 }} /> */}
-      <Image source={sadhanaLogo} style={{width: 150, height: 150, alignSelf: "center", marginTop: 20}} />
+      <View style={{ flex: 1 }} />
+      {/* <Image source={sadhanaLogo} style={{width: 150, height: 150, alignSelf: "center", marginTop: 20}} /> */}
       <View
         style={{
-          flex: 1,
+          flex: 6,
           justifyContent: "space-between",
           alignItems: "center",
         }}
