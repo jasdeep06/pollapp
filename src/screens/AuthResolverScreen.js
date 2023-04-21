@@ -43,8 +43,10 @@ const AuthResolverScreen = () => {
     // })
 
     const availableObject = await Updates.checkForUpdateAsync();
+    console.log( "object ",availableObject)
     if (availableObject.isAvailable) {
       setUpdating(true);
+      console.log("fetching available update....")
       const update = await Updates.fetchUpdateAsync();
       if (update.isNew) {
         await Updates.reloadAsync();
@@ -107,8 +109,11 @@ const AuthResolverScreen = () => {
         });
         console.log("Got font...");
 
+        console.log("__DEV__", __DEV__);
+
         if (!__DEV__) {
-          checkForUpdate();
+          console.log("checking for updates.....")
+          await checkForUpdate();
         }
 
         const forceUpdate = await checkForForceUpdate(token, Application.nativeBuildVersion);

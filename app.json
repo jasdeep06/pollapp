@@ -49,7 +49,8 @@
         {
           "mode": "development"
         }
-      ]
+      ],
+      ["@logrocket/react-native"]
     ],
     "notification": {
       "icon": "./assets/images/razz_logo_96x96_greyscale.png"

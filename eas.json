@@ -1,12 +1,12 @@
 {
-    "build": {
-      "development": {
-        "distribution": "internal",
-        "developmentClient":false,
-        "android":{
-            "buildType":"apk"
-        }
-      }
+  "build": {
+    "development": {
+      "distribution": "internal",
+      "developmentClient": false,
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "development"
     }
   }
-  
+}
