@@ -58,6 +58,10 @@
     "androidStatusBar": {
       "backgroundColor": "#1e1e1e",
       "translucent": false
+    },
+    "updates":{
+      "enabled":true,
+      "checkAutomatically":"ON_ERROR_RECOVERY"
     }
   }
 }
