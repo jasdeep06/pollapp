@@ -56,13 +56,13 @@ const AuthResolverScreen = () => {
 
   const checkForForceUpdate = async (authToken, version) => {
     try {
-      const response = await axios.get("https://b1ab0568-d96a-4b87-9d63-f3582716c94d.mock.pstmn.io/force_update", {
-        headers: {
-          token: authToken,
-        },
-        params: {
-          version: version,
-        },
+      const response = await axios.get(apiBaseURL +  "force_update",{
+           "headers":{
+            token: authToken,
+           },
+           "params":{
+              version: String(version)
+           }
       });
 
       if(response.data.status == 0 ){

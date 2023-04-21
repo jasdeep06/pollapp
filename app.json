@@ -8,7 +8,6 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash_logo_resized.png",
-      "resizeMode": "center",
       "backgroundColor": "#1e1e1e"
     },
     "assetBundlePatterns": [
@@ -17,9 +16,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jas1994.pollapp",
-      "splash":{
-        "image":"./assets/images/splash_logo_resized.png",
-        "backgroundColor":"#1e1e1e"
+      "splash": {
+        "image": "./assets/images/splash_logo_resized.png",
+        "backgroundColor": "#1e1e1e"
       }
     },
     "android": {
@@ -52,16 +51,20 @@
         }
       ]
     ],
-    "notification":{
-      "icon":"./assets/images/razz_logo_96x96_greyscale.png"
+    "notification": {
+      "icon": "./assets/images/razz_logo_96x96_greyscale.png"
     },
     "androidStatusBar": {
       "backgroundColor": "#1e1e1e",
       "translucent": false
     },
-    "updates":{
-      "enabled":true,
-      "checkAutomatically":"ON_ERROR_RECOVERY"
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_ERROR_RECOVERY",
+      "url": "https://u.expo.dev/34805afd-2276-43e6-b919-d485deafa99e"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }
