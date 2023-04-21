@@ -10,12 +10,17 @@ import { AuthContext } from "../context/AuthContext";
 import Constants from "expo-constants";
 import CustomText from "../components/CustomText";
 import CustomUpdate from "../components/CustomUpdate";
+import LogRocket from "@logrocket/react-native";
 import Purchases from "react-native-purchases";
 import { UserContext } from "../context/UserContext";
 import { View } from "react-native";
 import { apiBaseURL } from "../context/AxiosContext";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+
+if(!__DEV__){
+LogRocket.init('9apufh/razz')
+}
 
 const AuthResolverScreen = () => {
   // const { authToken,authLoading,updateAuthToken,updateAuthLoading } = useContext(AuthContext);

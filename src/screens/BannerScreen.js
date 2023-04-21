@@ -61,7 +61,7 @@ const BannerScreen = ({ navigation }) => {
           <CustomText
             style={{ color: "white", textAlign: "center", marginHorizontal: 30,color:"#bababa" }}
           >
-            By entering your age, you agree to our Terms and Privacy Pahwa
+            By entering your age, you agree to our Terms and Privacy Policy
           </CustomText>
         </View>
         <View style={{ width: "100%", alignItems: "center",marginTop:20 }}>
