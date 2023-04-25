@@ -1,19 +1,23 @@
-import React, {useLayoutEffect, useState} from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
+import React, {useLayoutEffect, useRef, useState} from 'react';
 
 import CustomButton from '../components/CustomButton';
 import CustomText from '../components/CustomText';
 import { UserContext } from '../context/UserContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 const LastNameScreen = ({navigation}) => {
   const {user,updateUser} = React.useContext(UserContext);
+  const lastnameRef = useRef(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -23,6 +27,15 @@ const LastNameScreen = ({navigation}) => {
       },
     });
   }, [navigation]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if(lastnameRef.current){
+        lastnameRef.current.focus();
+      }
+      return () => {}
+    },[])
+  )
 
   const handleNext = () => {
     navigation.navigate("GenderScreen")
@@ -43,8 +56,10 @@ const LastNameScreen = ({navigation}) => {
           placeholderTextColor="rgba(255, 255, 255, 0.5)"
           fontSize={20}
           autoFocus={true}
+          ref={lastnameRef}
         />
       </View>
+      <KeyboardAvoidingView style={Platform.OS == 'ios'  ? {flex:1} : {}}>
       <CustomButton 
         buttonStyles={user.lastname.length != 0 ? styles.nextButton:[styles.nextButton,styles.disabledButton]}
         onPress = {handleNext}
@@ -52,6 +67,7 @@ const LastNameScreen = ({navigation}) => {
         textStyles={styles.nextButtonText}
         disabled={user.lastname.length == 0}
         />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

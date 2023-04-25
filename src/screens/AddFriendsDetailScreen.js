@@ -15,6 +15,7 @@ import ErrorView from "../components/ErrorView";
 import { Feather } from "@expo/vector-icons";
 import FriendItem from "../components/FriendItem";
 import Loader from "../components/Loader";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
 
 const AddFriendsDetailScreen = ({ navigation }) => {
@@ -26,6 +27,12 @@ const AddFriendsDetailScreen = ({ navigation }) => {
   const { authAxios } = React.useContext(AxiosContext);
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackTitle:null
+    });
+  }, [navigation]);
 
 
   const sendFriendRequest = async (user_id) => {
@@ -133,6 +140,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
 
   return (
     isLoading || data == null ? <Loader visible={isLoading}/> :
+    // <SafeAreaView style={{flex:1,backgroundColor:"blue"}}>
     <ScrollView style={{ flex: 1, backgroundColor: "#e9e9e9" }}
           refreshControl={<RefreshControl refreshing={isLoading} onRefresh={getData}/>}>
       <View style={styles.searchBarContainer}>
@@ -172,6 +180,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
         </React.Fragment>
       ))}
     </ScrollView>
+    // </SafeAreaView>
   );
 };
 

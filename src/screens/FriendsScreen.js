@@ -8,6 +8,7 @@ import ErrorView from "../components/ErrorView";
 import { FontAwesome5 } from "@expo/vector-icons";
 import FriendItem from "../components/FriendItem";
 import Loader from "../components/Loader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const FriendsScreen = ({ navigation }) => {
   const { authAxios } = React.useContext(AxiosContext);
@@ -44,6 +45,7 @@ const FriendsScreen = ({ navigation }) => {
         backgroundColor: "#e9e9e9",
       },
       headerTitle: "Friends",
+      headerBackTitle: null,
     });
   }, [navigation]);
 
@@ -55,6 +57,7 @@ const FriendsScreen = ({ navigation }) => {
   return isLoadingFriendsData ? (
     <Loader visible={isLoadingFriendsData} />
   ) : friendsData.length > 0 ? (
+    <View style={{flex:1}}>
     <ScrollView style={{ backgroundColor: "#e9e9e9", flex: 1 }}>
       {friendsData.map((item, index) => (
         <React.Fragment key={index}>
@@ -75,8 +78,9 @@ const FriendsScreen = ({ navigation }) => {
         </React.Fragment>
       ))}
     </ScrollView>
+    </View>
   ) : (
-    <View style={{ backgroundColor: "#e9e9e9", flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: "#e9e9e9", flex: 1 }}>
       <Empty
         icon={<FontAwesome5 name="user-friends" size={80} color="#b0b0b0" />}
         description={"You don't have any friends now!"}
@@ -88,7 +92,7 @@ const FriendsScreen = ({ navigation }) => {
         buttonText={"Find Friends"}
         buttonStyles={{ width: "80%", alignSelf: "center", marginVertical: 30,backgroundColor:"#fa7024",borderWidth:0 }}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 import { AxiosContext } from "../context/AxiosContext";
@@ -19,6 +19,7 @@ import Loader from "../components/Loader";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MetaContext } from "../context/MetaContext";
 import { Octicons } from "@expo/vector-icons";
+import { Platform } from "react-native";
 import React from "react";
 import friendsImage from "../../assets/images/friends.png"
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
@@ -28,6 +29,7 @@ import likesImage from "../../assets/images/likes.png"
 import schoolImage from "../../assets/images/school.png"
 import unlockImage from "../../assets/images/unlock.png"
 import { useFocusEffect } from "@react-navigation/native";
+import { useLayoutEffect } from "react";
 
 const ProfileScreen = ({ navigation }) => {
 
@@ -39,11 +41,14 @@ const ProfileScreen = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      if(Platform.OS == "android"){
       StatusBar.setBackgroundColor("#e9e9e9");
       StatusBar.setBarStyle("dark-content");
+      }
     }, [])
   );
 
+  
 
   const getProfile = async () => {
     try{
@@ -75,7 +80,7 @@ const ProfileScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* <StatusBar backgroundColor={"#8C92AC"} barStyle="light-content" /> */}
       {!isLoadingProfileData ?  <>
       <View>
@@ -198,7 +203,7 @@ const ProfileScreen = ({ navigation }) => {
       />
           </>: <Loader visible={isLoadingProfileData} />}
 
-    </View>
+    </SafeAreaView>
   );
 };
 

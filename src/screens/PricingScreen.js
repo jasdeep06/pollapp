@@ -1,4 +1,4 @@
-import { Alert, Image, ImageBackground, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, ImageBackground, Platform, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
@@ -39,6 +39,14 @@ function parsePurchases(purchases) {
     }
   
     return products;
+  }
+  
+
+  function convertTimestampFormat(timestamp) {
+    const date = new Date(timestamp);
+    const isoString = date.toISOString();
+    const formattedTimestamp = isoString.replace(/\.\d{3}Z$/, '.000Z');
+    return formattedTimestamp;
   }
   
 
@@ -89,16 +97,21 @@ useLayoutEffect(() => {
     headerStyle: {
       backgroundColor: "#1c1c1c",
     },
+    headerShadowVisible:false,
+    headerBackTitleVisible:false,
     headerTitle: () => <CustomText style={{textAlign:"center",fontSize:20,marginHorizontal:20,color:"#d8d8d8"}}>Buy <CustomText style={{color:"#ff6a1d"}}>Reveals</CustomText> to see who liked you</CustomText>
     ,
+    headerBack
   });
 
 }, [navigation]);
 
 useFocusEffect(
   React.useCallback(() => {
+    if(Platform.OS == "android"){
     StatusBar.setBackgroundColor("#1c1c1c");
     StatusBar.setBarStyle("dark-content");
+    }
   }, [])
 );
 
@@ -114,9 +127,10 @@ useEffect(() => {
 
 const checkTransactionVerification = async (purchaseDate, productId, retryCount = 0) => {
     setTransactionLoading(true)
+    console.log(purchaseDate,productId)
     try {
       const response = await authAxios.post("/verify_transaction", {
-        purchase_date: purchaseDate,
+        purchase_date: convertTimestampFormat(purchaseDate),
         product_id: productId,
       });
   
@@ -205,9 +219,15 @@ const checkTransactionVerification = async (purchaseDate, productId, retryCount 
     setError(false)
     Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
     console.log("COnfiguring rc for user",user_id)
+    if(Platform.OS == 'android'){
     Purchases.configure({apiKey:'goog_bClHlaubcaVscmrRoRbWdxZmcyD',appUserId:user_id})
+    }else if(Platform.OS == 'ios'){
+    Purchases.configure({apiKey:'appl_xxGnvAiIFnDzXFkrxzNPGEfinNd',appUserId:user_id})
+    }
     Purchases.logIn(user_id)
     const offerings = await Purchases.getOfferings();
+    console.log("offerings ",offerings)
+    console.log(offerings['all']['reveal-1']['availablePackages'])
     setOfferings(parsePurchases(offerings))
     setIsLoading(false)
     }catch(e){

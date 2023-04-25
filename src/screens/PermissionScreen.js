@@ -15,9 +15,13 @@ import {
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 
+import ActionModal from "../components/ActionModal";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
 import { FontAwesome } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Platform } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { UserContext } from "../context/UserContext";
 import checkImage from "../../assets/images/check.png";
 import contactsImage from "../../assets/images/contacts.png";
@@ -33,6 +37,11 @@ const PermissionsScreen = ({ navigation }) => {
   // const [contactsGranted, setContactsGranted] = useState(false);
   const [isRequestingContacts, setIsRequestingContacts] = useState(false);
   const { user, updateUser } = React.useContext(UserContext);
+  const [isModalVisible, setIsModalVisible] = useState(true);
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  }
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -118,8 +127,10 @@ const PermissionsScreen = ({ navigation }) => {
     }
   }, [user.location, user.contacts]);
 
+  
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#fa7024" barStyle="light-content" />
 
       <View style={{ flex: 1 }} />
@@ -128,7 +139,7 @@ const PermissionsScreen = ({ navigation }) => {
         <CustomText style={styles.descriptionText}>
           Razz needs to find your school and suggest friends
         </CustomText>
-        <View style={{ marginTop: 10,width:"100%",alignItems:"center" }}>
+        <View style={{ marginTop: 10, width: "100%", alignItems: "center" }}>
           <CustomButton
             buttonText={
               user.location != null ? "Location enabled" : "Enable location"
@@ -173,7 +184,38 @@ const PermissionsScreen = ({ navigation }) => {
         <FontAwesome name="lock" size={14} color="white" /> Razz cares intensely
         about privacy. We will never text or spam your contacts.
       </CustomText>
-    </View>
+
+      {Platform.OS == 'ios' && <ActionModal
+        isVisible={isModalVisible}
+        backdropOpacity={0.7}
+        modalStyle={{ backgroundColor: "white" }}
+        showDismiss={false}
+      >
+        <View style={styles.permissionContainer}>
+          <CustomText style={styles.title}>Razz requires following permissions behind this popup:</CustomText>
+
+          <View style={styles.permissionRow}>
+            <Image source={contactsImage} style={{ width: 24, height: 24 }} />
+            <CustomText style={styles.permissionText}>
+              Contacts
+            </CustomText>
+            <CustomText style={{fontSize:16,marginTop:5}}>To find and recommend friends on Razz.</CustomText>
+          </View>
+
+          <View style={styles.permissionRow}>
+            <Image source={mapImage} style={{ width: 24, height: 24 }} />
+            <CustomText style={styles.permissionText}>
+              Location
+            </CustomText>
+            <CustomText style={{fontSize:16,marginTop:5}}>To find your school.</CustomText>
+          </View>
+          <CustomButton 
+          buttonText="Continue" 
+          buttonStyles={{backgroundColor:"#fa7024",width:"80%",marginTop:30}}
+          onPress={toggleModal}/>
+        </View>
+      </ActionModal>}
+    </SafeAreaView>
   );
 };
 
@@ -196,7 +238,26 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     marginVertical: 30,
     color: "white",
-  }
+  },
+  permissionContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 19,
+    marginBottom: 20,
+    textAlign:"center"
+  },
+  permissionRow: {
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  permissionText: {
+    marginLeft: 10,
+    fontSize: 20,
+  },
 });
 
 export default PermissionsScreen;

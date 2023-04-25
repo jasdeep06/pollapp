@@ -1,5 +1,5 @@
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
+  ActivityIndicator,
   Image,
   Linking,
   StyleSheet,
@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import React,{useEffect, useLayoutEffect} from 'react';
 
+import ActionModal from '../components/ActionModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
 import { AxiosContext } from '../context/AxiosContext';
@@ -18,9 +20,12 @@ import CustomText from '../components/CustomText';
 import ErrorView from '../components/ErrorView';
 import Loader from '../components/Loader';
 import { MetaContext } from '../context/MetaContext';
+import { SafeAreaView } from 'react-native';
 import { UserContext } from '../context/UserContext';
+import contactsImage from "../../assets/images/contacts.png";
 import deleteImage from "../../assets/images/dustbin.png"
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import mapImage from "../../assets/images/map.png";
 import signOutImage from "../../assets/images/sign_out.png"
 import { useNavigation } from '@react-navigation/native';
 
@@ -59,6 +64,7 @@ useLayoutEffect(() => {
     headerStyle: {
       backgroundColor: "#e9e9e9",
     },
+    headerBackTitle:null
   });
 }, [navigation]);
 
@@ -76,7 +82,15 @@ useLayoutEffect(() => {
   const {userId,updateUserId,updateUser} = React.useContext(UserContext)
   const [error,setError] = React.useState(false)
   const {updateMetadata} = React.useContext(MetaContext)
+  const [isModalVisible,setIsModalVisible] = React.useState(false)
+  const [deleteLoading,setDeleteLoading] = React.useState(false)
+  const [deleteError,setDeleteError] = React.useState(false)
 
+    const toggleModal = () => {
+      setDeleteError(false)
+      setIsModalVisible(!isModalVisible);
+    }
+   
 
     const getProfile = async () => {
     try{
@@ -95,6 +109,25 @@ useLayoutEffect(() => {
     console.log(error)
   }
   }
+
+  const deleteAccount = async () => {
+    try{
+    setDeleteError(false)
+    setDeleteLoading(true);
+    const response = await authAxios.get("/delete_account")
+    if (response.data.status == 0) {
+        signOut()
+    }else{
+      setDeleteError(true)
+      setDeleteLoading(false)
+      console.log(response.data)
+    }
+  }catch(error){
+    setDeleteError(true)
+    setDeleteLoading(false)
+    console.log(error)
+  }
+}
 
     React.useEffect(() => {
     getProfile();
@@ -162,7 +195,7 @@ useLayoutEffect(() => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
        {profileData == null || isLoadingProfileData ? <Loader />: <>
       <Image style={styles.image} source={{ uri: profileData.photo }} />
       <View style={styles.infoContainer}>
@@ -198,14 +231,32 @@ useLayoutEffect(() => {
           buttonStyles={styles.customButtonStyle}
           icon={<Image source={deleteImage} style={{width:24,height:24,marginRight:5}}/>}
           // Add your delete account logic onPress
-          onPress={() => Linking.openURL(`mailto:contact@vinglabs.com?subject=Please%20delete%20my%20account&body=${profileData.mobile}`)}
+          // onPress={() => Linking.openURL(`mailto:contact@vinglabs.com?subject=Please%20delete%20my%20account&body=${profileData.mobile}`)}
+          onPress = {toggleModal}
         />
       </View>
-      <TouchableOpacity onPress={() => Linking.openURL(`mailto:contact@vinglabs.com?subject=${profileData.mobile} needs help.`)}>
+      <TouchableOpacity onPress={() => Linking.openURL(`mailto:contact@vinglabs.com?subject=${profileData.mobile}%20needs%20help.`)}>
       <CustomText style={{textAlign:"center",fontSize:18}}>{"For any queries drop us an email by clicking here!"}</CustomText>
       </TouchableOpacity>
+      {Platform.OS == 'ios' && <ActionModal
+        isVisible={isModalVisible}
+        backdropOpacity={0.7}
+        modalStyle={{ backgroundColor: "white" }}
+        toggleModal={toggleModal}
+      >
+        <View style={styles.permissionContainer}>
+           <CustomText style={{textAlign:"center",fontSize:18}}>Deleting your account is an irreversible process.Your likes can still be seen by users to maintain normal operations of the app.It may take upto 30 days for us to delete all of your data from our servers.During this time you won't be able to sign up again from this number.</CustomText>
+          <CustomText style={{textAlign:"center",fontSize:18,marginTop:15}}>Are you sure you want to continue?</CustomText>
+          <CustomButton 
+          buttonText={deleteLoading ?  <ActivityIndicator size="small" color="white"/> : "Delete My Account"} 
+          buttonStyles={{backgroundColor:"#fa7024",width:"80%",marginTop:30}}
+          onPress={deleteAccount}
+          disabled = {deleteLoading}/>
+          {deleteError && <CustomText style={{textAlign:"center",fontSize:18,marginTop:15,color:"red"}}>{"Something went wrong.Please try again later."}</CustomText>}
+        </View>
+      </ActionModal>}
       </>}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -274,7 +325,25 @@ const styles = StyleSheet.create({
     opacity: 0.3,
     marginBottom: 15,
   },
-
+  permissionContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 19,
+    marginBottom: 20,
+    textAlign:"center"
+  },
+  permissionRow: {
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  permissionText: {
+    marginLeft: 10,
+    fontSize: 20,
+  },
 });
 
 export default MyAccountScreen;

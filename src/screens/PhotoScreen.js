@@ -17,6 +17,7 @@ import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
 import Loader from "../components/Loader";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Platform } from "expo-modules-core";
 import { StatusBar } from "expo-status-bar";
 import { UserContext } from "../context/UserContext";
 import { getStatusBarHeight } from "react-native-status-bar-height";
@@ -50,7 +51,7 @@ const PhotoScreen = () => {
     console.log("Verifying photo");
     setIsVerifying(true);
     await verifyAxios
-      .post("/liveness", { image: data.base64 })
+      .post("/liveness", { image: data.base64,os:Platform.OS })
       .then((res) => {
         console.log(res.data);
         if (res.data.status == 0) {
@@ -98,8 +99,8 @@ const PhotoScreen = () => {
 
   const takePicture = async () => {
     if (cameraRef) {
-      const ratios = await cameraRef.getSupportedRatiosAsync();
-      console.log(ratios);
+      // const ratios = await cameraRef.getSupportedRatiosAsync();
+      // console.log(ratios);
       const data = await cameraRef.takePictureAsync({ base64: true ,quality:0.1});
       console.log(data.base64.length)
       setCapturedImage(data.uri);
@@ -143,7 +144,7 @@ const PhotoScreen = () => {
   };
   if (!permission || !permission.granted || !showCamera) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         {/* <StatusBar style="light" backgroundColor="#fa7024" /> */}
         <View style={{ flex: 1 }} />
         <View style={{ flex: 2,alignItems:"center" }}>
@@ -189,10 +190,11 @@ const PhotoScreen = () => {
             <CustomText style={{color:"white",fontSize:18,fontWeight:"bold"}}>Skip</CustomText>
           </TouchableOpacity>}
         </View>
-      </View>
+      </SafeAreaView>
     );
   } else {
     return (
+      <SafeAreaView style={{flex:1}}>
       <Camera
         style={{ flex: 1, flexDirection: "column" }}
         type={CameraType.front}
@@ -214,6 +216,7 @@ const PhotoScreen = () => {
           </TouchableOpacity>
         </View>
       </Camera>
+      </SafeAreaView>
     );
   }
 };

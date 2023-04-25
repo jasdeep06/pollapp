@@ -4,7 +4,7 @@
     "slug": "pollapp",
     "version": "2.0.0",
     "orientation": "portrait",
-    "icon": "./assets/app_logo.png",
+    "icon": "./assets/ios_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash_logo_resized.png",
@@ -14,21 +14,30 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.jas1994.pollapp",
       "splash": {
         "image": "./assets/images/splash_logo_resized.png",
         "backgroundColor": "#1e1e1e"
-      }
+      },
+      "infoPlist":{
+        "LSApplicationQueriesSchemes":["whatsapp"],
+        "NSLocationWhenInUseUsageDescription": "This app requires access to your location to find your school.",
+        "NSLocationAlwaysUsageDescription": "This app requires access to your location to find your school.",
+        "NSLocationUsageDescription": "This app requires access to your location to find your school.",
+        "NSCameraUsageDescription":"This app requires access to your camera to capture your profile picture.",
+        "NSContactsUsageDescription":"This app requires access to your contacts to recommend and find your friends."
+      },
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/app_logo.png",
         "backgroundColor": "#1e1e1e"
-      },
+      },  
       "permissions": [],
       "package": "com.jas1994.pollapp",
-      "versionCode": 8,
+      "versionCode": 9,
       "resolutions": {
         "mdpi": {
           "supportsTablet": false

@@ -1,6 +1,8 @@
 import {
   ActivityIndicator,
   Button,
+  KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -190,18 +192,20 @@ useEffect(() => {
             {resendError && <CustomText style={{color:"white",textAlign:"center",fontSize:18,marginTop:10}}>{"Some error occured on our servers!Please try again!"}</CustomText>}
 
       </View>
-      <View>
+      <KeyboardAvoidingView style={Platform.OS == 'ios'  ? {flex:1} : {}}>
+      {/* <View> */}
         <CustomButton
           onPress={handleOtpSubmit}
           buttonText={"Verify"}
           buttonStyles={[
-            { marginBottom: 20,borderWidth:0,backgroundColor:"#ffffff" },
+            { marginBottom: 20,borderWidth:0,backgroundColor:"#ffffff",width:"80%",alignSelf:"center" },
             otp.length == 4 ? {} : styles.disabledButton,
           ]}
           icon = {isOtpValidating && <ActivityIndicator/>}
           textStyles={{color: "#fa7024"}}
         />
-      </View>
+      {/* </View> */}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

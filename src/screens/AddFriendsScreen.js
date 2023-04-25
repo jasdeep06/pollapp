@@ -22,6 +22,7 @@ import FriendItem from "../components/FriendItem";
 import { Linking } from "react-native";
 import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
+import { Platform } from "react-native";
 import RNFS from "react-native-fs";
 import React from "react";
 import topImage from "../../assets/images/top_image.png";
@@ -91,8 +92,10 @@ const AddFriendsScreen = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      if(Platform.OS == "android"){
       StatusBar.setBackgroundColor("#e9e9e9");
       StatusBar.setBarStyle("dark-content");
+      }
     }, [])
   );
 
@@ -122,6 +125,7 @@ const AddFriendsScreen = ({ navigation }) => {
   return isLoading ? (
     <Loader visible={isLoading} />
   ) : (
+    <SafeAreaView style={{flex:1}}>
     <ScrollView
       style={{
         flex: 1,
@@ -236,6 +240,7 @@ const AddFriendsScreen = ({ navigation }) => {
               </TouchableOpacity>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -1,12 +1,25 @@
-import React, { useLayoutEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 
 import CustomButton from '../components/CustomButton';
 import CustomText from '../components/CustomText';
+import { Platform } from 'expo-modules-core';
 import { UserContext } from '../context/UserContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 const FirstNameScreen = ({navigation}) => {
     const {user,updateUser} = React.useContext(UserContext);
+    const firstNameRef = useRef(null);
+
+
+    useFocusEffect(
+      React.useCallback(() => {
+        if(firstNameRef.current){
+          firstNameRef.current.focus();
+        }
+        return () => {}
+      },[])
+    )
 
     useLayoutEffect(() => {
       navigation.setOptions({
@@ -27,6 +40,7 @@ const FirstNameScreen = ({navigation}) => {
   
     return (
       <SafeAreaView style={styles.container}>
+       
         <View style={styles.content}>
           <CustomText style={styles.question}>What's your first name?</CustomText>
           <TextInput
@@ -36,8 +50,11 @@ const FirstNameScreen = ({navigation}) => {
             placeholder="First Name"
             placeholderTextColor="rgba(255, 255, 255, 0.5)"
             autoFocus={true}
+            ref={firstNameRef}
           />
         </View>
+        <KeyboardAvoidingView 
+        style={Platform.OS == 'ios'  ? {flex:1} : {}}>
         <CustomButton 
         buttonStyles={user.firstname.length != 0 ? styles.nextButton:[styles.nextButton,styles.disabledButton]}
         onPress = {handleNext}
@@ -45,6 +62,7 @@ const FirstNameScreen = ({navigation}) => {
         textStyles={styles.nextButtonText}
         disabled={user.firstname.length == 0}
         />
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   };

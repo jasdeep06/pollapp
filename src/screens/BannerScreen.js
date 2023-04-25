@@ -13,6 +13,7 @@ import React, { useContext, useState } from "react";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
 import { Picker } from "@react-native-picker/picker";
+import { Platform } from "react-native";
 import { UserContext } from "../context/UserContext";
 import firegif from "../../assets/images/fire-faster.gif";
 import razzImage from "../../assets/images/razz.png";
@@ -25,7 +26,7 @@ const BannerScreen = ({ navigation }) => {
   const generateAgeOptions = () => {
     let options = [];
     for (let i = 14; i <= 18; i++) {
-      options.push(<Picker.Item key={i} label={i.toString()} value={i} />);
+      options.push(<Picker.Item key={i} label={i.toString()} value={i} color="white" />);
     }
     return options;
   };
@@ -71,7 +72,7 @@ const BannerScreen = ({ navigation }) => {
               selectedValue={user.age}
               onValueChange={(itemValue) => updateUser({ age: itemValue })}
               style={styles.picker}
-              // itemStyle={{backgroundColor:"green"}}
+              itemStyle={{backgroundColor:"#1e1e1e",color:"white"}}
             >
               {generateAgeOptions()}
             </Picker>
@@ -113,22 +114,30 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   pickerWrapper: {
-    borderWidth: 1,
-    borderColor: "white",
-    borderRadius: 5,
+    ...Platform.select({
+      ios:{
+        borderWidth: 0,
+      },
+      android:{
+        borderWidth: 1,
+        borderColor: "white",
+    borderRadius: 5
+      }
+    }),
+    
     marginBottom: 10,
     width: "80%",
     backgroundColor:"#1e1e1e"
   },
   picker: {
-    height: 50,
-    width: "100%",
+    // height: 200,
+    // width: "100%",
     color: "white",
   },
   loginText: {
     color: "#fa7024",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight:"bold",
     marginRight:10
   },
 });

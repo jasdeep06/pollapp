@@ -1,4 +1,4 @@
-import { Image, RefreshControl, ScrollView, StatusBar, Text, View } from "react-native";
+import { Image, Platform, RefreshControl, ScrollView, StatusBar, Text, View } from "react-native";
 import React, { useEffect } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
@@ -10,6 +10,7 @@ import {Ionicons} from "@expo/vector-icons"
 import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
 import OneSignal from 'react-native-onesignal';
+import { SafeAreaView } from "react-native-safe-area-context";
 import { UserContext } from "../context/UserContext";
 import blackFlameImage from '../../assets/images/top_black_flame_png.png'
 import blueFlameImage from '../../assets/images/blue_flame.png'
@@ -29,9 +30,11 @@ const LikesScreen = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      if(Platform.OS == 'android'){
       console.log("firing...")
       StatusBar.setBackgroundColor("#e9e9e9");
       StatusBar.setBarStyle("dark-content");
+      }
     }, [])
   );
 
@@ -92,7 +95,7 @@ const LikesScreen = ({ navigation }) => {
     return <ErrorView onRetry={getLikes}/>
   }
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
         // marginTop: getStatusBarHeight(),
@@ -102,7 +105,7 @@ const LikesScreen = ({ navigation }) => {
       <View style={{marginVertical:10,marginBottom:20,alignItems:"center"}}>
       <Image source={blackFlameImage} style={{width:80,height:80}}/>
       <CustomText style={{ fontSize: 18, color: "#6c6c6c" }}>
-        See who liked you!
+        See who liked you!!
       </CustomText>
       </View>
       {!isFetching ? (
@@ -138,7 +141,7 @@ const LikesScreen = ({ navigation }) => {
       ) : (
         <Loader visible={isFetching} />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

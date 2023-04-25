@@ -1,5 +1,7 @@
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -7,12 +9,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 
 import { AxiosContext } from '../context/AxiosContext';
 import CustomButton from '../components/CustomButton';
 import CustomText from '../components/CustomText';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from '../context/UserContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 const MobileNumberInputScreen = ({navigation,route}) => {
     // const [mobileNumber, setMobileNumber] = useState('');
@@ -21,15 +25,26 @@ const MobileNumberInputScreen = ({navigation,route}) => {
     const {publicAxios,sendOtpAxios} = React.useContext(AxiosContext);
     const isLogin = route.params?.isLogin || false;
     const [errorMessage, setErrorMessage] = useState(null);
+    const mobileRef = useRef(null);
 
     useLayoutEffect(() => {
       navigation.setOptions({
+        headerShown:!isLogin,
         headerTintColor: "white",
         headerStyle: {
           backgroundColor: "#fa7024",
         },
       });
     }, [navigation]);
+
+    useFocusEffect(
+      React.useCallback(() => {
+        if(mobileRef.current){
+          mobileRef.current.focus();
+        }
+        return () => {}
+      },[])
+    )
 
     const handleNextButton = async () => {
       console.log('Mobile Number:', user.phone);
@@ -49,6 +64,9 @@ const MobileNumberInputScreen = ({navigation,route}) => {
           setErrorMessage("The mobile number you entered is already registered. Please login!");
           setIsSendingOtp(false)
         }
+      }else if(result.data.status == 4){
+        setErrorMessage("We are processing your account deletion request. Please try again later!");
+        setIsSendingOtp(false)
       }
       else{
         console.log(respose.data)
@@ -67,7 +85,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
       };
   
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <StatusBar backgroundColor="#fa7024" />
         {isLogin &&
         (<View style={{flexDirection:"row"}}>
@@ -93,6 +111,8 @@ const MobileNumberInputScreen = ({navigation,route}) => {
             onChangeText={(text) => handleMobileNumberChange(text)}
             value={user.phone}
             placeholder="Mobile Number"
+            autoFocus={true}
+            ref={mobileRef}
           />
         </View>
         {!isLogin ?  <CustomText style={styles.warning}>
@@ -118,6 +138,7 @@ const MobileNumberInputScreen = ({navigation,route}) => {
           <CustomText style={styles.nextButtonText}>Next</CustomText>
           {isSendingOtp && <ActivityIndicator/>}
         </TouchableOpacity> */}
+        <KeyboardAvoidingView style={Platform.OS == 'ios'  ? {flex:1} : {}}>
         <CustomButton 
           buttonStyles={[
             styles.nextButton,
@@ -129,9 +150,10 @@ const MobileNumberInputScreen = ({navigation,route}) => {
           onPress={handleNextButton}
           icon={isSendingOtp ? <ActivityIndicator size="small" color="black"/> : null}
           />
+          </KeyboardAvoidingView>
         {/* </View> */}
 
-      </View>
+      </SafeAreaView>
     );
   };
 

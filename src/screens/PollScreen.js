@@ -5,6 +5,7 @@ import {
   Dimensions,
   Image,
   Linking,
+  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -228,18 +229,22 @@ const PollScreen = ({ navigation }) => {
     })
     const {success} = await Share.open({url:uri,failOnCancel:false})
     if(success){
+      if(Platform.OS == 'android'){
       ToastAndroid.showWithGravity(
         'Shared Successfully!',
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
       );
+      }
     }
     else{
+      if(Platform.OS == 'android'){
       ToastAndroid.showWithGravity(
         'Could not share!',
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
       );
+      }
     }
   }catch(e){
     console.log(e)
@@ -391,8 +396,10 @@ const PollScreen = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       if (randomColor != null && status == 0) {
+        if(Platform.OS == "android"){
         StatusBar.setBackgroundColor(randomColor);
         StatusBar.setBarStyle("light-content");
+        }
       }
     }, [randomColor])
   );
@@ -432,7 +439,7 @@ const PollScreen = ({ navigation }) => {
     const notEnoughImageHeight = notEnoughImageWidth/4.5
 
     return (
-      <View style={[styles.playAgainContainer, { backgroundColor: "#e9e9e9" }]}>
+      <SafeAreaView style={[styles.playAgainContainer, { backgroundColor: "#e9e9e9" }]}>
         <StatusBar backgroundColor="#e9e9e9" barStyle="dark-content" />
         {status === -2 && (
           <>
@@ -494,7 +501,7 @@ const PollScreen = ({ navigation }) => {
                } />
           </>
         )}
-      </View>
+      </SafeAreaView>
     );
   } else if (polls && status == 0) {
     // const png = require("../../assets/poll-pngs/" + polls[currentIndex].image)
@@ -612,10 +619,10 @@ const PollScreen = ({ navigation }) => {
     );
   } else {
     // return <Loader visible={isPollsLoading} />;
-    return <View style={{flex:1,backgroundColor:"#ffffff"}}>
+    return <SafeAreaView style={{flex:1,backgroundColor:"#ffffff"}}>
     <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />  
     <PollsLoader text={"Loading Polls"} textStyles={{textAlign:"center",fontSize:20,fontWeight:"bold"}}/>
-    </View>
+    </SafeAreaView>
 
   }
 };
@@ -711,7 +718,7 @@ const getContinueView = (isSendingResponse, handleSkip,captureAndShare,isMock) =
       <TouchableOpacity onPress={handleSkip}>
         <CustomText style={styles.continueText}>Tap to continue</CustomText>
       </TouchableOpacity>
-      {isMock &&
+      {!isMock &&
       <>
       <TouchableOpacity onPress={captureAndShare}>
       <Image source={shareImage} style={{width:shareWidth,height:shareHeight,alignSelf:"center",marginTop:10}} resizeMode="contain"/>

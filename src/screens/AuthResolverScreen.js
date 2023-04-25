@@ -68,12 +68,16 @@ const AuthResolverScreen = () => {
             token: authToken,
            },
            "params":{
-              version: String(version)
+              version: String(version),
+              os: Platform.OS
            }
       });
 
       if(response.data.status == 0 ){
+        console.log(response.data)
       setForceUpdate(response.data.update);
+      // setForceUpdate(true);
+      // return true
       return response.data.update
       }else{
         console.log(response.data)

@@ -74,6 +74,8 @@ const LikeViewScreen = ({ route, navigation }) => {
         backgroundColor: "black",
       },
       headerTintColor: "white",
+      headerBackTitleVisible:false,
+      headerShadowVisible:false,
     });
   }, [navigation]);
 
