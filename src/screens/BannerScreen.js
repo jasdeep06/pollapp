@@ -26,7 +26,7 @@ const BannerScreen = ({ navigation }) => {
   const generateAgeOptions = () => {
     let options = [];
     for (let i = 14; i <= 18; i++) {
-      options.push(<Picker.Item key={i} label={i.toString()} value={i} color="white" />);
+      options.push(<Picker.Item key={i} label={i.toString()} value={i} />);
     }
     return options;
   };

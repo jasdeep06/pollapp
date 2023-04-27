@@ -12,6 +12,7 @@ import { AuthProvider } from "./src/context/AuthContext";
 import AuthResolverScreen from "./src/screens/AuthResolverScreen";
 import { AxiosProvider } from "./src/context/AxiosContext";
 import BannerScreen from "./src/screens/BannerScreen";
+import FeedScreen from "./src/screens/FeedScreen";
 import FirstNameScreen from "./src/screens/FirstNameScreen";
 import FriendsScreen from "./src/screens/FriendsScreen";
 import GenderScreen from "./src/screens/GenderScreen";
@@ -48,7 +49,8 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
-      screenOptions={{ swipeEnabled: false }}
+      screenOptions={{ swipeEnabled: false,tabBarStyle:{height:60},tabBarLabelStyle:{fontSize:10} }}
+      
     >
       <Tab.Screen
         name="Polls"
@@ -64,16 +66,16 @@ const TabNavigator = () => {
                     : require("./assets/images/polls_unselected.png")
                 }
                 style={{
-                  height: 35,
-                  width: 35,
+                  height: 30,
+                  width: 30,
                   alignSelf: "center",
                 }}
               />
             );
           },
-          tabBarIconStyle: {
-            margin: 5,
-          },
+          // tabBarIconStyle: {
+          //   margin: 5,
+          // },
         }}
       />
 
@@ -94,9 +96,31 @@ const TabNavigator = () => {
               />
             );
           },
-          tabBarIconStyle: {
-            margin: 5,
+          // tabBarIconStyle: {
+          //   margin: 5,
+          // },
+        }}
+      />
+      <Tab.Screen
+        name="Feed"
+        component={FeedScreen}
+        options={{
+          unmountOnBlur: true,
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <IconWithBadge
+                icon={
+                  focused
+                    ? require("./assets/images/home_selected.png")
+                    : require("./assets/images/home_unselected.png")
+                }
+                unreadCount={metadata.unread_posts}
+              />
+            );
           },
+          // tabBarIconStyle: {
+          //   margin: 5,
+          // },
         }}
       />
       <Tab.Screen
@@ -113,16 +137,16 @@ const TabNavigator = () => {
                     : require("./assets/images/profile_unselected.png")
                 }
                 style={{
-                  height: 35,
-                  width: 35,
+                  height: 30,
+                  width: 30,
                   alignSelf: "center",
                 }}
               />
             );
           },
-          tabBarIconStyle: {
-            margin: 5,
-          },
+          // tabBarIconStyle: {
+          //   margin: 5,
+          // },
         }}
       />
       <Tab.Screen
@@ -142,11 +166,12 @@ const TabNavigator = () => {
               />
             );
           },
-          tabBarIconStyle: {
-            margin: 5,
-          },
+          // tabBarIconStyle: {
+          //   margin: 5,
+          // },
         }}
       />
+      
     </Tab.Navigator>
   );
 };

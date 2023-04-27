@@ -152,6 +152,7 @@ const PollScreen = ({ navigation }) => {
   const [isMock,setIsMock] = useState(false)
   const viewRef = useRef(null);
   const [inviteModalVisible,setInviteModalVisible] = useState(false)
+  const [minFriends,setMinFriends] = useState(0)
 
   const screenWidth = Dimensions.get("window").width
 
@@ -310,6 +311,7 @@ const PollScreen = ({ navigation }) => {
       setCountdown(response.data.data);
     } else if (response.data.status == -1) {
       setStatus(-1);
+      setMinFriends(response.data.data)
     }else{
       console.log(response.data)
       setError(true)
@@ -493,7 +495,8 @@ const PollScreen = ({ navigation }) => {
           <Image source={flameImage} style={{height:150,width:118,alignSelf:"center"}} resizeMode="cover"/>
           <Image source={razzImage} style={{height:razzImageHeight,width:razzImageWidth}}/>
           </View>
-          <Image source={notEnoughImage} style={{height:notEnoughImageHeight,width:notEnoughImageWidth,marginTop:40,marginBottom:10}}/>
+          {/* <Image source={notEnoughImage} style={{height:notEnoughImageHeight,width:notEnoughImageWidth,marginTop:40,marginBottom:10}}/> */}
+          <CustomText style={{fontSize:24,fontWeight:"bold",marginBottom:10}}>{"You need " + minFriends +   " friends to start!"}</CustomText>
           <CustomButton buttonText={"Add Friends"} 
           buttonStyles={{width:"80%",alignSelf:"center",backgroundColor:"#fa7024",borderWidth:0}}
           onPress={() =>
@@ -718,13 +721,13 @@ const getContinueView = (isSendingResponse, handleSkip,captureAndShare,isMock) =
       <TouchableOpacity onPress={handleSkip}>
         <CustomText style={styles.continueText}>Tap to continue</CustomText>
       </TouchableOpacity>
-      {!isMock &&
+      {/* {!isMock &&
       <>
       <TouchableOpacity onPress={captureAndShare}>
       <Image source={shareImage} style={{width:shareWidth,height:shareHeight,alignSelf:"center",marginTop:10}} resizeMode="contain"/>
       </TouchableOpacity>
       <CustomText style={{color:"white",textAlign:"center",fontWeight:"bold"}}>razzapp.com</CustomText>
-      </>}
+      </>} */}
       </View>
     );
   }

@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   emptyLikesTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#a4a4a4",
+    color: "#bcbcbc",
     marginBottom: 10,
   },
   emptyLikesDescription: {

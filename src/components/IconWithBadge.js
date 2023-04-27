@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   icon: {
-    height: 35,
-    width: 35,
+    height: 30,
+    width: 30,
   },
   iconFocused: {
     opacity: 1,

@@ -100,8 +100,6 @@ useLayoutEffect(() => {
     headerShadowVisible:false,
     headerBackTitleVisible:false,
     headerTitle: () => <CustomText style={{textAlign:"center",fontSize:20,marginHorizontal:20,color:"#d8d8d8"}}>Buy <CustomText style={{color:"#ff6a1d"}}>Reveals</CustomText> to see who liked you</CustomText>
-    ,
-    headerBack
   });
 
 }, [navigation]);

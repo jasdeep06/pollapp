@@ -16,6 +16,7 @@ import blackFlameImage from '../../assets/images/top_black_flame_png.png'
 import blueFlameImage from '../../assets/images/blue_flame.png'
 import flameLogo from "../../assets/images/flame_logo.png"
 import { getStatusBarHeight } from "react-native-status-bar-height";
+import orangeFlameImage from '../../assets/images/top_bright_orange_flame_png.png'
 import pinkFlameImage from '../../assets/images/pink_flame.png'
 import seenFlameImage from '../../assets/images/seen_flame.png'
 import { useFocusEffect } from "@react-navigation/native";
@@ -104,8 +105,8 @@ const LikesScreen = ({ navigation }) => {
     >
       <View style={{marginVertical:10,marginBottom:20,alignItems:"center"}}>
       <Image source={blackFlameImage} style={{width:80,height:80}}/>
-      <CustomText style={{ fontSize: 18, color: "#6c6c6c" }}>
-        See who liked you!!
+      <CustomText style={{ fontSize: 18, color: "black",fontWeight:"bold" }}>
+        Tap on likes to know more!
       </CustomText>
       </View>
       {!isFetching ? (
@@ -134,9 +135,9 @@ const LikesScreen = ({ navigation }) => {
         ) : (
           <Empty 
           //icon={<Ionicons name="flame-outline" size={80} color="#ccc" />} 
-                      icon = {<Image source={flameLogo} style={{width:120,height:120}}/>}
-                      description={"No likes yet!"}
-                      subDescription={"Your likes will appear here!"}/>
+                      icon = {<Image source={flameLogo} style={{width:120,height:120,opacity:0.4}}/>}
+                      description={"No likes yet!"}/>
+                      // subDescription={"Your likes will appear here!"}/>
         )
       ) : (
         <Loader visible={isFetching} />

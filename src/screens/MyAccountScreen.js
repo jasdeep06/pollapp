@@ -20,6 +20,7 @@ import CustomText from '../components/CustomText';
 import ErrorView from '../components/ErrorView';
 import Loader from '../components/Loader';
 import { MetaContext } from '../context/MetaContext';
+import { Platform } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { UserContext } from '../context/UserContext';
 import contactsImage from "../../assets/images/contacts.png";
@@ -232,7 +233,7 @@ useLayoutEffect(() => {
           icon={<Image source={deleteImage} style={{width:24,height:24,marginRight:5}}/>}
           // Add your delete account logic onPress
           // onPress={() => Linking.openURL(`mailto:contact@vinglabs.com?subject=Please%20delete%20my%20account&body=${profileData.mobile}`)}
-          onPress = {toggleModal}
+          onPress = {Platform.OS == 'ios' ?  toggleModal : () => Linking.openURL(`mailto:contact@vinglabs.com?subject=Please%20delete%20my%20account&body=${profileData.mobile}`)}
         />
       </View>
       <TouchableOpacity onPress={() => Linking.openURL(`mailto:contact@vinglabs.com?subject=${profileData.mobile}%20needs%20help.`)}>

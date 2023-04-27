@@ -1,5 +1,5 @@
-import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import { Dimensions, Image, StatusBar, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from "react-native";
+import React, { useRef, useState } from "react";
 import { useEffect, useLayoutEffect } from "react";
 
 import ActionModal from "../components/ActionModal";
@@ -12,9 +12,12 @@ import { Ionicons } from '@expo/vector-icons';
 import Loader from "../components/Loader";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import Share from "react-native-share";
 import boyImage from "../../assets/images/boy.png"
+import { captureRef } from "react-native-view-shot";
 import girlImage from "../../assets/images/girl.png"
 import lockImage from "../../assets/images/lock.png"
+import shareImage from '../../assets/images/poll.png'
 import { useFocusEffect } from "@react-navigation/native";
 
 // import { likeViewDummyData } from "../data/dummyLikeViewData";
@@ -35,6 +38,12 @@ const LikeViewScreen = ({ route, navigation }) => {
 
   const [successModalVisible,setSuccessModalVisible] = useState(false)
   const [error,setError] = useState(null)
+
+  const screenWidth = Dimensions.get("screen").width;
+  const shareWidth = screenWidth * 0.6;
+  const shareHeight = screenWidth/4.63
+
+  const viewRef = useRef(null);
 
   const handleToggleModal = () => {
     setModalVisible(!modalVisible);
@@ -66,6 +75,36 @@ const LikeViewScreen = ({ route, navigation }) => {
     setError(true)
   }
   };
+
+  const captureAndShare = async () => {
+    try{
+    const uri = await captureRef(viewRef, {
+      format:'png',
+      quality:1
+    })
+    const {success} = await Share.open({url:uri,failOnCancel:false})
+    if(success){
+      if(Platform.OS == 'android'){
+      ToastAndroid.showWithGravity(
+        'Shared Successfully!',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
+      }
+    }
+    else{
+      if(Platform.OS == 'android'){
+      ToastAndroid.showWithGravity(
+        'Could not share!',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
+      }
+    }
+  }catch(e){
+    console.log(e)
+  }
+  }
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -159,7 +198,7 @@ const LikeViewScreen = ({ route, navigation }) => {
       <StatusBar backgroundColor={"black"} barStyle="light-content" />
 
       {!isLoadingLikeViewData ? (
-        <View style={styles.content}>
+        <View style={styles.content} ref={viewRef}>
           <View
             style={{
               backgroundColor: gender ==  "boy" ? "#3f85fa": "#fd4996",
@@ -188,6 +227,9 @@ const LikeViewScreen = ({ route, navigation }) => {
                 <CustomText style={styles.questionText}>{likeViewData["ques"]}</CustomText>
                 {getOptionView(likeViewData,gender)}
                 <CustomText style={{color:"white",textAlign:"center",fontWeight:"bold"}}>razzapp.com</CustomText>
+                <TouchableOpacity onPress={captureAndShare}>
+      <Image source={shareImage} style={{width:shareWidth,height:shareHeight,alignSelf:"center",marginTop:10}} resizeMode="contain"/>
+      </TouchableOpacity>
               </View>
             {/* </View> */}
           </View>
