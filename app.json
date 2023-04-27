@@ -28,7 +28,7 @@
         "NSCameraUsageDescription":"This app requires access to your camera to capture your profile picture.",
         "NSContactsUsageDescription":"This app requires access to your contacts to recommend and find your friends."
       },
-      "buildNumber": "2"
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
@@ -37,7 +37,7 @@
       },  
       "permissions": [],
       "package": "com.jas1994.pollapp",
-      "versionCode": 9,
+      "versionCode": 10,
       "resolutions": {
         "mdpi": {
           "supportsTablet": false

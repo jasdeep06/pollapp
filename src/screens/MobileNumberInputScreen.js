@@ -202,10 +202,21 @@ const MobileNumberInputScreen = ({navigation,route}) => {
       paddingHorizontal: 20,
     },
     loginText: {
-      color: "#ffffff",
-      fontSize: 16,
-      fontWeight: "bold",
-      marginRight:10
+      ...Platform.select({
+        ios:{
+          color: "#ffffff",
+          fontSize: 20,
+          fontWeight:"bold",
+          marginRight:10
+        },
+        android:{
+          color: "#ffffff",
+          fontSize: 16,
+          fontWeight:"bold",
+          marginRight:10
+        }
+      })
+      
     },
     // nextButton: {
     //   borderRadius: 30,

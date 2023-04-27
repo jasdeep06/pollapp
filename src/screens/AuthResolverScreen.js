@@ -125,7 +125,12 @@ const AuthResolverScreen = () => {
           await checkForUpdate();
         }
 
-        const forceUpdate = await checkForForceUpdate(token, Application.nativeBuildVersion);
+        if(!__DEV__){
+
+          const forceUpdate = await checkForForceUpdate(token, Application.nativeBuildVersion);
+        }else{
+          const forceUpdate = false
+        }
 
         if(!forceUpdate){
           if (token && userId) {

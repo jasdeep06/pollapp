@@ -1,6 +1,7 @@
 import {
   FlatList,
   Image,
+  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -68,7 +69,7 @@ const SchoolSelectionScreen = ({navigation}) => {
     try {
       setError(false);
       console.log(user.location);
-      const response = await publicAxios.get("/get_nearby_schools", {
+      const response = await publicAxios.get(Platform.OS == 'android' ?  "/get_nearby_schools" : "get_nearby_schools_ios", {
         params: {
           lat: user.location.coords.latitude,
           long: user.location.coords.longitude,

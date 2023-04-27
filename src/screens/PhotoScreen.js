@@ -129,7 +129,7 @@ const PhotoScreen = () => {
     if (!response.granted) {
       Alert.alert(
         "Permission Denied",
-        "In order to ensure only genuine people join Razz, it is required to click a photo! Please go to settings and enable camera permissions",
+        "Please go to settings and enable camera permissions or you can skip clicking the photo.",
         [
           {
             text: "Go to Settings",

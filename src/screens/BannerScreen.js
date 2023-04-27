@@ -135,10 +135,21 @@ const styles = StyleSheet.create({
     color: "white",
   },
   loginText: {
-    color: "#fa7024",
-    fontSize: 16,
-    fontWeight:"bold",
-    marginRight:10
+    ...Platform.select({
+      ios:{
+        color: "#fa7024",
+        fontSize: 20,
+        fontWeight:"bold",
+        marginRight:10
+      },
+      android:{
+        color: "#fa7024",
+        fontSize: 16,
+        fontWeight:"bold",
+        marginRight:10
+      }
+    })
+    
   },
 });
 

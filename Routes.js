@@ -1,6 +1,6 @@
 import * as SplashScreen from "expo-splash-screen";
 
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { UserContext, UserProvider } from "./src/context/UserContext";
 
@@ -49,7 +49,7 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
-      screenOptions={{ swipeEnabled: false,tabBarStyle:{height:60},tabBarLabelStyle:{fontSize:10} }}
+      screenOptions={{ swipeEnabled: false,tabBarStyle:Platform.OS == 'android' ? {height:60} : {height:80},tabBarLabelStyle:{fontSize:10} }}
       
     >
       <Tab.Screen
