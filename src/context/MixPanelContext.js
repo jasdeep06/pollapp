@@ -7,13 +7,12 @@ export const MixpanelProvider = ({children}) => {
   const [mixpanel, setMixpanel] = React.useState(null);
 
   React.useEffect(() => {
-    const initMixpanel = async () => {
-      const initializedMixpanel = await Mixpanel.init('your token');
-      initializedMixpanel.serverURL = 'https://api-eu.mixpanel.com'; // if needed
-      setMixpanel(initializedMixpanel);
-    };
+    
+    const trackAutomaticEvents = true;
+    const mixpanelInstance = new Mixpanel(`6aa80e01c1b312a931b4205f81da82d7`, trackAutomaticEvents);
+    mixpanelInstance.init();
+    setMixpanel(mixpanelInstance)
 
-    initMixpanel();
   }, []);
 
   return <MixpanelContext.Provider value={mixpanel}>{children}</MixpanelContext.Provider>;

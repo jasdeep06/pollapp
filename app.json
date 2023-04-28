@@ -37,7 +37,7 @@
       },  
       "permissions": [],
       "package": "com.jas1994.pollapp",
-      "versionCode": 10,
+      "versionCode": 11,
       "resolutions": {
         "mdpi": {
           "supportsTablet": false

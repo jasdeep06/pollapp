@@ -19,6 +19,7 @@ import { CommonActions } from "@react-navigation/native";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MixpanelContext } from "../context/MixPanelContext";
 import { UserContext } from "../context/UserContext";
 import useOtpResend from "../hooks/useOtpResend";
 import useOtpValidation from "../hooks/useOtpValidation";
@@ -72,6 +73,7 @@ const OtpVerificationScreen = ({navigation,route}) => {
   const {publicAxios,sendOtpAxios} = React.useContext(AxiosContext);
   const isLogin = route.params?.isLogin || false;
   const [errorMessage,setErrorMessage] = useState(null);
+  const mixpanel = React.useContext(MixpanelContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -156,6 +158,7 @@ useEffect(() => {
         console.log("Setting user_id",otpResponse.data.user_id)
         saveToStorage("userId",otpResponse.data.user_id)
         updateUserId(otpResponse.data.user_id)
+        !__DEV__ && mixpanel.identify(otpResponse.data.user_id)
       
     }else if(otpResponse && otpResponse.data.status == 1){
       setErrorMessage("The OTP you entered is incorrect. Please try again!")

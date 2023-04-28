@@ -26,6 +26,7 @@ import ErrorView from "../components/ErrorView";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
+import { MixpanelContext } from "../context/MixPanelContext";
 import OneSignal from 'react-native-onesignal';
 import PollsLoader from "../components/PollsLoader";
 import ProgressBar from "../components/ProgressBar";
@@ -153,6 +154,7 @@ const PollScreen = ({ navigation }) => {
   const viewRef = useRef(null);
   const [inviteModalVisible,setInviteModalVisible] = useState(false)
   const [minFriends,setMinFriends] = useState(0)
+  const mixpanel = useContext(MixpanelContext)
 
   const screenWidth = Dimensions.get("window").width
 
@@ -279,6 +281,7 @@ const PollScreen = ({ navigation }) => {
 
   const handleSkip = () => {
     if (currentIndex < polls.length - 1) {
+      !__DEV__ && mixpanel.track("skipped",{"ques_id":polls[currentIndex].ques_id,"question":polls[currentIndex].ques})
       setCurrentIndex(currentIndex + 1);
       setShuffleId(0);
       setSelectedIndex(null);
@@ -287,6 +290,17 @@ const PollScreen = ({ navigation }) => {
       getPolls();
     }
   };
+
+  const handleContinue = () => {
+    if (currentIndex < polls.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setShuffleId(0);
+      setSelectedIndex(null);
+    } else {
+      console.log("calling from continue!")
+      getPolls();
+    }
+  }
 
   const getPolls = async () => {
     try{
@@ -351,6 +365,7 @@ const PollScreen = ({ navigation }) => {
 
   const sendResponse = async (shuffleId, selectedIndex) => {
     console.log("sending...");
+    !__DEV__ && mixpanel.track("polled",{ques_id:polls[currentIndex].ques_id,question:polls[currentIndex].ques})
     setIsSendingResponse(true);
     const response = await authAxios.post(
       "/add_response_and_like",
@@ -405,6 +420,17 @@ const PollScreen = ({ navigation }) => {
       }
     }, [randomColor])
   );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if(!__DEV__){
+      mixpanel.timeEvent("pollsTab")
+      return () =>{
+        mixpanel.track("pollsTab")
+      }
+    }
+    },[])
+  )
 
 
   useFocusEffect(
@@ -590,7 +616,7 @@ const PollScreen = ({ navigation }) => {
                 </TouchableOpacity> */}
               </View>
             ) : (
-              getContinueView(isSendingResponse, handleSkip,captureAndShare,isMock)
+              getContinueView(isSendingResponse, handleSkip,captureAndShare,isMock,handleContinue)
             )}
             <ActionModal 
               isVisible={inviteModalVisible} 
@@ -652,6 +678,7 @@ const renderOption = (
       key={index}
       style={{ flex: 1, padding: 20, backgroundColor }}
       text={isUUIDv4(option.user_id) ? option.firstname + " " + option.lastname : <CustomText><CustomText style={{fontSize:17}}>{option.firstname}</CustomText><CustomText style={{color:"#888888"}}>{" (" + option.lastname + ")"}</CustomText></CustomText> }
+      // text={option.firstname + " " + option.lastname}
       // textStyle = {selected ? {color:"white"} :{}}
       onPress={() => handleOptionSelect(shuffle_id, index)}
       disabled={selectedIndex != null}
@@ -709,7 +736,7 @@ const getOptionView = (
   );
 };
 
-const getContinueView = (isSendingResponse, handleSkip,captureAndShare,isMock) => {
+const getContinueView = (isSendingResponse, handleSkip,captureAndShare,isMock,handleContinue) => {
   const screenWidth = Dimensions.get("screen").width;
   const shareWidth = screenWidth * 0.6;
   const shareHeight = screenWidth/4.63
@@ -718,7 +745,7 @@ const getContinueView = (isSendingResponse, handleSkip,captureAndShare,isMock) =
   } else {
     return (
       <View style={{justifyContent:"center"}}>
-      <TouchableOpacity onPress={handleSkip}>
+      <TouchableOpacity onPress={handleContinue}>
         <CustomText style={styles.continueText}>Tap to continue</CustomText>
       </TouchableOpacity>
       {/* {!isMock &&

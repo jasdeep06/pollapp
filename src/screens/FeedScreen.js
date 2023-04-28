@@ -9,6 +9,7 @@ import ErrorView from "../components/ErrorView";
 import {Ionicons} from "@expo/vector-icons"
 import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
+import { MixpanelContext } from "../context/MixPanelContext";
 import OneSignal from 'react-native-onesignal';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserContext } from "../context/UserContext";
@@ -31,6 +32,7 @@ const FeedScreen = ({ navigation }) => {
 //   const {userId} = React.useContext(UserContext)
   const [error,setError] = React.useState(false)
   const [newElements,setNewElements] = React.useState(0)
+  const mixpanel = React.useContext(MixpanelContext)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -41,6 +43,18 @@ const FeedScreen = ({ navigation }) => {
       }
     }, [])
   );
+
+  useFocusEffect(
+    React.useCallback(() => {
+     if(!__DEV__){
+      mixpanel.timeEvent("feedTab")
+      return () =>{
+        mixpanel.track("feedTab")
+      }
+    }
+    },[])
+  )
+
 
   const getFeed = async () => {
     try{

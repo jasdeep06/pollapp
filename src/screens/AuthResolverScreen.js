@@ -11,6 +11,7 @@ import Constants from "expo-constants";
 import CustomText from "../components/CustomText";
 import CustomUpdate from "../components/CustomUpdate";
 import LogRocket from "@logrocket/react-native";
+import { MixpanelContext } from "../context/MixPanelContext";
 import Purchases from "react-native-purchases";
 import { UserContext } from "../context/UserContext";
 import { View } from "react-native";
@@ -26,9 +27,10 @@ const AuthResolverScreen = () => {
   // const { authToken,authLoading,updateAuthToken,updateAuthLoading } = useContext(AuthContext);
   const { updateAuthState } = useContext(AuthContext);
   const [tokenUpdated, setTokenUpdated] = React.useState(false);
-  const { updateUserId } = useContext(UserContext);
+  const { updateUserId,userId } = useContext(UserContext);
   const [updating, setUpdating] = React.useState(false);
   const [forceUpdate, setForceUpdate] = React.useState(false);
+  const mixpanel = React.useContext(MixpanelContext)
 
   console.log("Version ", Application.nativeBuildVersion);
   const navigation = useNavigation();
@@ -76,8 +78,6 @@ const AuthResolverScreen = () => {
       if(response.data.status == 0 ){
         console.log(response.data)
       setForceUpdate(response.data.update);
-      // setForceUpdate(true);
-      // return true
       return response.data.update
       }else{
         console.log(response.data)
@@ -99,6 +99,11 @@ const AuthResolverScreen = () => {
   }, [updating,forceUpdate]);
 
   
+  useEffect(() => {
+    if(mixpanel && userId && !__DEV__){
+      mixpanel.identify(userId);
+    }
+  },[mixpanel,userId])
 
   useEffect(() => {
     const initApp = async () => {
@@ -127,9 +132,7 @@ const AuthResolverScreen = () => {
 
         if(!__DEV__){
 
-          const forceUpdate = await checkForForceUpdate(token, Application.nativeBuildVersion);
-        }else{
-          const forceUpdate = false
+          await checkForForceUpdate(token, Application.nativeBuildVersion);
         }
 
         if(!forceUpdate){

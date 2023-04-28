@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Loader from "../components/Loader";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { MixpanelContext } from "../context/MixPanelContext";
 import Share from "react-native-share";
 import boyImage from "../../assets/images/boy.png"
 import { captureRef } from "react-native-view-shot";
@@ -38,6 +39,7 @@ const LikeViewScreen = ({ route, navigation }) => {
 
   const [successModalVisible,setSuccessModalVisible] = useState(false)
   const [error,setError] = useState(null)
+  const mixpanel = React.useContext(MixpanelContext)
 
   const screenWidth = Dimensions.get("screen").width;
   const shareWidth = screenWidth * 0.6;
@@ -60,6 +62,7 @@ const LikeViewScreen = ({ route, navigation }) => {
       if (response.data.status === 0) {
         handleToggleModal();
       } else if (response.data.status === 3 || response.data.status === 4) {
+        !__DEV__ && mixpanel.track("insufficientReveal")
         navigation.navigate("PricingScreen", {
           like_id: like_id,
           gender: gender,
@@ -77,6 +80,7 @@ const LikeViewScreen = ({ route, navigation }) => {
   };
 
   const captureAndShare = async () => {
+    !__DEV__ && mixpanel.track("shareLike")
     try{
     const uri = await captureRef(viewRef, {
       format:'png',

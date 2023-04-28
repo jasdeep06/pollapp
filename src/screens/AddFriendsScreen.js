@@ -22,6 +22,7 @@ import FriendItem from "../components/FriendItem";
 import { Linking } from "react-native";
 import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
+import { MixpanelContext } from "../context/MixPanelContext";
 import { Platform } from "react-native";
 import RNFS from "react-native-fs";
 import React from "react";
@@ -40,6 +41,7 @@ const AddFriendsScreen = ({ navigation }) => {
   const imageHeight = whatsappWidth/whatsappAspectRatio
   const {updateMetadata} = React.useContext(MetaContext)
   const [error, setError] = React.useState(false);
+  const mixpanel = React.useContext(MixpanelContext)
 
   const getAddFriendsData = async () => {
     try{
@@ -70,6 +72,7 @@ const AddFriendsScreen = ({ navigation }) => {
   };
 
   const shareWhatsAppMessage = async (message) => {
+    !__DEV__ && mixpanel.track("whatsapp_invite")
     const url = `whatsapp://send?text=${encodeURIComponent(message)}`;
 
     try {

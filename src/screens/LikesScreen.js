@@ -9,6 +9,7 @@ import ErrorView from "../components/ErrorView";
 import {Ionicons} from "@expo/vector-icons"
 import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
+import { MixpanelContext } from "../context/MixPanelContext";
 import OneSignal from 'react-native-onesignal';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserContext } from "../context/UserContext";
@@ -28,6 +29,7 @@ const LikesScreen = ({ navigation }) => {
   const {updateMetadata} = React.useContext(MetaContext)
   const {userId} = React.useContext(UserContext)
   const [error,setError] = React.useState(false)
+  const mixpanel = React.useContext(MixpanelContext)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -69,6 +71,17 @@ const LikesScreen = ({ navigation }) => {
   );
 
   useFocusEffect(
+    React.useCallback(() => {
+      if(!__DEV__){
+      mixpanel.timeEvent("likesTab")
+      return () =>{
+        mixpanel.track("likesTab")
+      }
+    }
+    },[])
+  )
+
+  useFocusEffect(
     React.useCallback(() => {    
     const oneSignalInit = async () => {
     console.log("firing onesignal...")
@@ -90,6 +103,7 @@ const LikesScreen = ({ navigation }) => {
 
   const handleLikePress = (like_id, gender) => {
     // console.log(like_id)
+    !__DEV__ && mixpanel.track("likePress",{gender:gender})
     navigation.navigate("LikeViewScreen", { like_id: like_id, gender: gender });
   };
   if(error){
