@@ -4,12 +4,21 @@
       "distribution": "internal",
       "developmentClient": true,
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "apk"
       },
-      "channel": "development"
+      "channel": "dev",
+      "env":{
+        "APP_ENV":"dev"
+      }
     },
     "production":{
-      "channel":"development"
+      "android":{
+        "buildType": "apk"
+      },
+      "channel":"development",
+      "env":{
+        "APP_ENV":"prod"
+      }
     }
   }
 }
