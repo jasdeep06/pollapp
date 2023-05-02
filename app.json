@@ -28,7 +28,7 @@
         "NSCameraUsageDescription":"This app requires access to your camera to capture your profile picture.",
         "NSContactsUsageDescription":"This app requires access to your contacts to recommend and find your friends."
       },
-      "buildNumber": "3"
+      "buildNumber": "4"
     },
     "android": {
       "adaptiveIcon": {

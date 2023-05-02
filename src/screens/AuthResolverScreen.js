@@ -132,10 +132,25 @@ const AuthResolverScreen = () => {
 
         if(!__DEV__){
 
-          await checkForForceUpdate(token, Application.nativeBuildVersion);
-        }
-
-        if(!forceUpdate){
+          const force = await checkForForceUpdate(token, Application.nativeBuildVersion);
+          
+          if(!force){
+            if (token && userId) {
+              // updateAuthToken(token);
+              updateAuthState({token:token})
+              updateUserId(userId);
+              setTokenUpdated(true);
+              // navigation.replace("Tabs");
+            } else {
+              console.log('No Auth Token Found');
+              setTokenUpdated(true);
+              // navigation.replace('BannerScreen');
+            }
+            // updateAuthLoading(false);
+            updateAuthState({loading:false})
+  
+          }
+        }else{
           if (token && userId) {
             // updateAuthToken(token);
             updateAuthState({token:token})
@@ -151,6 +166,8 @@ const AuthResolverScreen = () => {
           updateAuthState({loading:false})
 
         }
+
+        
         
       } catch (e) {
         console.warn(e);
