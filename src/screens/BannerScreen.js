@@ -12,6 +12,7 @@ import React, { useContext, useState } from "react";
 
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
+import { Dimensions } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Platform } from "react-native";
 import { UserContext } from "../context/UserContext";
@@ -52,11 +53,14 @@ const BannerScreen = ({ navigation }) => {
           flex: 6,
           justifyContent: "space-between",
           alignItems: "center",
+          // height:Dimensions.get("window").height*0.8
         }}
       >
         <View style={{ alignItems: "center" }}>
-          <Image style={styles.appLogo} source={firegif} />
-          <Image source={razzImage} style={styles.appImage} />
+          {/* <Image style={styles.appLogo} source={firegif} /> */}
+          <Image source={firegif} style={{height:Dimensions.get('screen').height * 0.15,width:Dimensions.get('screen').height * 0.15 /1.28}}/>
+          {/* <Image source={razzImage} style={styles.appImage} /> */}
+          <Image source={razzImage} style={{height:Dimensions.get('screen').height * (0.15*0.5),width:Dimensions.get('screen').height * (0.15*0.5) * 2.85 }} />
         </View>
         <View style={{ justifyContent: "center" }}>
           <CustomText
@@ -138,7 +142,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios:{
         color: "#fa7024",
-        fontSize: 20,
+        fontSize: 22,
         fontWeight:"bold",
         marginRight:10
       },

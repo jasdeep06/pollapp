@@ -4,9 +4,29 @@ import React, { useState } from "react";
 import CustomText from "./CustomText";
 
 const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get("window").width
 console.log(screenHeight)
-const cardHeight = (screenHeight-250) / 2; // 200 is an arbitrary value to accommodate other elements on the screen
+const cardHeight = (screenHeight- screenHeight*0.25) / 2; // 200 is an arbitrary value to accommodate other elements on the screen
+const cardWidth = (screenWidth - 100) /2
 console.log(cardHeight)
+
+function removeDecimalZeroes(priceString) {
+  // Extract currency symbol and number parts using regex
+  const regex = /([^0-9.-]*)([0-9]*\.?[0-9]+)/;
+  const match = priceString.match(regex);
+  
+  if (match) {
+    const currencySymbol = match[1];
+    const price = parseFloat(match[2]);
+    const cleanedPrice = price.toFixed(price % 1 === 0 ? 0 : 2);
+
+    return currencySymbol + cleanedPrice;
+  } else {
+    // Return the original string if it doesn't match the expected format
+    return priceString;
+  }
+}
+
 
 const PricingCard = ({ index, imageSrc, price, description, isSelected, onSelect }) => {
 //   const [isSelected, setIsSelected] = useState(false);
@@ -20,7 +40,7 @@ const PricingCard = ({ index, imageSrc, price, description, isSelected, onSelect
   const renderDescription = () => {
     return description.map((item, index) => (
       <CustomText key={index} style={[styles.descriptionItem, isSelected ? styles.selectedDescriptionItem : null,{fontWeight:"bold"}]}>
-        {index == 0 ? item : item + " Days"} <CustomText style={[styles.descriptionItem, isSelected ? styles.selectedDescriptionItem : null,{fontWeight:"normal"}]}>{index == 0 ? "Reveal(s)":"Validity"}</CustomText>
+        {index == 0 || item === "unlimited" ? item : item + " Days"} <CustomText style={[styles.descriptionItem, isSelected ? styles.selectedDescriptionItem : null,{fontWeight:"normal"}]}>{index == 0 ? "Reveal(s)":"Validity"}</CustomText>
       </CustomText>
     ));
   };
@@ -34,7 +54,7 @@ const PricingCard = ({ index, imageSrc, price, description, isSelected, onSelect
       {/* <Image source={{ uri: imageSrc }} style={styles.image} /> */}
       <Image source={imageSrc} style={styles.image}/>
       <CustomText style={[styles.price, isSelected ? styles.selectedPrice : null]}>
-        {price}
+        {removeDecimalZeroes(price)}
       </CustomText>
       <View style={styles.description}>{renderDescription()}</View>
     </TouchableOpacity>
@@ -49,7 +69,7 @@ const styles = StyleSheet.create({
     paddingVertical: 35,
     alignItems: "center",
     justifyContent: "center",
-    margin: 15,
+    margin: 7,
     width: 160,
     shadowColor: "#ffffff",
     shadowOffset: {
@@ -59,7 +79,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 10,
-    height:cardHeight
+    height:cardHeight,
+    width:cardWidth
   },
   selectedCard: {
     backgroundColor: "#fff66d",
