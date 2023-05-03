@@ -18,6 +18,7 @@ import FriendsScreen from "./src/screens/FriendsScreen";
 import GenderScreen from "./src/screens/GenderScreen";
 import GradeSelectionScreen from "./src/screens/GradeSelectionScreen";
 import IconWithBadge from "./src/components/IconWithBadge";
+import InstaAuthScreen from "./src/screens/InstaAuthScreen";
 import IntroScreen from "./src/screens/IntroScreen";
 import LastNameScreen from "./src/screens/LastNameScreen";
 import LikeViewScreen from "./src/screens/LikeViewScreen";
@@ -180,6 +181,15 @@ export default function Routes() {
   const { authState } = React.useContext(AuthContext);
   const {userId} = React.useContext(UserContext)
 
+  const linking = {
+    prefixes: ['com.jas1994.pollapp://'],
+    config: {
+      screens: {
+        BannerScreen: 'auth',
+      },
+    },
+  };
+
   console.log("from route ", authState.token);
 
 
@@ -191,14 +201,14 @@ export default function Routes() {
     );
   }
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       {authState.token && userId ? (
         getAuthNavigator(authState.isSignUp)
       ) : (
         <Stack.Navigator>
           <Stack.Screen
-            name="BannerScreen"
-            component={BannerScreen}
+            name="InstaAuthScreen"
+            component={InstaAuthScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -270,6 +280,15 @@ export default function Routes() {
               headerStyle: { backgroundColor: "#FF8C00" },
             }}
           />
+          {/* <Stack.Screen
+            name="InstaAuthScreen"
+            component={InstaAuthScreen}
+            options={{
+              headerShown: true,
+              headerTitle: "",
+              headerStyle: { backgroundColor: "#FF8C00" },
+            }}
+          /> */}
           <Stack.Screen
             name="MobileNumberInputScreen"
             component={MobileNumberInputScreen}

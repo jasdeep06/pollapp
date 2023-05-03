@@ -37,7 +37,8 @@ const GenderScreen = ({navigation}) => {
   const handleGenderSelect = (gender) => {
     updateUser({'gender':gender})
     // navigation.navigate('PhotoScreen')
-    navigation.navigate('MobileNumberInputScreen')
+    // navigation.navigate('MobileNumberInputScreen')
+    navigation.navigate('InstaAuthScreen')
   };
 
   const isSelected = (gender) => {

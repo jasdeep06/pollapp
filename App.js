@@ -1,3 +1,5 @@
+import * as WebBrowser from 'expo-web-browser';
+
 import { AuthProvider } from "./src/context/AuthContext";
 import { AxiosProvider } from "./src/context/AxiosContext";
 import { MetaProvider } from "./src/context/MetaContext";
