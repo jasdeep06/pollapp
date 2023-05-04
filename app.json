@@ -27,9 +27,9 @@
         "NSLocationAlwaysUsageDescription": "This app requires access to your location to find your school.",
         "NSLocationUsageDescription": "This app requires access to your location to find your school.",
         "NSCameraUsageDescription":"This app requires access to your camera to capture your profile picture.",
-        "NSContactsUsageDescription":"This app requires access to your contacts to recommend and find your friends."
+        "NSContactsUsageDescription":"This app collects contacts for friend impersonation prevention and friend recommendations. Your contacts will be securely stored on our servers."
       },
-      "buildNumber": "5"
+      "buildNumber": "7"
     },
     "android": {
       "adaptiveIcon": {

@@ -16,6 +16,7 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import ActionModal from "../components/ActionModal";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
 import { FontAwesome } from "@expo/vector-icons";
@@ -39,9 +40,40 @@ const PermissionsScreen = ({ navigation }) => {
   const { user, updateUser } = React.useContext(UserContext);
   const [isModalVisible, setIsModalVisible] = useState(true);
 
+  const [locationDeclined, setLocationDeclined] = useState(false);
+  const [contactsDeclined, setContactsDeclined] = useState(false);
+
+  const storeDeclineStatus = async (key) => {
+    try {
+      await AsyncStorage.setItem(key, "true");
+    } catch (e) {
+      console.log("Error storing decline status:", e);
+    }
+  };
+
+  const loadDeclineStatus = async () => {
+    try {
+      const locationDeclinedStatus = await AsyncStorage.getItem("locationDeclined");
+      const contactsDeclinedStatus = await AsyncStorage.getItem("contactsDeclined");
+      setLocationDeclined(locationDeclinedStatus === "true");
+      setContactsDeclined(contactsDeclinedStatus === "true");
+    } catch (e) {
+      console.log("Error loading decline status:", e);
+    }
+  };
+
+  useEffect(() => {
+    loadDeclineStatus();
+  }, []);
+
+
+
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   }
+
+
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -65,6 +97,7 @@ const PermissionsScreen = ({ navigation }) => {
 
       if (status !== "granted") {
         setIsRequestingLocation(false);
+        if(locationDeclined){
         Alert.alert(
           "Permission Denied",
           "In order for the Razz app to work properly, you need to enable location!",
@@ -76,6 +109,10 @@ const PermissionsScreen = ({ navigation }) => {
             { text: "Cancel" },
           ]
         );
+        }else{
+          setLocationDeclined(true);
+          storeDeclineStatus("locationDeclined")
+        }
         return;
       }
 
@@ -99,6 +136,8 @@ const PermissionsScreen = ({ navigation }) => {
 
       if (status !== "granted") {
         setIsRequestingContacts(false);
+
+        if(contactsDeclined){
         Alert.alert(
           "Permission Denied",
           "In order for the Razz app to work properly, you need to enable contacts access!",
@@ -110,6 +149,10 @@ const PermissionsScreen = ({ navigation }) => {
             { text: "Cancel" },
           ]
         );
+        }else{
+          setContactsDeclined(true);
+          storeDeclineStatus("contactsDeclined")
+        }
         return;
       }
 
@@ -142,7 +185,7 @@ const PermissionsScreen = ({ navigation }) => {
         <View style={{ marginTop: 10, width: "100%", alignItems: "center" }}>
           <CustomButton
             buttonText={
-              user.location != null ? "Location enabled" : "Enable location"
+              user.location != null ? "Location enabled" : getButtonString("location")
             }
             buttonStyles={{ width: "80%", backgroundColor: "white" }}
             textStyles={{ marginLeft: 5, color: "black" }}
@@ -161,7 +204,7 @@ const PermissionsScreen = ({ navigation }) => {
 
           <CustomButton
             buttonText={
-              user.contacts != null ? "Contacts enabled" : "Enable contacts"
+              user.contacts != null ? "Contacts enabled" : getButtonString("contacts")
             }
             buttonStyles={{ width: "80%", backgroundColor: "white" }}
             textStyles={{ marginLeft: 5, color: "black" }}
@@ -185,7 +228,7 @@ const PermissionsScreen = ({ navigation }) => {
         about privacy. We will never text or spam your contacts.
       </CustomText>
 
-      {Platform.OS == 'ios' && <ActionModal
+      {(Platform.OS == 'ios' && user.location == null && user.contacts == null) && <ActionModal
         isVisible={isModalVisible}
         backdropOpacity={0.7}
         modalStyle={{ backgroundColor: "white" }}
@@ -200,6 +243,7 @@ const PermissionsScreen = ({ navigation }) => {
               Contacts
             </CustomText>
             <CustomText style={{fontSize:16,marginTop:5}}>To find and recommend friends on Razz.</CustomText>
+            <CustomText style={{fontSize:16,marginTop:5}}>To validate friends on Razz ensuring your safety.</CustomText>
           </View>
 
           <View style={styles.permissionRow}>
@@ -218,6 +262,23 @@ const PermissionsScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
+const getButtonString = (cond) => {
+  if (cond == 'location') {
+    if (Platform.OS == "ios" ) {
+      return "Continue Location Access";
+    }else{
+      return "Enable Location";
+    }
+  }else{
+    if (Platform.OS == "ios" ) {
+      return "Continue Contacts Access";
+    }else{
+      return "Enable Contacts";
+    }
+  }
+  
+}
 
 const styles = StyleSheet.create({
   container: {
