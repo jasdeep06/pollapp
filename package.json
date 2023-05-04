@@ -55,7 +55,8 @@
     "react-native-view-shot": "3.5.0",
     "expo-auth-session": "~4.0.3",
     "expo-web-browser": "~12.1.1",
-    "expo-crypto": "~12.2.1"
+    "expo-crypto": "~12.2.1",
+    "react-native-webview": "11.26.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

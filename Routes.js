@@ -19,6 +19,7 @@ import GenderScreen from "./src/screens/GenderScreen";
 import GradeSelectionScreen from "./src/screens/GradeSelectionScreen";
 import IconWithBadge from "./src/components/IconWithBadge";
 import InstaAuthScreen from "./src/screens/InstaAuthScreen";
+import InstaAuthWebview from "./src/screens/InstaAuthWebview";
 import IntroScreen from "./src/screens/IntroScreen";
 import LastNameScreen from "./src/screens/LastNameScreen";
 import LikeViewScreen from "./src/screens/LikeViewScreen";
@@ -182,10 +183,11 @@ export default function Routes() {
   const {userId} = React.useContext(UserContext)
 
   const linking = {
-    prefixes: ['com.jas1994.pollapp://'],
+    prefixes: ['razz://'],
     config: {
       screens: {
-        BannerScreen: 'auth',
+        InstaAuthScreen: 'auth',
+
       },
     },
   };
@@ -208,7 +210,7 @@ export default function Routes() {
         <Stack.Navigator>
           <Stack.Screen
             name="InstaAuthScreen"
-            component={InstaAuthScreen}
+            component={InstaAuthWebview}
             options={{ headerShown: false }}
           />
           <Stack.Screen

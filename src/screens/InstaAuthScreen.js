@@ -15,7 +15,7 @@ const InstaAuthScreen = ({navigation}) => {
 //   const redirectUri = makeRedirectUri({scheme:"com.jas1994.pollapp"})
   const responseType = ResponseType.Code;
   console.log(responseType)
-  const redirectUri = 'https://api.razzapp.com/redirect'
+  const redirectUri = 'https://com.jas1994.pollapp/expo-development-client/?url=http%3A%2F%2F192.168.69.226%3A8081'
 
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -29,7 +29,6 @@ const InstaAuthScreen = ({navigation}) => {
     }
   );
 
-  console.log(response)
 
   useEffect(() => {
     if (response?.type === 'success') {
