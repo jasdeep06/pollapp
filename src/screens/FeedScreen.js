@@ -141,8 +141,10 @@ const FeedScreen = ({ navigation }) => {
                   leftText={item.mock ? 
                     <><CustomText style={{fontWeight:"bold"}}>{item.firstname + " (" + item.lastname + ")"}</CustomText><CustomText>{" received"}</CustomText> </>: <><CustomText style={{fontWeight:"bold"}}>{item.firstname + " " + item.lastname}</CustomText><CustomText>{" received"}</CustomText> </>}
                   style={[{
-                    margin: 10,
+                    margin: 0,
                     backgroundColor:  "#ffffff",
+                    borderRadius: 0,
+                    elevation:0
                   }]}
                   rightText={item.time}
                   icon={item.mock ? genericImage : item.photo}
