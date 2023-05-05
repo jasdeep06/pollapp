@@ -16,12 +16,13 @@ const FriendItem = ({
   onUnfriend,
   itemStyle,
   contact_name,
-  gender
+  gender,
+  isSent
 }) => {
 
   const [accepted,setAccepted] = useState(false)
   const [declined,setDeclined] = useState(false)
-  const [added,setAdded] = useState(false)
+  const [added,setAdded] = useState(isSent !== null ? isSent : false)
   const [imageModalVisible,setImageModalVisible] = useState(false)
   const [unfriended,setUnfriended] = useState(false)
 
@@ -94,9 +95,9 @@ const FriendItem = ({
       );
     }
 
-    if (type === 'add') {
+    if (type === 'add' || unfriended) {
       return (
-        <TouchableOpacity onPress={addFriend} style={[styles.button,{paddingHorizontal:22}]} disabled={added}>
+        <TouchableOpacity onPress={addFriend} style={[!added ? [styles.button,{paddingHorizontal:22}] : [styles.button,{paddingHorizontal:22,backgroundColor:"#1f8f00"}]]} disabled={added}>
           <CustomText style={styles.buttonText}>{added ? "SENT":"ADD"}</CustomText>
         </TouchableOpacity>
       );
@@ -104,7 +105,7 @@ const FriendItem = ({
 
     if(type === 'friend'){
       return (
-        <TouchableOpacity onPress={unFriend} style={[styles.button,{paddingHorizontal:22}]}>
+        <TouchableOpacity onPress={unFriend} style={!unfriended ?  [styles.button,{paddingHorizontal:22,backgroundColor:"#d64b36"}]:[styles.button,{paddingHorizontal:22}]}>
           <CustomText style={styles.buttonText}>{unfriended ? "ADD":"REMOVE"}</CustomText>
         </TouchableOpacity>
       );

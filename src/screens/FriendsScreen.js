@@ -16,6 +16,18 @@ const FriendsScreen = ({ navigation }) => {
   const [isLoadingFriendsData, setIsLoadingFriendsData] = React.useState(true);
   const [error, setError] = React.useState(false);
 
+  const unFriend = async (user_id) => {
+    return authAxios.post("/request_action", {
+      friend_id: user_id,
+      concern: "unfriend"
+    });
+  }
+  const sendFriendRequest = async (user_id) => {
+    return authAxios.post("/send_request", {
+      friend_id: user_id,
+    });
+  };
+
   const getFriends = async () => {
     try{
     setError(false);
@@ -70,6 +82,9 @@ const FriendsScreen = ({ navigation }) => {
               contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
               number={item.in_contacts ? null : item.mobile}
               gender={item.gender}
+              onUnfriend={() => unFriend(item.user_id)}
+              onAdd={() => sendFriendRequest(item.user_id)}
+              
             />
           </View>
           <View

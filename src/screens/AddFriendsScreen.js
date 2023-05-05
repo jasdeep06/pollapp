@@ -246,6 +246,7 @@ const AddFriendsScreen = ({ navigation }) => {
                   onAdd={() => sendFriendRequest(item.user_id)}
                   itemStyle={{ padding: 10 }}
                   gender={item.gender}
+                  isSent={item.is_sent}
                 />
               </View>
             </React.Fragment>

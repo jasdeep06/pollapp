@@ -1,10 +1,12 @@
 import {
   FlatList,
+  Linking,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
@@ -15,6 +17,7 @@ import ErrorView from "../components/ErrorView";
 import { Feather } from "@expo/vector-icons";
 import FriendItem from "../components/FriendItem";
 import Loader from "../components/Loader";
+import { MixpanelContext } from "../context/MixPanelContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
 
@@ -27,6 +30,9 @@ const AddFriendsDetailScreen = ({ navigation }) => {
   const { authAxios } = React.useContext(AxiosContext);
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
+
+  const mixpanel = React.useContext(MixpanelContext)
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -53,6 +59,22 @@ const AddFriendsDetailScreen = ({ navigation }) => {
       friend_id: user_id,
       concern: "decline",
     });
+  };
+
+  const shareWhatsAppMessage = async (message) => {
+    !__DEV__ && mixpanel.track("whatsapp_invite")
+    const url = `whatsapp://send?text=${encodeURIComponent(message)}`;
+
+    try {
+      const canOpenURL = await Linking.canOpenURL(url);
+      if (canOpenURL) {
+        await Linking.openURL(url);
+      } else {
+        console.error("WhatsApp is not installed on the device");
+      }
+    } catch (error) {
+      console.error("Error opening WhatsApp:", error);
+    }
   };
 
 
@@ -158,12 +180,12 @@ const AddFriendsDetailScreen = ({ navigation }) => {
           placeholderTextColor="#888"
         />
       </View>
-      {filteredData.map((item, index) => (
+      {filteredData.length ? filteredData.map((item, index) => (
         <React.Fragment key={item.user_id}>
           <View style={{ padding: 10 }} >
             <FriendItem
               imageUrl={item.photo}
-              name={item.firstname + " " + item.lastname + "(@" + item.insta_username.slice(0,8) + ")"}
+              name={item.firstname + " " + item.lastname}
               type={context}
               // number={item.in_contacts ? item.contact_name + " in contacts" : item.mobile}
               contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
@@ -172,13 +194,17 @@ const AddFriendsDetailScreen = ({ navigation }) => {
                   onDecline={() => friendRequestDecline(item.user_id)}
                   onAdd={() => sendFriendRequest(item.user_id)}
                   gender={item.gender}
+                  isSent={context == "add" ? item.is_sent : null}
             />
           </View>
           <View
             style={{ borderBottomWidth: 0.5, borderBottomColor: "#DDD" }}
           ></View>
         </React.Fragment>
-      ))}
+      )):<View style={{paddingVertical:20}}><TouchableOpacity onPress={() =>
+        shareWhatsAppMessage(
+          "Hey, I just found this awesome app called Razz! It's a fun way to see who likes you! https://play.google.com/store/apps/details?id=com.jas1994.pollapp"
+        )}><CustomText style={{textAlign:"center",color:"blue",fontSize:18}}>{"Invite \"" + searchText + "\""}</CustomText></TouchableOpacity></View>}
     </ScrollView>
     // </SafeAreaView>
   );
