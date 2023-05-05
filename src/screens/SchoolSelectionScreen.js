@@ -52,7 +52,7 @@ const SchoolSelectionScreen = ({navigation}) => {
   const handleSchoolSelect = (item) => {
     console.log(`Selected school: ${item.name}`)
     updateUser({'school':item.school_id})
-    navigation.navigate('FirstNameScreen');
+    navigation.navigate('FullNameScreen');
   }
 
   useLayoutEffect(() => {

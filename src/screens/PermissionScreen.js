@@ -242,8 +242,8 @@ const PermissionsScreen = ({ navigation }) => {
             <CustomText style={styles.permissionText}>
               Contacts
             </CustomText>
-            <CustomText style={{fontSize:16,marginTop:5}}>To find and recommend friends on Razz.</CustomText>
-            <CustomText style={{fontSize:16,marginTop:5}}>To validate friends on Razz ensuring your safety.</CustomText>
+            <CustomText style={{fontSize:16,marginTop:5,textAlign:"center"}}>To find and recommend friends on Razz.</CustomText>
+            <CustomText style={{fontSize:16,marginTop:5,textAlign:"center"}}>To validate friends on Razz ensuring your safety.</CustomText>
           </View>
 
           <View style={styles.permissionRow}>

@@ -15,6 +15,7 @@ import BannerScreen from "./src/screens/BannerScreen";
 import FeedScreen from "./src/screens/FeedScreen";
 import FirstNameScreen from "./src/screens/FirstNameScreen";
 import FriendsScreen from "./src/screens/FriendsScreen";
+import FullNameScreen from "./src/screens/FullNameScreen";
 import GenderScreen from "./src/screens/GenderScreen";
 import GradeSelectionScreen from "./src/screens/GradeSelectionScreen";
 import IconWithBadge from "./src/components/IconWithBadge";
@@ -247,7 +248,7 @@ export default function Routes() {
               headerStyle: { backgroundColor: "#FF8C00" },
             }}
           />
-          <Stack.Screen
+          {/* <Stack.Screen
             name="FirstNameScreen"
             component={FirstNameScreen}
             options={{
@@ -255,10 +256,19 @@ export default function Routes() {
               headerTitle: "",
               headerStyle: { backgroundColor: "#FF8C00" },
             }}
-          />
-          <Stack.Screen
+          /> */}
+          {/* <Stack.Screen
             name="LastNameScreen"
             component={LastNameScreen}
+            options={{
+              headerShown: true,
+              headerTitle: "",
+              headerStyle: { backgroundColor: "#FF8C00" },
+            }}
+          /> */}
+          <Stack.Screen
+            name="FullNameScreen"
+            component={FullNameScreen}
             options={{
               headerShown: true,
               headerTitle: "",
