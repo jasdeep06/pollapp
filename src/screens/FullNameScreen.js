@@ -9,13 +9,13 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const FullNameScreen = ({navigation}) => {
     const {user,updateUser} = React.useContext(UserContext);
-    const nameRef = useRef(null);
+    const firstNameRef = useRef(null);
 
 
     useFocusEffect(
       React.useCallback(() => {
-        if(nameRef.current){
-          nameRef.current.focus();
+        if(firstNameRef.current){
+          firstNameRef.current.focus();
         }
         return () => {}
       },[])
@@ -30,8 +30,12 @@ const FullNameScreen = ({navigation}) => {
       });
     }, [navigation]);
 
-    const handleName = (text) => {
-        updateUser({name:text})
+    const handleFirstName = (text) => {
+        updateUser({firstname:text})
+    }
+
+    const handleLastName = (text) => {
+        updateUser({lastname:text})
     }
   
     const handleNext = () => {
@@ -45,22 +49,33 @@ const FullNameScreen = ({navigation}) => {
           <CustomText style={styles.question}>What's your name?</CustomText>
           <TextInput
             style={styles.input}
-            value={user.name}
-            onChangeText={handleName}
-            placeholder="Name"
+            value={user.firstname}
+            onChangeText={handleFirstName}
+            placeholder="Firstname"
             placeholderTextColor="rgba(255, 255, 255, 0.5)"
             autoFocus={true}
-            ref={nameRef}
+            ref={firstNameRef}
           />
+          <TextInput
+            style={styles.input}
+            value={user.lastname}
+            onChangeText={handleLastName}
+            placeholder="Lastname"
+            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            // autoFocus={true}
+          />
+            <CustomText style={styles.warning}>
+            Remember - To avoid impersonation, this name along with your mobile number would be seen by people who you add friends on Razz.
+            </CustomText>        
         </View>
         <KeyboardAvoidingView 
         style={Platform.OS == 'ios'  ? {flex:1} : {}}>
         <CustomButton 
-        buttonStyles={user.name.length != 0 ? styles.nextButton:[styles.nextButton,styles.disabledButton]}
+        buttonStyles={user.firstname.length != 0 && user.lastname.length !=0 ? styles.nextButton:[styles.nextButton,styles.disabledButton]}
         onPress = {handleNext}
         buttonText={"Next"}
         textStyles={styles.nextButtonText}
-        disabled={user.name.length == 0}
+        disabled={user.firstname.length == 0  || user.lastname.length == 0}
         />
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -108,7 +123,14 @@ const FullNameScreen = ({navigation}) => {
     },
     disabledButton: {
       backgroundColor: '#fdbf9c'
-    }
+    },
+    warning: {
+        fontSize: 14,
+        color: '#FFFFFF',
+        textAlign: 'center',
+        marginBottom: 20,
+        paddingHorizontal: 20,
+      },
   });
   
 
