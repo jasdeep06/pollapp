@@ -20,6 +20,7 @@ import GradeSelectionScreen from "./src/screens/GradeSelectionScreen";
 import IconWithBadge from "./src/components/IconWithBadge";
 import InstaAuthScreen from "./src/screens/InstaAuthScreen";
 import InstaAuthWebview from "./src/screens/InstaAuthWebview";
+import InstagramAuthExternal from "./src/screens/InstagramAuthExternal";
 import IntroScreen from "./src/screens/IntroScreen";
 import LastNameScreen from "./src/screens/LastNameScreen";
 import LikeViewScreen from "./src/screens/LikeViewScreen";
@@ -186,7 +187,7 @@ export default function Routes() {
     prefixes: ['razz://'],
     config: {
       screens: {
-        InstaAuthScreen: 'auth',
+        InstagramAuthExternal: 'auth',
 
       },
     },
@@ -209,8 +210,8 @@ export default function Routes() {
       ) : (
         <Stack.Navigator>
           <Stack.Screen
-            name="InstaAuthScreen"
-            component={InstaAuthWebview}
+            name="BannerScreen"
+            component={BannerScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -282,15 +283,15 @@ export default function Routes() {
               headerStyle: { backgroundColor: "#FF8C00" },
             }}
           />
-          {/* <Stack.Screen
-            name="InstaAuthScreen"
-            component={InstaAuthScreen}
+          <Stack.Screen
+            name="InstagramAuthExternal"
+            component={InstagramAuthExternal}
             options={{
               headerShown: true,
               headerTitle: "",
               headerStyle: { backgroundColor: "#FF8C00" },
             }}
-          /> */}
+          />
           <Stack.Screen
             name="MobileNumberInputScreen"
             component={MobileNumberInputScreen}

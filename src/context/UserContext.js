@@ -13,7 +13,8 @@ export const UserProvider = ({ children }) => {
     "school_id":null,
     "gender":null,
     "phone":null,
-    "photo":null
+    "photo":null,
+    "insta_username":null
   });
   const [userId, setUserId] = useState(null);
 

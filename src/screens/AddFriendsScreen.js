@@ -156,7 +156,7 @@ const AddFriendsScreen = ({ navigation }) => {
               <View>
                 <FriendItem
                   imageUrl={item.photo}
-                  name={item.firstname + " " + item.lastname}
+                  name={item.firstname + " " + item.lastname + "(@" + item.insta_username.slice(0,8) + ")"}
                   type="request"
                   contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
                   number={item.in_contacts ? null : item.mobile}
@@ -199,7 +199,7 @@ const AddFriendsScreen = ({ navigation }) => {
               <View>
                 <FriendItem
                   imageUrl={item.photo}
-                  name={item.firstname + " " + item.lastname}
+                  name={item.firstname + " " + item.lastname + "(@" + item.insta_username.slice(0,8) + ")"}
                   type="add"
                   contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
                   number={item.in_contacts ? null : item.mobile}

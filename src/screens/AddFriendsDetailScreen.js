@@ -163,7 +163,7 @@ const AddFriendsDetailScreen = ({ navigation }) => {
           <View style={{ padding: 10 }} >
             <FriendItem
               imageUrl={item.photo}
-              name={item.firstname + " " + item.lastname}
+              name={item.firstname + " " + item.lastname + "(@" + item.insta_username.slice(0,8) + ")"}
               type={context}
               // number={item.in_contacts ? item.contact_name + " in contacts" : item.mobile}
               contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}

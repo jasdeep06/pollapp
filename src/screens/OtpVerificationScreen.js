@@ -99,7 +99,8 @@ const OtpVerificationScreen = ({navigation,route}) => {
       "grade":user.grade,
       "latitude":user.location.coords.latitude,
       "longitude":user.location.coords.longitude,
-      "contacts":reformatContacts(user.contacts)
+      "contacts":reformatContacts(user.contacts),
+      "insta_username":user.insta_username,
     }:{
       "mobile": "91" + user.phone,
       "otp": otp,
@@ -119,7 +120,8 @@ const OtpVerificationScreen = ({navigation,route}) => {
       "grade":user.grade,
       "latitude":user.location.coords.latitude,
       "longitude":user.location.coords.longitude,
-      "contacts":reformatContacts(user.contacts)
+      "contacts":reformatContacts(user.contacts),
+      "insta_username":user.insta_username,
     }:{
       "mobile": "91" + user.phone,
       "otp": otp,

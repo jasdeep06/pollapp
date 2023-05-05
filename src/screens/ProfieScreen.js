@@ -93,7 +93,7 @@ const ProfileScreen = ({ navigation }) => {
           style={{
             alignSelf: "center",
             fontSize: 25,
-            marginVertical: 10,
+            marginVertical: 5,
             color: "#3b3b3b",
             fontWeight:"bold"
 
@@ -101,6 +101,7 @@ const ProfileScreen = ({ navigation }) => {
         >
           {profileData.firstname + " " + profileData.lastname}
         </CustomText>
+        {profileData.insta_username && <CustomText style={{textAlign:"center",fontSize:15}}>{"(@" + profileData.insta_username + ")"}</CustomText>}
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
           {/* <FontAwesome5 name="school" size={20} color="white" /> */}
           <Image source={schoolImage} style={{height:30,width:30,alignSelf:"center"}}/>
