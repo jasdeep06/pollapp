@@ -1,4 +1,4 @@
-import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React,{useState} from 'react';
 
 import CircularImageModal from './CircularImageModal';
@@ -13,6 +13,7 @@ const FriendItem = ({
   onDecline,
   onInvite,
   onAdd,
+  onUnfriend,
   itemStyle,
   contact_name,
   gender
@@ -22,6 +23,7 @@ const FriendItem = ({
   const [declined,setDeclined] = useState(false)
   const [added,setAdded] = useState(false)
   const [imageModalVisible,setImageModalVisible] = useState(false)
+  const [unfriended,setUnfriended] = useState(false)
 
   const handleImageModal = () => {
     setImageModalVisible(!imageModalVisible)
@@ -43,6 +45,31 @@ const FriendItem = ({
     setAdded(true)
     const response = await onAdd(user_id)
     console.log(response.data)
+  }
+
+  const unFriend = async (user_id) => {
+    // setUnfriended(true)
+    // const response = await onUnfriend(user_id)
+    // console.log(response.data)
+    Alert.alert(
+      "Remove Friend",
+      "Are you sure you want to remove this friend?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        {
+          text:"Remove",
+          onPress: async () => {
+            setUnfriended(true)
+            const response = await onUnfriend(user_id)
+            console.log(response.data)
+          }
+        }
+      ]
+    )
   }
 
   const renderButtons = () => {
@@ -75,12 +102,20 @@ const FriendItem = ({
       );
     }
 
+    if(type === 'friend'){
+      return (
+        <TouchableOpacity onPress={unFriend} style={[styles.button,{paddingHorizontal:22}]}>
+          <CustomText style={styles.buttonText}>{unfriended ? "ADD":"REMOVE"}</CustomText>
+        </TouchableOpacity>
+      );
+    }
+
     return null;
   };
 
   return (
     <>
-    <TouchableOpacity onPress={handleImageModal}>
+    {/* <TouchableOpacity> */}
     <View style={[styles.container,itemStyle]}>
       <View style={styles.imageNameContainer}>
         <Image source={{ uri: imageUrl }} style={[styles.image,gender == 'boy' ? {borderColor:"#3f85fa",borderWidth:2.5} : {borderColor:"#fd4996",borderWidth:2.5}]} />
@@ -91,8 +126,8 @@ const FriendItem = ({
       </View>
       <View style={styles.buttonsContainer}>{renderButtons()}</View>
     </View>
-    </TouchableOpacity>
-    <CircularImageModal imageUri={imageUrl} toggleModal={handleImageModal} isVisible={imageModalVisible} diameterPercentage={50}/>
+    {/* </TouchableOpacity> */}
+    {/* <CircularImageModal imageUri={imageUrl} toggleModal={handleImageModal} isVisible={imageModalVisible} diameterPercentage={50}/> */}
     </>
   );
 };

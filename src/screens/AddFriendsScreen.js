@@ -122,6 +122,12 @@ const AddFriendsScreen = ({ navigation }) => {
       concern: "decline",
     });
   };
+  const unFriend = async (user_id) => {
+    return authAxios.post("/request_action", {
+      friend_id: user_id,
+      concern: "unfriend"
+    });
+  }
 
   if(error){
     return <ErrorView onRetry={getAddFriendsData}/>
@@ -202,6 +208,7 @@ const AddFriendsScreen = ({ navigation }) => {
                   onAdd={() => sendFriendRequest(item.user_id)}
                   itemStyle={{ padding: 10 }}
                   gender={item.gender}
+                  onUnfriend={() => unFriend(item.user_id)}
                 />
               </View>
             </React.Fragment>
