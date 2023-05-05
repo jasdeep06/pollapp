@@ -56,7 +56,8 @@ const AddFriendsScreen = ({ navigation }) => {
         firstname: response.data.data.firstname,
         lastname: response.data.data.lastname,
         num_requests:response.data.data.num_requests,
-        num_from_school:response.data.data.num_from_school
+        num_from_school:response.data.data.num_from_school,
+        num_friends:response.data.data.num_friends
       });
       updateMetadata({unread_likes: response.data.unread_likes,
         friend_requests: response.data.friend_requests})
@@ -137,12 +138,8 @@ const AddFriendsScreen = ({ navigation }) => {
       }}
       refreshControl = {<RefreshControl refreshing={isLoading} onRefresh={getAddFriendsData}/>}
     >
-      <View style={{marginVertical:10,marginBottom:20}}>
-      <Image source={topImage} style={{ width: 80, height: 80,alignSelf:"center" }} />
-      <CustomText style={{alignSelf:"center"}}>Find friends here</CustomText>
-      </View>
-      <View style={{ backgroundColor: "white" }}>
-        <CustomText style={styles.heading}>{"Friend Requests(" + userData.num_requests + ")"}</CustomText>
+      <View>
+      <CustomText style={styles.heading}>{"Friend Requests"} <CustomText style={[styles.heading]}>{"("+userData.num_requests+")"}</CustomText></CustomText>
       </View>
       <View style={{ borderWidth: 1, borderColor: "#e9e9e9" }} />
       {addFriendsData["friend_requests"].length == 0 ? (
@@ -156,7 +153,7 @@ const AddFriendsScreen = ({ navigation }) => {
               <View>
                 <FriendItem
                   imageUrl={item.photo}
-                  name={item.firstname + " " + item.lastname + "(@" + item.insta_username.slice(0,8) + ")"}
+                  name={item.firstname + " " + item.lastname }
                   type="request"
                   contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
                   number={item.in_contacts ? null : item.mobile}
@@ -177,16 +174,52 @@ const AddFriendsScreen = ({ navigation }) => {
               });
             }}
           >
-            <CustomText style={{ textAlign: "center", fontSize: 15,color:"#767676" }}>See more</CustomText>
+            <CustomText style={{ textAlign: "center", fontSize: 18,color:"blue",fontWeight:"bold" }}>See more</CustomText>
           </TouchableOpacity>
         </>
       )}
-      <View
-        style={{ borderBottomWidth: 1.5, borderBottomColor: "#e9e9e9" }}
-      ></View>
-      <View style={{ backgroundColor: "white" }}>
-        <CustomText style={styles.heading}>{"Add friends from school(" + userData.num_from_school + ")"}</CustomText>
-        <View style={{ borderWidth: 1, borderColor: "#e9e9e9" }} />
+
+<View >
+        <CustomText style={styles.heading}>{"Friends"} <CustomText style={[styles.heading]}>{"("+userData.num_friends+")"}</CustomText></CustomText>
+        {/* <View style={{ borderWidth: 1, borderColor: "#e9e9e9" }} /> */}
+        
+      </View>
+      {addFriendsData["friends"].length == 0 ? (
+        <CustomText style={{ textAlign: "center", margin: 10 }}>
+          You don't have any new friend requests.
+        </CustomText>
+      ) : (
+        <>
+          {addFriendsData["friends"].slice(0, 2).map((item, index) => (
+            <React.Fragment key={item.user_id}>
+              <View>
+                <FriendItem
+                  imageUrl={item.photo}
+                  name={item.firstname + " " + item.lastname}
+                  type="friend"
+                  contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
+                  number={item.in_contacts ? null : item.mobile}
+                  onAdd={() => sendFriendRequest(item.user_id)}
+                  itemStyle={{ padding: 10 }}
+                  gender={item.gender}
+                />
+              </View>
+            </React.Fragment>
+          ))}
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("FriendsScreen")
+            }}
+          >
+            <CustomText style={{ textAlign: "center", fontSize: 18,color:"blue",fontWeight:"bold",marginBottom:25 }}>{"See more"}</CustomText>
+          </TouchableOpacity>
+        </>
+      )}
+     
+      <View >
+        <CustomText style={styles.heading}>{"Add from school"} <CustomText style={[styles.heading]}>{"("+userData.num_from_school+")"}</CustomText></CustomText>
+        {/* <View style={{ borderWidth: 1, borderColor: "#e9e9e9" }} /> */}
+        
       </View>
       {addFriendsData["from_school"].length == 0 ? (
         <CustomText style={{ textAlign: "center", margin: 10 }}>
@@ -199,7 +232,7 @@ const AddFriendsScreen = ({ navigation }) => {
               <View>
                 <FriendItem
                   imageUrl={item.photo}
-                  name={item.firstname + " " + item.lastname + "(@" + item.insta_username.slice(0,8) + ")"}
+                  name={item.firstname + " " + item.lastname}
                   type="add"
                   contact_name={item.in_contacts ? item.contact_name : "Not in Contacts"}
                   number={item.in_contacts ? null : item.mobile}
@@ -211,7 +244,6 @@ const AddFriendsScreen = ({ navigation }) => {
             </React.Fragment>
           ))}
           <TouchableOpacity
-            style={{ backgroundColor: "white", padding: 10 }}
             onPress={() => {
               navigation.navigate("AddFriendsDetailScreen", {
                 context: "add",
@@ -219,7 +251,7 @@ const AddFriendsScreen = ({ navigation }) => {
               });
             }}
           >
-            <CustomText style={{ textAlign: "center", fontSize: 15,color:"#767676" }}>See more</CustomText>
+            <CustomText style={{ textAlign: "center", fontSize: 18,color:"blue",fontWeight:"bold",marginBottom:25 }}>See more</CustomText>
           </TouchableOpacity>
         </>
       )}
@@ -248,7 +280,7 @@ const AddFriendsScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  heading: { margin: 5, fontSize: 18,color:"#727272",fontWeight:"bold" },
+  heading: { margin: 5, fontSize: 18,fontWeight:"bold" },
 });
 
 export default AddFriendsScreen;
