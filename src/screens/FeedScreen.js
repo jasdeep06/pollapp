@@ -1,4 +1,4 @@
-import { Image, Platform, RefreshControl, ScrollView, StatusBar, Text, View } from "react-native";
+import { Image, Platform, RefreshControl, SafeAreaView, ScrollView, StatusBar, Text, View } from "react-native";
 import React, { useEffect } from "react";
 
 import { AxiosContext } from "../context/AxiosContext";
@@ -11,7 +11,6 @@ import Loader from "../components/Loader";
 import { MetaContext } from "../context/MetaContext";
 import { MixpanelContext } from "../context/MixPanelContext";
 import OneSignal from 'react-native-onesignal';
-import { SafeAreaView } from "react-native-safe-area-context";
 import { UserContext } from "../context/UserContext";
 import blackFlameImage from '../../assets/images/top_black_flame_png.png'
 import blueFlameImage from '../../assets/images/blue_flame.png'
@@ -142,9 +141,10 @@ const FeedScreen = ({ navigation }) => {
                     <><CustomText style={{fontWeight:"bold"}}>{item.firstname + " (" + item.lastname + ")"}</CustomText><CustomText>{" received"}</CustomText> </>: <><CustomText style={{fontWeight:"bold"}}>{item.firstname + " " + item.lastname}</CustomText><CustomText>{" received"}</CustomText> </>}
                   style={[{
                     margin: 0,
-                    backgroundColor:  "#ffffff",
+                    backgroundColor:  "#e9e9e9",
                     borderRadius: 0,
-                    elevation:0
+                    elevation:0,
+                    shadowOpacity:0
                   }]}
                   rightText={item.time}
                   icon={item.mock ? genericImage : item.photo}
